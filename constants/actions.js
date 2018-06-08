@@ -1,0 +1,10 @@
+export const ACCOUNTS_SET = 'ACCOUNTS_SET';
+export const ACCOUNT_ADD = 'ACCOUNT_ADD';
+export const ERROR = 'ERROR';
+export const STATE = 'STATE';
+export const RD = 'RD';
+export const LOAD = 'LOAD';
+export const REFS = 'REFS';
+export const REAL_CURRENCIES = 'REAL_CURRENCIES';
+export const LOCATION = 'LOCATION';
+export const SERVICES = 'SERVICES';
