@@ -1,8 +1,6 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { ScrollView, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions from '../../engine/actions.js';
+import { Text, View, Image } from 'react-native';
 import C from '../../engine/c.js';
 
 class Info extends RefluxComponent {
@@ -18,11 +16,11 @@ class Info extends RefluxComponent {
 		 */
 
 		for(; i < user_auras.length; i++){
-			console.log(typeof C.refs.battle_aura)
-
 			let aura = C.refs.ref('battle_aura|'+user_auras[i][0]);
 
 			if(aura){
+				console.log('AURA',aura);
+
 				auras.push(aura);
 			}
 		}
@@ -54,7 +52,7 @@ class Info extends RefluxComponent {
 							justifyContent:'center',
 							margin:5
 						}}>
-							<Text>{item.label}</Text>
+							<Image source={C.images[item.params.images.large]} />
 						</View>
 					))
 				}

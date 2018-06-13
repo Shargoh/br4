@@ -1,6 +1,7 @@
 'use strict';
 import _ from 'lodash';
 import Reflux from 'reflux';
+import images from '../image_paths';
 
 class C {
 	constructor(){
@@ -56,6 +57,8 @@ class C {
 		};
 		
 		this.stores = {};
+
+		this.images = images;
 	}
 	promise(method){
 		var self = this;
