@@ -2,6 +2,8 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
 import images from '../image_paths';
+// import image_uris from '../image_uri_paths';
+import * as constants from '../constants/common';
 
 class C {
 	constructor(){
@@ -59,6 +61,7 @@ class C {
 		this.stores = {};
 
 		this.images = images;
+		// this.image_uris = image_uris;
 	}
 	promise(method){
 		var self = this;
@@ -157,6 +160,15 @@ class C {
 		setTimeout(function(){
 			if(loading > 0 && callback) callback();
 		},10000);
+	}
+	getImage(url){
+		var image = this.images[url];
+
+		if(!image){
+			return {
+				uri:constants.IMAGE_URL + url
+			};
+		}else return image;
 	}
 };
 

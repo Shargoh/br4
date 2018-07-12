@@ -1,13 +1,13 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { Text, View, Image } from 'react-native';
+import { View, ImageBackground } from 'react-native';
 import C from '../../engine/c.js';
 
 class Info extends RefluxComponent {
 	getAuras(){
-		var user = this.props.user,
+		var user = this.props.user || {},
 			auras = [],
-			user_auras = user.aura,
+			user_auras = user.aura || [],
 			empty_auras = [],
 			i = 0;
 
@@ -19,8 +19,6 @@ class Info extends RefluxComponent {
 			let aura = C.refs.ref('battle_aura|'+user_auras[i][0]);
 
 			if(aura){
-				console.log('AURA',aura);
-
 				auras.push(aura);
 			}
 		}
@@ -45,15 +43,14 @@ class Info extends RefluxComponent {
 			}}>
 				{
 					auras.auras.map((item,index) => (
-						<View key={'aura'+item.id} style={{
+						<ImageBackground key={'aura'+item.id} style={{
 							flex:1,
 							borderWidth:1,
 							borderColor:'black',
 							justifyContent:'center',
 							margin:5
-						}}>
-							<Image source={C.images[item.params.images.large]} />
-						</View>
+						}} source={C.getImage(item.params.images.large)} resizeMode="contain">
+						</ImageBackground>
 					))
 				}
 				{

@@ -1,21 +1,33 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions, { BattleActions } from '../../engine/actions.js';
+import { TouchableOpacity, ImageBackground } from 'react-native';
+import { BattleActions } from '../../engine/actions.js';
+import C from '../../engine/c.js';
 
 class Turn extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setState({
-			kick:this.store.get('kick')
+			kick:this.getKick()
 		});
 	}
 	onAction(action,store){
 		if(action == 'change' && store.changed.kick != undefined){
 			this.setState({
-				kick:store.changed.kick
+				kick:this.getKick()
 			});
+		}
+	}
+	getKick(){
+		var data = this.store.get('kick');
+
+		if(!data) return;
+
+		var ref = C.refs.ref('battle_turn|'+data.name);
+
+		return {
+			data:data,
+			ref:ref
 		}
 	}
 	render() {
@@ -32,16 +44,20 @@ class Turn extends RefluxComponent {
 				flex:1,
 				justifyContent:'center',
 				alignItems:'center',
-				borderWidth:1,
-				borderColor:'#000',
-				borderRadius:50,
 				margin:5
 			}} onPress={() => {
 				if(can_kick){
 					BattleActions.kick(name);
 				}
 			}}>
-				<Text>{name}</Text>
+				<ImageBackground style={{
+					width:'100%',
+					height:'100%',
+					borderRadius:50,
+					borderWidth:1,
+					borderColor:'#000',
+				}} source={C.getImage(this.state.kick.ref.desc.images.active)} resizeMode="contain">
+				</ImageBackground>
 			</TouchableOpacity>
     )
   }

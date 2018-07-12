@@ -13,8 +13,9 @@ import Reroll from '../components/battle/Reroll';
 import Timer from '../components/battle/Timer';
 import Turn from '../components/battle/Turn';
 import Groups from '../components/battle/Groups';
-import { StyleSheet, Text, View, Button, Alert, TextInput } from 'react-native';
+import { View } from 'react-native';
 import SideMenu from 'react-native-side-menu';
+import AnimationBox from '../components/battle/AnimationBox';
 
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
@@ -72,6 +73,7 @@ class LocationContainer extends RefluxComponent {
 					<ManaBar />
 					<Info user={this.user.attributes} />
 				</View>
+				<AnimationBox />
 			</SideMenu>
 		)
   }

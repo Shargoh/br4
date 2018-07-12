@@ -46,7 +46,6 @@ import * as types from '../constants/actions.js';
 import * as constants from '../constants/common.js';
 import GlobalActions from './actions.js';
 
-const IMAGE_URL = constants.IMAGE_URL;
 const BLANK_IMAGE_URL = constants.BLANK_IMAGE_URL;
 
 var references;
@@ -111,7 +110,7 @@ function prepareReferences(config_references) {
 
     item.entry = Number(item.entry);
     item.order = item.order ? Number(item.order) : 0;
-    item.images.main = item.images.main ? (IMAGE_URL + item.images.main) : constants.BLANK_IMAGE_URL;
+    item.images.main = item.images.main ? item.images.main : constants.BLANK_IMAGE_URL;
 
     mod_group[item.entry] = item;
   }
@@ -136,7 +135,7 @@ function prepareReferences(config_references) {
     for(let j = 0; j < item.data.length; j++){
       let image = item.data[j];
 
-      data[image.name] = IMAGE_URL + image.value;
+      data[image.name] = image.value;
     }
 
     return {
@@ -203,8 +202,8 @@ function prepareReferences(config_references) {
     return {
       label: item.label,
       icon: item.params.icon,
-      image_big: IMAGE_URL + item.params.image,
-      image_disabled: IMAGE_URL + item.params.image_disabled,
+      image_big: item.params.image,
+      image_disabled: item.params.image_disabled,
       visible: Number(item.visible)
     };
   });
@@ -220,9 +219,9 @@ function prepareReferences(config_references) {
 
   // справочник валют
   prepareRef(refs,'user_money','name',(item) => {
-    item.image = IMAGE_URL + item.param.image
-    item.image_big = IMAGE_URL + item.param.image_big
-    item.image_disabled = IMAGE_URL + item.param.image_disabled
+    item.image = item.param.image
+    item.image_big = item.param.image_big
+    item.image_disabled = item.param.image_disabled
     item.visible = Number(item.visible);
 
     return item;
@@ -267,7 +266,7 @@ function prepareReferences(config_references) {
     prepareRef(refs,'user_valour','level',(item) => {
       item.level = Number(item.level);
       item.valour = Number(item.valour);
-      item.data.img = item.data.img ? (IMAGE_URL + item.data.img) : '';
+      item.data.img = item.data.img ? item.data.img : '';
 
       return item;
     });
@@ -275,10 +274,10 @@ function prepareReferences(config_references) {
 
   // справочник образов
   prepareRef(refs,'user_shape','name',(item) => {
-    item.thumb = item.small ? (IMAGE_URL + item.small) : BLANK_IMAGE_URL;
-    item.avatar = item.medium ? (IMAGE_URL + item.medium) : BLANK_IMAGE_URL;
-    item.full = item.large ? (IMAGE_URL + item.large) : BLANK_IMAGE_URL;
-    item.battle = item.battle ? (IMAGE_URL + item.battle) : BLANK_IMAGE_URL;
+    item.thumb = item.small ? item.small : BLANK_IMAGE_URL;
+    item.avatar = item.medium ? item.medium : BLANK_IMAGE_URL;
+    item.full = item.large ? item.large : BLANK_IMAGE_URL;
+    item.battle = item.battle ? item.battle : BLANK_IMAGE_URL;
 
     delete item.large;
     delete item.medium;
@@ -288,10 +287,10 @@ function prepareReferences(config_references) {
       for(let j = 0; j < item.modif.length; j++){
         let el = item.modif[j];
 
-        el.thumb = el.small ? (IMAGE_URL + el.small) : BLANK_IMAGE_URL;
-        el.avatar = el.medium ? (IMAGE_URL + el.medium) : BLANK_IMAGE_URL;
-        el.full = el.large ? (IMAGE_URL + el.large) : BLANK_IMAGE_URL;
-        el.battle = el.battle ? (IMAGE_URL + el.battle) : BLANK_IMAGE_URL;
+        el.thumb = el.small ? el.small : BLANK_IMAGE_URL;
+        el.avatar = el.medium ? el.medium : BLANK_IMAGE_URL;
+        el.full = el.large ? el.large : BLANK_IMAGE_URL;
+        el.battle = el.battle ? el.battle : BLANK_IMAGE_URL;
 
         delete el.large;
         delete el.medium;
@@ -326,7 +325,7 @@ function prepareReferences(config_references) {
   prepareRef(refs,'slot_type','entry',(item) => {
     if(typeof item.images == 'object'){
       for(let key in item.images){
-        item.images[key] = IMAGE_URL + item.images[key];
+        item.images[key] = item.images[key];
       }
     }
 
@@ -356,9 +355,9 @@ function prepareReferences(config_references) {
 
   // справочник типов поединков
   prepareRef(refs,'battle_types','entry',(item) => {
-    item.params.img = item.params.img ? (IMAGE_URL + item.params.img) : BLANK_IMAGE_URL;
-    item.params.img_list = item.params.img_list ? (IMAGE_URL + item.params.img_list) : BLANK_IMAGE_URL;
-    item.params.img_stat = item.params.img_stat ? (IMAGE_URL + item.params.img_stat) : BLANK_IMAGE_URL;
+    item.params.img = item.params.img ? item.params.img : BLANK_IMAGE_URL;
+    item.params.img_list = item.params.img_list ? item.params.img_list : BLANK_IMAGE_URL;
+    item.params.img_stat = item.params.img_stat ? item.params.img_stat : BLANK_IMAGE_URL;
 
     return {
       label: item.label,

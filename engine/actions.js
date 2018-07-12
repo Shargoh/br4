@@ -24,7 +24,8 @@ GlobalActions = Reflux.createActions([
 	'userChanged',
 	'showLocation',
 	'showBattle',
-	'updateUser'
+	'updateUser',
+	'initAnimations'
 ]);
 
 export const ChatConnectionActions = Reflux.createActions([

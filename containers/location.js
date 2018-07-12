@@ -13,7 +13,7 @@ class LocationContainer extends RefluxComponent {
 	}
   render() {
 		return (
-			<View style={CSS.container}>
+			<View>
 				<SurgingList />
 			</View>
 		)

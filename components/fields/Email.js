@@ -9,6 +9,9 @@ class EmailInput extends React.Component {
 				style={CSS.input}
 				autoCapitalize='none'
 				placeholder='E-mail'
+				autoCorrect={false}
+				keyboardAppearance='dark'
+				keyboardType='email-address'
 				onChangeText={(text) => {
 					if(this.props.onChangeEmail){
 						this.props.onChangeEmail(text);

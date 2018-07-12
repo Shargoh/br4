@@ -13,8 +13,14 @@ class SurgingList extends RefluxComponent {
 	}
   render() {
 		return (
-			<View style={CSS.container}>
+			<View style={{
+				flex:1,
+				width:'100%',
+			}}>
 				<FlatList
+					style={{
+						marginTop:70
+					}}
 					data={this.state.surging}
 					renderItem={({item}) => (
 						<Item item={item} />

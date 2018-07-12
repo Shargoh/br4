@@ -28,7 +28,9 @@ class Module extends Proto{
 		this.listenTo(GlobalActions.showBattle,'showBattle');
 	}
 	onEnterGame(account){
-		C.lock();
+		C.lock({
+			full:true
+		});
 
 		request('reg','mobile_mail_enter',{
       login:account.email,
@@ -70,6 +72,7 @@ class Module extends Proto{
 			GlobalActions.initServices(config.services);
 			GlobalActions.updateLocation(config.location);
 			GlobalActions.setUser(config.user);
+			// GlobalActions.initAnimations();
 			// this.showGame();
 			// dispatch(setRealCurrency(config.references.real_currency));
 			C.getModule('ChatConnection').connect();

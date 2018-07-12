@@ -1,8 +1,8 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions, { BattleActions } from '../../engine/actions.js';
+import { ImageBackground, View, TouchableOpacity } from 'react-native';
+import { BattleActions } from '../../engine/actions.js';
+import C from '../../engine/c.js';
 
 const cells_count = 4;
 
@@ -16,6 +16,22 @@ class Preps extends RefluxComponent {
 			this.setState(store.changed.state);
 		}
 	}
+	getPreps(){
+		var map = [],
+			l = this.state.av_prep.length;
+
+		for(let i = 0; i < l; i++){
+			let data = this.state.av_prep[i],
+				prep = C.refs.ref('battle_prep|'+data.name);
+
+			map.push({
+				data:data,
+				ref:prep
+			});
+		}
+
+		return map;
+	}
 	getEmptyCells(){
 		var map = [],
 			l = cells_count - this.state.av_prep.length;
@@ -27,6 +43,8 @@ class Preps extends RefluxComponent {
 		return map;
 	}
 	render() {
+		console.log(this.state.av_prep);
+
 		return (
 			<View style={{
 				flex:1,
@@ -34,8 +52,8 @@ class Preps extends RefluxComponent {
 				flexDirection:'row'
 			}}>
 				{
-					this.state.av_prep.map((item,index) => (
-						<TouchableOpacity key={'prep'+item.name} style={{
+					this.getPreps().map((item,index) => (
+						<TouchableOpacity key={'prep'+item.data.name} style={{
 							flex:1,
 							borderWidth:1,
 							borderColor:'black',
@@ -44,10 +62,14 @@ class Preps extends RefluxComponent {
 							margin:5
 						}} onPress={() => {
 							if(this.state.can_prep){
-								BattleActions.prep(item);
+								BattleActions.prep(item.data);
 							}
 						}}>
-							<Text>{item.name}</Text>
+							<ImageBackground style={{
+								width:'100%',
+								height:'100%'
+							}} source={C.getImage(item.ref.desc.images.active)} resizeMode="contain">
+							</ImageBackground>
 						</TouchableOpacity>
 					))
 				}

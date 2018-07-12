@@ -26,6 +26,10 @@ class LockManager extends Manager{
 			opts.locked = true;
 		}
 
+		if(!opts.full){
+			opts.full = false;
+		}
+
 		LockStore.set(opts);
 	}
 	unlock(){
