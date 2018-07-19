@@ -59,8 +59,7 @@ const store = {
 
 		for(let i = 0; i < list.length; i++){
 			let user = list[i],
-				changes = data.list[user.battle.ekey],
-				prepared = {};
+				changes = data.list[user.battle.ekey];
 
 			if(!changes) continue;
 

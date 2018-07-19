@@ -32,7 +32,9 @@ class Damage extends RefluxComponent {
 	render() {
 		return (
 			<View>
-				<Text>{this.getDamage()}</Text>
+				<Text style={{
+					fontSize:24
+				}}>{this.getDamage()}</Text>
 			</View>
     )
   }

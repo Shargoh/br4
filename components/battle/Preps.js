@@ -1,6 +1,6 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { ImageBackground, View, TouchableOpacity } from 'react-native';
+import { ImageBackground, View, TouchableOpacity, Text } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 
@@ -43,8 +43,6 @@ class Preps extends RefluxComponent {
 		return map;
 	}
 	render() {
-		console.log(this.state.av_prep);
-
 		return (
 			<View style={{
 				flex:1,
@@ -52,8 +50,30 @@ class Preps extends RefluxComponent {
 				flexDirection:'row'
 			}}>
 				{
-					this.getPreps().map((item,index) => (
-						<TouchableOpacity key={'prep'+item.data.name} style={{
+					this.getPreps().map((item,index) => {
+						var cd;
+
+						if(item.data.rest){
+							cd = <View style={{
+								width:'100%',
+								height:'100%',
+								alignItems:'center',
+								backgroundColor:'rgba(0,0,0,0.5)',
+							}}>
+								<Text style={{
+									fontSize:72,
+									color:'yellow'
+								}}>{item.data.rest}</Text>
+							</View>
+						}else if(!this.state.can_prep){
+							cd = <View style={{
+								width:'100%',
+								height:'100%',
+								backgroundColor:'rgba(0,0,0,0.5)',
+							}}></View>
+						}
+
+						return <TouchableOpacity key={'prep'+item.data.name} style={{
 							flex:1,
 							borderWidth:1,
 							borderColor:'black',
@@ -69,9 +89,10 @@ class Preps extends RefluxComponent {
 								width:'100%',
 								height:'100%'
 							}} source={C.getImage(item.ref.desc.images.active)} resizeMode="contain">
+								{cd}
 							</ImageBackground>
 						</TouchableOpacity>
-					))
+					})
 				}
 				{
 					this.getEmptyCells().map((item,index) => (

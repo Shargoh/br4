@@ -1,8 +1,6 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions from '../../engine/actions.js';
+import { View } from 'react-native';
 import Timer from '../common/Timer';
 import DateUtils from '../../engine/utils/date.js';
 
@@ -46,7 +44,9 @@ class BattleTimer extends RefluxComponent {
 				borderRadius:50,
 				margin:5
 			}}>
-				<Timer time={this.state.time} />
+				<Timer textStyle={{
+					fontSize:24
+				}} time={this.state.time} />
 			</View>
     )
   }

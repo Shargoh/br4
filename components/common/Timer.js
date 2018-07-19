@@ -68,7 +68,7 @@ class Timer extends React.Component {
 		});
 	}
 	render(){
-		return <Text>{DateUtils.printTime(this.state.time,this.props.options)}</Text>
+		return <Text style={this.props.textStyle}>{DateUtils.printTime(this.state.time,this.props.options)}</Text>
 	}
 }
 

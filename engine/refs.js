@@ -468,7 +468,6 @@ function prepareReferences(config_references) {
   prepareRef(refs,'battle_prep','name');
   // справочник боевых аур
   prepareRef(refs,'battle_aura','id');
-  console.log('ATATA',typeof refs.battle_aura)
   // справочник длящихся
   prepareRef(refs,'battle_continuing','id');
   // справочник боевых аур

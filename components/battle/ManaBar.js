@@ -1,8 +1,6 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions from '../../engine/actions.js';
+import { Text, View } from 'react-native';
 
 class ManaBar extends RefluxComponent {
 	componentWillMount(){
@@ -24,7 +22,9 @@ class ManaBar extends RefluxComponent {
 				justifyContent:'center',
 				alignItems:'center'
 			}}>
-				<Text>{this.state.mp[0]}/{this.state.mp[1]}</Text>
+				<Text style={{
+					fontSize:24
+				}}>{this.state.mp[0]}/{this.state.mp[1]}</Text>
 			</View>
     )
   }

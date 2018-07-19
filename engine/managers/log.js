@@ -21,7 +21,7 @@ class LogManager extends Manager{
 		});
 
 		Reflux.ListenerMethods.listenTo(GlobalActions.log,function(){
-			log('LOG',arguments);
+			// log('LOG',arguments);
 		});
 
 		Reflux.ListenerMethods.listenTo(GlobalActions.warn,function(){

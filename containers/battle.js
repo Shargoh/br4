@@ -25,9 +25,7 @@ class LocationContainer extends RefluxComponent {
 	}
 	onAction(action,store){
 		if(action == 'change' && store.changed.state){
-			if(store.changed.state.enemy != store.previous.state.enemy){
-				this.setEnemy();
-			}
+			this.setEnemy();
 		}
 	}
 	onUserAction(action,user){

@@ -202,6 +202,7 @@ class Module extends Proto{
 		return this.request('battle_reroll',{
 			round:this.store.get('round')
 		}).then((json) => {
+			this.store.setKick();
 			this.store.trigger('reroll',this.store);
 
 			return json;
@@ -273,7 +274,28 @@ class Module extends Proto{
 			case 'meddle':
 				if (!this.store.get('started')) {
 					this.show();
+				}else{
+					let ekey = data.user.battle.ekey,
+						list = this.store.get('list'),
+						exists = false;
+
+					for(let i = 0; i < list.length; i++){
+						let member = list[i];
+
+						if(member.battle.ekey == ekey){
+							exists = true;
+							break;
+						}
+					}
+
+					if(!exists){
+						list.push(data.user);
+						this.store.set({
+							list:list
+						});
+					}
 				}
+				// TODO добавление юзеров вроде работает, но не работает updateTitles - на будущее надо ввести
 				// else if (!me.list.getByKey(data.user.battle.ekey)) {
 				// 	me.list.add(data.user.battle.ekey, data.user);
 				// 	/***/
