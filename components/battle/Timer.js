@@ -12,11 +12,7 @@ class BattleTimer extends RefluxComponent {
 	onAction(action,store){
 		if(
 			action == 'change' && 
-			store.changed.state &&
-			(
-				store.changed.state.start != store.previous.state.start ||
-				store.changed.state.to_round != store.previous.state.to_round
-			)
+			store.changed.round
 		){
 			this.setTime();
 		}

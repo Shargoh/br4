@@ -1,8 +1,7 @@
 import React from 'react';
-import CSS from '../../css/main.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { ScrollView, FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
-import GlobalActions from '../../engine/actions.js';
+import { ScrollView, Text, View } from 'react-native';
+import Info from './Info';
 
 class Groups extends RefluxComponent {
 	componentWillMount(){
@@ -39,40 +38,35 @@ class Groups extends RefluxComponent {
 	render() {
 		return (
 			<ScrollView contentContainerStyle={{
-				justifyContent:'space-around',
+				justifyContent:'flex-start',
 				borderWidth:1,
 				borderColor:'#000',
-				backgroundColor:'#ccc'
+				backgroundColor:'#fff',
+				height:'100%'
 			}}>
 				{
 					this.state.allies.map((item,index) => (
 						<View key={index} style={{
-							flex:1,
-							height:100,
+							backgroundColor:'lime',
+							height:140,
 							borderWidth:1,
 							borderColor:'black',
-							justifyContent:'center',
-							margin:5
+							justifyContent:'center'
 						}}>
-							<Text>{item.display_title}</Text>
-							<Text>{item.timed.hp[0]}/{item.timed.hp[1]}</Text>
-							<Text>{item.timed.mp[0]}/{item.timed.mp[1]}</Text>
+							<Info user={item} />
 						</View>
 					))
 				}
 				{
 					this.state.enemies.map((item,index) => (
 						<View key={index} style={{
-							flex:1,
-							height:100,
+							backgroundColor:'#F59191',
+							height:140,
 							borderWidth:1,
 							borderColor:'black',
-							justifyContent:'center',
-							margin:5
+							justifyContent:'center'
 						}}>
-							<Text>{item.display_title}</Text>
-							<Text>{item.timed.hp[0]}/{item.timed.hp[1]}</Text>
-							<Text>{item.timed.mp[0]}/{item.timed.mp[1]}</Text>
+							<Info user={item} />
 						</View>
 					))
 				}
@@ -80,5 +74,5 @@ class Groups extends RefluxComponent {
     )
   }
 }
-  
+
 export default Groups;

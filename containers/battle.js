@@ -40,7 +40,7 @@ class LocationContainer extends RefluxComponent {
 		const menu = <Groups />;
 
 		return (
-			<SideMenu menu={menu}>
+			<SideMenu openMenuOffset={370} menu={menu}>
 				<View style={{
 						// flexDirection: 'row',
 						flex: 1,

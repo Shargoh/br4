@@ -29,7 +29,8 @@ class Info extends RefluxComponent {
 				alignItems:'center',
 			}}>
 				<Text style={styles.text}>{this.props.user.display_title}</Text>
-				<Text style={styles.text}>{this.props.user.timed.hp[0]}/{this.props.user.timed.hp[1]}</Text>
+				<Text style={styles.text}>Здоровье:{this.props.user.timed.hp[0]}/{this.props.user.timed.hp[1]}</Text>
+				<Text style={styles.text}>Щит:{this.props.user.timed.shield[0]}/{this.props.user.timed.shield[1]}</Text>
 			</View>
 		}else{
 			user_data_cmp = <TouchableOpacity onPress={() => {
