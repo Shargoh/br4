@@ -13,7 +13,8 @@ class Module extends Proto{
 	}
 	onLocationServiceReady(location_service){
 		location_service.store.listen((action,store) => {
-			if(action == 'change'){
+			// если мы меняем активную вкладку меню - нам не надо обновлять сервис
+			if(action == 'change' && store.changed.active_menu === undefined){
 				this.onLocationChange(store);
 			}
 		});

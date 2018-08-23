@@ -5,11 +5,8 @@ GlobalActions = Reflux.createActions([
 	'showAlert',
 	'showModule',
 	'updateLocation',
-	'addChatMessage',
 	'showReward',
-	'moveMap',
 	'closeWindows',
-	'setInstanceAims',
 	'showConfirm',
 	'removeConfirm',
 	'updateBattles',
@@ -46,6 +43,10 @@ export const BattleActions = Reflux.createActions([
 	'reroll',
 	'kick',
 	'prep'
+]);
+
+export const InventoryActions = Reflux.createActions([
+	'event'
 ]);
 
 export default GlobalActions;

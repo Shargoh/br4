@@ -1,89 +1,70 @@
-/*global define
-*/
-define(function(require){
-    "use strict";
-    var _ = require("lodash"),
-        C = require("C"),
-        Manager = require("./proto"),
-        Reflux = require("reflux"),
-        GlobalActions = require("engine/actions"),
+import Manager from './proto';
+import Item from '../stuff/item/stuff';
 
-    StuffManager = function() {
-        var me = this;
+class StuffManager extends Manager {
+	constructor(){
+		super();
 
-        Manager.apply(me,arguments);
-        me.type = 'stuff';
+		this.type = 'stuff';
+		this.types = {};
+		this.objects = [];
 
-        me.types = {};
-		me.objects = [];
-
-		//хеш абилок для подгрузки с сервера. Потом также будет для предметов
-		me.abilities = {};
+		this.features = {};
+		this.items = {};
 
 		// регистрирую классы базовых типов имущества
-		me.register({'item':require("engine/stuff/item/stuff")});
-		me.register({'ability':require("engine/stuff/ability/stuff")});
-		me.register({'bonus':require("engine/stuff/bonus/stuff")});
-		me.register({'other':require("engine/stuff/bonus/stuff")});
-		me.register({'timed':require("engine/stuff/bonus/stuff")});
-		me.register({'resources':require("engine/stuff/currency/stuff")});
-		me.register({'ship':require("engine/stuff/ship/stuff")});
+		this.register({'item':Item});
+		// this.register({'ability':require("engine/stuff/ability/stuff")});
+		// this.register({'bonus':require("engine/stuff/bonus/stuff")});
+		// this.register({'other':require("engine/stuff/bonus/stuff")});
+		// this.register({'timed':require("engine/stuff/bonus/stuff")});
+		// this.register({'resources':require("engine/stuff/currency/stuff")});
+		// this.register({'ship':require("engine/stuff/ship/stuff")});
+	}
+	register(config) {
+		for(var name in config){
+			this.types[name] = config[name];
+		}
+	}
+	image(config){
+		if(!Array.isArray(config)) config = [config];
+		var i = config.length,
+			els = [],
+			el;
 
-		Reflux.ListenerMethods.listenTo(GlobalActions.showReward,function(){
-            me.onShowReward.apply(me,arguments);
-        });
-    };
+		while(i--){
+			el = new this.types[config[i].type](config[i]);
+			els.push(el.image());
+		}
 
-    StuffManager.prototype = _.extend(Object.create(Manager.prototype),{
-        constructor : StuffManager,
-        register:function (config) {
-            for(var name in config){
-                this.types[name] = config[name];
-            }
-        },
-        image:function(config){
-            if(!Array.isArray(config)) config = [config];
-            var i = config.length,
-                els = [],
-                el;
+		return els;
+	}
+	print(config){
+		if(!Array.isArray(config)) config = [config];
+		var i = config.length,
+			els = [],
+			el;
 
-            while(i--){
-                el = new this.types[config[i].type](config[i]);
-                els.push(el.image(config[i]));
-            }
+		while(i--){
+			el = new this.types[config[i].type](config[i]);
+			els.push(el.print());
+		}
 
-            return els;
-        },
-        print:function(config){
-            if(!Array.isArray(config)) config = [config];
-            var i = config.length,
-                els = [],
-                el;
+		return els;
+	}
+	printLarge(config){
+		if(!Array.isArray(config)) config = [config];
+		var i = config.length,
+			els = [],
+			el;
 
-            while(i--){
-                el = new this.types[config[i].type](config[i]);
-                els.push(el.print(config[i]));
-            }
+		while(i--){
+			el = new this.types[config[i].type](config[i]);
+			els.push(el.printLarge(config[i]));
+		}
 
-            return els;
-        },
-        printLarge:function(config){
-            if(!Array.isArray(config)) config = [config];
-            var i = config.length,
-                els = [],
-                el;
+		return els;
+	}
+};
 
-            while(i--){
-                el = new this.types[config[i].type](config[i]);
-                els.push(el.printLarge(config[i]));
-            }
-
-            return els;
-        },
-        onShowReward:function(stuff){
-            C.getManager('window').showAlert(['Получено #stuff|'+JSON.stringify(stuff)+'#']);
-        }
-    });
-
-    return StuffManager;
-});
+export default StuffManager;

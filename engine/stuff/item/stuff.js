@@ -1,49 +1,32 @@
-define(function(require){
-    'use strict';
-    var _ = require("lodash"),
-        Proto = require("../proto"),
-        React = require("react"),
-        C = require("C"),
-        Image = require("./image"),
-        PrintLarge = require("./print_large"),
-        Print = require("./print"),
+// var _ = require("lodash"),
+//     Proto = require("../proto"),
+//     React = require("react"),
+//     C = require("C"),
+//     Image = require("./image"),
+//     PrintLarge = require("./print_large"),
+//     Print = require("./print"),
+
+import Proto from '../proto';
+import C from '../../c';
+
+class Item extends Proto{
+	constructor(config){
+		super(config);
     
-    Item = function(config){
-        Array.prototype.push.call(arguments,config);
-        Proto.apply(this,arguments);
-        
-        this.proto = C.config.prototypes.items[config.params.name];
-        this.item = _.extend({},this.proto,config.item_params);
-        this.config = config;
-    };
+    this.proto = C.config.prototypes.items[config.params.name];
+    this.item = Object.assign({},this.proto,config.item_params);
+    this.config = config;
+	}
+	print(){
+		// return (
+		// 	<Print config={this.config} proto={this.proto} item={this.item} key={Math.random().toString()} />
+		// );
+	}
+	image(){
+		return (
+			<Image config={this.config} proto={this.proto} item={this.item} key={Math.random().toString()} />
+		);
+	}
+}
 
-    Item.prototype = _.extend(Object.create(Proto.prototype),{
-        constructor: Item,
-        print:function(config){
-            return React.createElement(Print,{
-                config:this.config,
-                proto:this.proto,
-                item:this.item,
-                key:Math.random().toString()
-            });
-        },
-        image:function(config){
-            return React.createElement(Image,{
-                config:this.config,
-                proto:this.proto,
-                item:this.item,
-                key:Math.random().toString()
-            });
-        },
-        printLarge:function(config){
-            return React.createElement(PrintLarge,{
-                config:this.config,
-                proto:this.proto,
-                item:this.item,
-                key:Math.random().toString()
-            });
-        }
-    });
-
-    return  Item;
-});
+export default Item;

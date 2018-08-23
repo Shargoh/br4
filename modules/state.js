@@ -96,7 +96,7 @@ class Module extends Proto{
 		}
 	}
 	showLocation(){
-		C.getModule('Surging').show().then(() => {
+		C.getModule('Location').show().then(() => {
 			this.setState(3);
 			C.unlock();
 		})

@@ -7,7 +7,7 @@ import BaseLayer from './layers/base.js';
 import LoaderLayer from './layers/loader.js';
 // import AnimatedSprite from 'react-native-animated-sprite';
 
-C.App = new GameApp().start(['module','lock','service','log'/*,'animation'*/]);
+C.App = new GameApp().start(['module','lock','service','log','stuff'/*,'animation'*/]);
 
 export default class App extends React.Component {
   render() {

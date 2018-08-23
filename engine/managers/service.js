@@ -96,9 +96,9 @@ class ServiceManager extends Manager{
 					return this.factory(service_id);
 				}
 			}
-		}
 
-		GlobalActions.error('Сервис не найден',name);
+			GlobalActions.error('Сервис не найден',name);
+		}else return service;
 	}
 	/**
 	 * Обновляет данные по группе сервисов
