@@ -20,6 +20,13 @@ class InventoryContainer extends RefluxComponent {
 			state:1
 		})
 	}
+	onAction(action,state){
+		if(action == 'state'){
+			this.setState({
+				state:state
+			});
+		}
+	}
   render() {
 		if(this.state.state == 1){
 			return (
@@ -30,10 +37,10 @@ class InventoryContainer extends RefluxComponent {
 			)
 		}else{
 			return (
-				<View>
+				<ScrollView>
 					<QuickSlots />
 					<ChangeItem />
-				</View>
+				</ScrollView>
 			)
 		}
   }

@@ -1,11 +1,16 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, View, Button, TouchableOpacity } from 'react-native';
 import InventoryItem from './InventoryItem.js';
-import GlobalActions from '../../engine/actions.js';
+import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 
 const TYPE = 14;
+const styles = StyleSheet.create({
+  button: {
+    fontSize:10
+	}
+});
 
 class Inventory extends RefluxComponent {
 	componentWillMount(){
@@ -15,6 +20,8 @@ class Inventory extends RefluxComponent {
 	onAction(action,store){
 		if(action == 'change' && store.changed && store.changed.slots){
 			this.initSlots();
+		}else if(action == 'change' && store.changed && store.changed.context){
+			this.initContext();
 		}
 	}
 	initSlots(){
@@ -46,7 +53,55 @@ class Inventory extends RefluxComponent {
 			items:arr
 		})
 	}
+	initContext(){
+		var context = this.store.get('context');
+
+		if(context && context.item_id){
+			this.refs.view.measure((x, y, width, height, pageX, pageY) => {
+				context.x -= pageX;
+				context.y -= pageY;
+	
+				this.setState({
+					context:context
+				});
+			});
+		}else{
+			this.setState({
+				context:store.changed.context
+			});
+		}
+	}
   render() {
+		var context;
+
+		if(this.state.context && this.state.context.item_id){
+			context = (
+				<View style={{
+					position:'absolute',
+					top:this.state.context.y + 100,
+					left:this.state.context.x,
+					width:100
+				}}>
+					<Button
+						style={styles.button}
+						onPress={() => {
+							console.log(1)
+						}}
+						title={'Информация'}
+						color={'blue'}
+					/>
+					<Button
+						style={styles.button}
+						onPress={() => {
+							InventoryActions.event('select');
+						}}
+						title={'Использовать'}
+						color={'red'}
+					/>
+				</View>
+			)
+		}
+
 		return (
 			<View style={{
 				flex:1,
@@ -55,7 +110,7 @@ class Inventory extends RefluxComponent {
 				borderTopWidth:4,
 				borderTopColor:'lime',
 				flexDirection:'row'
-			}}>
+			}} ref={'view'}>
 				<FlatList
 					// style={{
 					// 	marginTop:70
@@ -68,6 +123,7 @@ class Inventory extends RefluxComponent {
 					)}
 					keyExtractor={(item, index) => 'item'+item.item_id}
 				/>
+				{context}
 			</View>
     )
   }
