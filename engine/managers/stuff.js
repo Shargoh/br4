@@ -52,19 +52,6 @@ class StuffManager extends Manager {
 
 		return els;
 	}
-	printLarge(config){
-		if(!Array.isArray(config)) config = [config];
-		var i = config.length,
-			els = [],
-			el;
-
-		while(i--){
-			el = new this.types[config[i].type](config[i]);
-			els.push(el.printLarge(config[i]));
-		}
-
-		return els;
-	}
 };
 
 export default StuffManager;

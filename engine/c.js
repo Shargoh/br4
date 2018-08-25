@@ -1,4 +1,3 @@
-'use strict';
 import _ from 'lodash';
 import Reflux from 'reflux';
 import images from '../image_paths';

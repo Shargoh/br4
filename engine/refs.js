@@ -312,7 +312,7 @@ function prepareReferences(config_references) {
   });
 
   // справочник типов предметов
-  prepareRef(refs,'item_type','name',(item) => {
+  prepareRef(refs,'item_type','entry',(item) => {
     return {
       title: item.title,
       slot_on: Number(item.slot_on),
@@ -492,6 +492,8 @@ function prepareReferences(config_references) {
   prepareRef(refs,'pets','entry');
   //линейки заданий
   prepareRef(refs,'quest_lines','item');
+  //прототипы предметов
+  prepareRef(refs,'item_proto','entry');
   
   return refs;
 }

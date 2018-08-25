@@ -1,7 +1,17 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { View, ImageBackground } from 'react-native';
+import { View, ImageBackground, StyleSheet } from 'react-native';
 import C from '../../engine/c.js';
+
+const styles = StyleSheet.create({
+  item: {
+    flex:1,
+		borderWidth:1,
+		borderColor:'black',
+		justifyContent:'center',
+		margin:5
+  }
+});
 
 class Info extends RefluxComponent {
 	getAuras(){
@@ -43,25 +53,13 @@ class Info extends RefluxComponent {
 			}}>
 				{
 					auras.auras.map((item,index) => (
-						<ImageBackground key={'aura'+item.id} style={{
-							flex:1,
-							borderWidth:1,
-							borderColor:'black',
-							justifyContent:'center',
-							margin:5
-						}} source={C.getImage(item.params.images.large)} resizeMode="contain">
+						<ImageBackground key={'aura'+item.id} style={styles.item} source={C.getImage(item.params.images.large)} resizeMode="contain">
 						</ImageBackground>
 					))
 				}
 				{
 					auras.empty_auras.map((item,index) => (
-						<View key={'emptyaura'+index} style={{
-							flex:1,
-							borderWidth:1,
-							borderColor:'black',
-							justifyContent:'center',
-							margin:5
-						}}></View>
+						<View key={'emptyaura'+index} style={styles.item}></View>
 					))
 				}
 			</View>

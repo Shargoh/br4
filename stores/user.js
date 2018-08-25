@@ -13,19 +13,6 @@ const store = {
 		if(data.slots){
 			InventoryActions.event('slots',data.slots);
 		}
-	},
-	setSlots: function(slots){
-		this.slots = {};
-
-		var i = slots.length;
-
-		while(i--){
-			this.slots[slots[i].type] = slots[i];
-		}
-
-		InventoryActions.event('slots',data.slots);
-
-		this.trigger('slots',this.slots);
 	}
 };
 

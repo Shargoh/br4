@@ -10,8 +10,10 @@ class Module extends Proto{
 		super();
 		this.name = "Inventory";
 
-		Reflux.ListenerMethods.listenTo(InventoryActions.event,() => {
-			this.onEvent.apply(this,arguments);
+		var me = this;
+
+		Reflux.ListenerMethods.listenTo(InventoryActions.event,function(){
+			me.onEvent.apply(me,arguments);
 		});
 	}
 	onInit(){
@@ -22,7 +24,7 @@ class Module extends Proto{
 			i = slots.length;
 
 		while(i--){
-			prepared[slots[i].type] = slots[i];
+			prepared[slots[i].ekey] = slots[i];
 		}
 
 		this.store.set({

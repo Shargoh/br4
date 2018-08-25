@@ -11,6 +11,7 @@
 import React from 'react';
 import StuffComponent from '../proto_component';
 import { View, ImageBackground } from 'react-native';
+import C from '../../c';
 
 class ImageStuff extends StuffComponent {
 	componentWillMount(){
@@ -19,18 +20,17 @@ class ImageStuff extends StuffComponent {
 	render(){
 		var decorators = this.getDecorators(),
 			config = this.props.config,
-			item = this.props.item;
+			proto = this.props.proto;
 
 		return (
-			<View>
+			<View style={{flex:1}}>
 				{decorators[0]}
 				<ImageBackground key={'itemimage'+config.params.id} style={{
 					flex:1,
-					borderWidth:1,
-					borderColor:'black',
-					justifyContent:'center',
-					margin:5
-				}} source={C.getImage(item.params.images.large)} resizeMode="contain">
+					borderWidth:2,
+					borderColor:'lime',
+					justifyContent:'center'
+				}} source={C.getImage(proto.images.thumb)} resizeMode="contain">
 					{decorators[1]}
 				</ImageBackground>
 			</View>
