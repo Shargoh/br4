@@ -18,10 +18,16 @@ class LocationContainer extends RefluxComponent {
 			active_menu:0
 		});
 	}
-	onAction(action,active_menu){
-		// if(action == 'menubutton' && this.state.active_menu != active_menu){
-		// 	this.refs.swiper.scrollBy(active_menu);
-		// }
+	onAction(action,data){
+		if(action == 'menubutton' && this.state.active_menu != data.index){
+			this.setState({
+				active_menu:data.index
+			});
+
+			if(data.by_button){
+				this.refs.swiper.scrollBy(data.by_button);
+			}
+		}
 	}
   render() {
 		return (

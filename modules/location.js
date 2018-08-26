@@ -20,14 +20,33 @@ class Module extends Proto{
 	updateLocation(data){
 		this.service.store.set(data);
 	}
-	onToggleMenu(index){
-		this.service.store.trigger('menubutton',index);
+	onToggleMenu(index,by_button){
+		var active_menu = this.service.store.get('active_menu');
+
+		if(active_menu == index) return;
+
+		if(by_button){
+			by_button = index - active_menu;
+		}
+
+		this.service.store.trigger('menubutton',{
+			index:index,
+			by_button:by_button
+		});
+
 		this.service.store.set({
 			active_menu:index
 		});
 	}
 	show(){
-		var active_menu = this.service.store.get('active_menu') || 0;
+		var active_menu = this.service.store.get('active_menu');
+
+		if(active_menu == undefined){
+			this.service.store.set({
+				active_menu:0
+			});
+			active_menu = 0;
+		}
 
 		switch(active_menu){
 			case 0:

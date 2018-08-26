@@ -21,7 +21,7 @@ class AccountList extends RefluxComponent {
 					flexDirection:'row'
 				}}
 				onPress={() => {
-					GlobalActions.event('toggle_menu',this.props.index);
+					GlobalActions.event('toggle_menu',this.props.index,true);
 				}}
 				title={this.props.title}
 				color={color}
