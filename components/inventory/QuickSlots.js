@@ -11,14 +11,19 @@ const COUNT = 8;
 
 class QuickSlots extends RefluxComponent {
 	componentWillMount(){
-		this.bindStore('Inventory');
+		this.bindService('inventory');
 		this.initSlots();
+	}
+	onAction(action,store){
+		if(action == 'change' && store.changed && store.changed.slots){
+			this.initSlots();
+		}
 	}
 	initSlots(){
 		var slots = {},
 			arr,
 			count = 0,
-			prepared = this.store.get('slots');
+			prepared = this.service.store.get('slots');
 
 		for(let ekey in prepared){
 			let slot = prepared[ekey];

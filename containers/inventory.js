@@ -15,7 +15,7 @@ import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
  */
 class InventoryContainer extends RefluxComponent {
 	componentWillMount(){
-		this.bindStore('Inventory');
+		this.bindService('inventory');
 		this.setState({
 			state:1
 		})

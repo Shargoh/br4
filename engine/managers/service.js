@@ -10,13 +10,15 @@ import Location from '../../services/Location.js';
 import Room from '../../services/Room.js';
 import ShowComponent from '../../services/ShowComponent.js';
 import Surging from '../../services/Surging.js';
+import Inventory from '../../services/Inventory.js';
 
 const classes = {
 	Empty,
 	Location,
 	Room,
 	ShowComponent,
-	Surging
+	Surging,
+	Inventory
 }
 
 class ServiceManager extends Manager{

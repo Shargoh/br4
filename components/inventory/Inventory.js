@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 
 class Inventory extends RefluxComponent {
 	componentWillMount(){
-		this.bindStore('Inventory');
+		this.bindService('inventory');
 		this.initSlots();
 	}
 	onAction(action,store){
@@ -26,7 +26,7 @@ class Inventory extends RefluxComponent {
 	}
 	initSlots(){
 		var arr = [],
-			prepared = this.store.get('slots');
+			prepared = this.service.store.get('slots');
 
 		for(let ekey in prepared){
 			let slot = prepared[ekey],
@@ -54,7 +54,8 @@ class Inventory extends RefluxComponent {
 		})
 	}
 	initContext(){
-		var context = this.store.get('context');
+		var store = this.service.store,
+			context = store.get('context');
 
 		if(context && context.item_id){
 			this.refs.view.measure((x, y, width, height, pageX, pageY) => {

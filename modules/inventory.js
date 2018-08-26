@@ -2,9 +2,9 @@ import C from '../engine/c.js';
 import Proto from '../engine/proto_module.js';
 import React from 'react';
 import Reflux from 'reflux';
-import inventory_store_config from '../stores/inventory.js';
 import { InventoryActions } from '../engine/actions.js';
 import request from '../utils/request.js';
+import { Alert } from 'react-native';
 
 class Module extends Proto{
 	constructor(){
@@ -18,7 +18,7 @@ class Module extends Proto{
 		});
 	}
 	onInit(){
-		this.store = C.createStore('Inventory',inventory_store_config);
+		this.service = C.getManager('service').get('inventory');
 	}
 	onSlots(slots){
 		var prepared = {},
@@ -28,20 +28,20 @@ class Module extends Proto{
 			prepared[slots[i].ekey] = slots[i];
 		}
 
-		this.store.set({
+		this.service.store.set({
 			slots:prepared
 		});
 	}
 	onContext(react_element,item){
-		var context = this.store.get('context');
+		var context = this.service.store.get('context');
 
-		if(context && context.item_id == item_id){
-			this.store.set({
+		if(context && context.item_id == item.item_id){
+			this.service.store.set({
 				context:{}
 			});
 		}else{
 			react_element.measure((x, y, width, height, pageX, pageY) => {
-				this.store.set({
+				this.service.store.set({
 					context:{
 						item:item,
 						item_id:item.item_id,
@@ -53,9 +53,52 @@ class Module extends Proto{
 		}
 	}
 	onSelect(){
-		var context = this.store.get('context');
+		var context = this.service.store.get('context');
 
-		this.store.trigger('state',2);
+		this.service.store.set({
+			state:2
+		});
+		this.service.store.trigger('state',2);
+	}
+	onUnselect(){
+		this.service.store.trigger('state',1);
+		this.service.store.set({
+			state:1,
+			context:{}
+		});
+	}
+	onChangeItem(slot){
+		if(!slot || !slot.ekey){
+			return Alert.alert('Это заглушка под слот. В релизе такого быть не должно');
+		}
+
+		//keys: 'type', 'items', 'name', 'protect', 'ekey'
+		var context = this.service.store.get('context');
+
+		if(!context || !context.item){
+			return this.onUnselect();
+		}
+
+		C.lock();
+
+		this.service.command('item_on',{
+			item:context.item.item_id,
+			slot:context.item.slot_id,
+			slot_to:slot.ekey
+		}).then((json) => {
+			if (!json.success || !json.user) {
+				// запрашиваю актуальное состояние слотов, если ответ отрицательный или нет данных по юзеру  
+				// me.user.loadRemote(function() {
+				// 	//
+				// });
+			}
+
+			this.onUnselect();
+			C.unlock();
+		}).catch(() => {
+			this.onUnselect();
+			C.unlock();
+		});
 	}
 };
 

@@ -27,8 +27,6 @@ class ImageStuff extends StuffComponent {
 				{decorators[0]}
 				<ImageBackground key={'itemimage'+config.params.id} style={{
 					flex:1,
-					borderWidth:2,
-					borderColor:'lime',
 					justifyContent:'center'
 				}} source={C.getImage(proto.images.thumb)} resizeMode="contain">
 					{decorators[1]}

@@ -1,7 +1,7 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
-import GlobalActions from '../../engine/actions.js';
+import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 
 const styles = StyleSheet.create({
@@ -11,15 +11,17 @@ const styles = StyleSheet.create({
 		margin:5,
 		width:100,
 		height:100
-  }
+	},
+	inside: {
+		flex:1,
+		justifyContent:'center',
+	}
 });
 
 class Inventory extends RefluxComponent {
-	// componentWillMount(){
-	// 	this.bindStore('Inventory');
-	// 	// this.bindService(C.getStore('Surging').get('service'));
-	// 	// this.updateServiceState();
-	// }
+	componentWillMount(){
+		this.bindService('inventory');
+	}
 	compileItem(){
 		var slot = this.props.slot;
 
@@ -43,9 +45,13 @@ class Inventory extends RefluxComponent {
 		}
 
 		return (
-			<ImageBackground style={styles.item} source={C.getImage('ds1/slots/new/empty.jpg')} resizeMode="contain">
-				{stuff}
-			</ImageBackground>
+			<TouchableOpacity style={styles.item} onPress={() => {
+				InventoryActions.event('change_item',this.props.slot);
+			}}>
+				<ImageBackground style={styles.inside} source={C.getImage('ds1/slots/new/empty.jpg')} resizeMode="contain">
+					{stuff}
+				</ImageBackground>
+			</TouchableOpacity>
     )
   }
 }
