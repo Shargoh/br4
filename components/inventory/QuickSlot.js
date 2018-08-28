@@ -15,12 +15,33 @@ const styles = StyleSheet.create({
 	inside: {
 		flex:1,
 		justifyContent:'center',
+	},
+	highlighted: {
+		transform: [
+      { perspective: 850 },
+      // { translateX: - Dimensions.get('window').width * 0.24 },
+      { rotateY: '60deg'},
+    ]
 	}
 });
 
 class Inventory extends RefluxComponent {
 	componentWillMount(){
 		this.bindService('inventory');
+		this.setState({
+			highlighted:false
+		});
+	}
+	onAction(action,index){
+		console.log(action,Number(index))
+		if(action == 'highlight'){
+			this.setState({
+				highlighted:this.props.index == index
+			});
+		}else if(action == 'dropped' && this.props.index == index){
+			console.log('D3',index)
+			InventoryActions.event('change_item',this.props.slot);
+		}
 	}
 	compileItem(){
 		var slot = this.props.slot;
@@ -38,14 +59,15 @@ class Inventory extends RefluxComponent {
 	}
   render() {
 		var config = this.compileItem(),
-			stuff;
+			stuff,
+			highlighted = this.state.highlighted ? styles.highlighted : undefined;
 
 		if(config){
 			stuff = C.getManager('stuff').image(config);
 		}
 
 		return (
-			<TouchableOpacity style={styles.item} onPress={() => {
+			<TouchableOpacity style={[styles.item,highlighted]} onPress={() => {
 				InventoryActions.event('change_item',this.props.slot);
 			}}>
 				<ImageBackground style={styles.inside} source={C.getImage('ds1/slots/new/empty.jpg')} resizeMode="contain">

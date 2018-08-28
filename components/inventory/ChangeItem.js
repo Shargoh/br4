@@ -1,8 +1,12 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
+import DraggableItem from './DraggableItem';
+import { StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+
+const TOP = 400,
+	LEFT = 150
 
 const styles = StyleSheet.create({
   item: {
@@ -10,19 +14,32 @@ const styles = StyleSheet.create({
 		justifyContent:'center',
 		width:100,
 		height:100,
-		margin:100
+		marginTop:TOP,
+		marginLeft:LEFT,
+		marginRight:LEFT
 	},
 	inside: {
 		flex:1,
 		justifyContent:'center',
+	},
+	view_anim_on: {
+    zIndex:1
+	},
+	view_anim_off: {
+		zIndex:0
 	}
 });
 
 class ChangeItem extends RefluxComponent {
+	constructor(props){
+		super(props);
+
+		this.state = {
+			view_anim_style:{}
+		}
+	}
 	componentWillMount(){
 		this.bindService('inventory');
-		// this.bindService(C.getStore('Surging').get('service'));
-		// this.updateServiceState();
 	}
 	compileItem(){
 		var item = this.service.store.get('context').item;
@@ -36,20 +53,34 @@ class ChangeItem extends RefluxComponent {
 			items_params:item
 		};
 	}
+	onStartDrag(e,gesture){
+		this.setState({
+			view_anim_style:styles.view_anim_on
+		});
+	}
+	onDrop(e,gesture,in_drop_area){
+		this.setState({
+			view_anim_style:styles.view_anim_off
+		});
+	}
   render() {
 		return (
-			<TouchableOpacity style={{
-				flex:1,
+			<TouchableOpacity style={[{
+				position:'absolute',
+				top:0,
+				bottom:0,
+				left:0,
+				right:0,
 				flexDirection:'row',
 				justifyContent:'center'
-			}} onPress={() => {
+			},this.state.view_anim_style]} onPress={() => {
 				InventoryActions.event('unselect')
 			}}>
 				{/* <TouchableOpacity style={styles.item} ref={'view'} onPress={() => {
 					InventoryActions.event('context',this.refs.view,this.props.item)
 				}}> */}
 					<ImageBackground style={styles.item} source={C.getImage('ds1/slots/new/empty.jpg')} resizeMode="contain">
-						{C.getManager('stuff').image(this.compileItem())}
+						<DraggableItem item={this.compileItem()} container={this} top={TOP} left={LEFT} />
 					</ImageBackground>
 				{/* </TouchableOpacity> */}
 			</TouchableOpacity>

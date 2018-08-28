@@ -66,8 +66,8 @@ class QuickSlots extends RefluxComponent {
 					horizontal={false}
 					numColumns={4}
 					data={this.state.slots_arr}
-					renderItem={({item}) => (
-						<QuickSlot slot={item} />
+					renderItem={({item,index}) => (
+						<QuickSlot slot={item} index={index} />
 					)}
 					keyExtractor={(slot, index) => 'slot'+(slot.ekey || index)}
 				/>

@@ -100,6 +100,12 @@ class Module extends Proto{
 			C.unlock();
 		});
 	}
+	onDrop(index){
+		this.service.store.trigger('dropped',index);
+	}
+	onHighlightQuickSlot(index){
+		this.service.store.trigger('highlight',index);
+	}
 };
 
 export default Module;
