@@ -1,6 +1,6 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, StyleSheet, View, Button, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, View, Button, Text } from 'react-native';
 import InventoryItem from './InventoryItem.js';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
@@ -106,12 +106,14 @@ class Inventory extends RefluxComponent {
 		return (
 			<View style={{
 				flex:1,
-				width:'100%',
-				justifyContent:'space-around',
-				borderTopWidth:4,
-				borderTopColor:'lime',
-				flexDirection:'row'
+				borderTopColor:'lime'//нужно оставить - магическим образом добавляет возможность абсолютного позиционирования контекстного меню
 			}} ref={'view'}>
+				<Text style={{
+					fontSize:21,
+					textAlign:'center'
+				}}>
+					Инвентарь
+				</Text>
 				<FlatList
 					// style={{
 					// 	marginTop:70

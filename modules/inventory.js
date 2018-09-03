@@ -3,7 +3,6 @@ import Proto from '../engine/proto_module.js';
 import React from 'react';
 import Reflux from 'reflux';
 import { InventoryActions } from '../engine/actions.js';
-import request from '../utils/request.js';
 import { Alert } from 'react-native';
 
 class Module extends Proto{

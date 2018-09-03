@@ -3,6 +3,7 @@ import C from '../../engine/c.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
 import { Text, View, Button, Image, StyleSheet } from 'react-native';
 import GlobalActions from '../../engine/actions.js';
+import Dims from '../../utils/dimensions';
 
 class AccountList extends RefluxComponent {
 	render() {
@@ -18,7 +19,8 @@ class AccountList extends RefluxComponent {
 			<Button
 				style={{
 					flex:1,
-					flexDirection:'row'
+					flexDirection:'row',
+					width:Dims.width(this.props.bcount)
 				}}
 				onPress={() => {
 					GlobalActions.event('toggle_menu',this.props.index,true);

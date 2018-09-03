@@ -3,14 +3,14 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Button } from 'react-native';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions';
 
 const styles = StyleSheet.create({
   item: {
     flex:1,
 		justifyContent:'center',
-		margin:5,
-		width:100,
-		height:100
+		width:Dims.itemSide(),
+		height:Dims.itemSide()
 	},
 	inside: {
 		flex:1,

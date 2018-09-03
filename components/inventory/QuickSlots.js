@@ -2,8 +2,7 @@ import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
 import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
 import QuickSlot from './QuickSlot';
-import GlobalActions from '../../engine/actions.js';
-import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions';
 
 // тип слота, который рисовать
 const TYPE = 14;
@@ -53,25 +52,20 @@ class QuickSlots extends RefluxComponent {
 	}
   render() {
 		return (
-			<View style={{
-				flex:1,
-				width:'100%',
-				justifyContent:'space-around',
-				flexDirection:'row'
-			}}>
-				<FlatList
-					// style={{
-					// 	marginTop:70
-					// }}
-					horizontal={false}
-					numColumns={4}
-					data={this.state.slots_arr}
-					renderItem={({item,index}) => (
-						<QuickSlot slot={item} index={index} />
-					)}
-					keyExtractor={(slot, index) => 'slot'+(slot.ekey || index)}
-				/>
-			</View>
+			<FlatList
+				contentContainerStyle={{
+					height:Dims.width(2),
+					width:'100%',
+					zIndex:1
+				}}
+				horizontal={false}
+				numColumns={4}
+				data={this.state.slots_arr}
+				renderItem={({item,index}) => (
+					<QuickSlot slot={item} index={index} />
+				)}
+				keyExtractor={(slot, index) => 'slot'+(slot.ekey || index)}
+			/>
     )
   }
 }

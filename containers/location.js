@@ -10,6 +10,8 @@ import { StyleSheet, Text, View, Button, Alert, TextInput } from 'react-native';
 import Swiper from 'react-native-swiper';
 import GlobalActions from '../engine/actions.js';
 
+const COUNT = 2;
+
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
 		this.bindService('location');
@@ -52,8 +54,8 @@ class LocationContainer extends RefluxComponent {
 					justifyContent:'space-around',
 					flexDirection:'row'
 				}}>
-					<MenuButton title="Монстры" index={0} active={this.state.active_menu} />
-					<MenuButton title="Рюкзак" index={1} active={this.state.active_menu} />
+					<MenuButton title="Монстры" bcount={COUNT} index={0} active={this.state.active_menu} />
+					<MenuButton title="Рюкзак" bcount={COUNT} index={1} active={this.state.active_menu} />
 				</View>
 			</View>
 		)

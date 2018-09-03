@@ -3,9 +3,10 @@ import DragComponent from '../../engine/views/drag_component';
 import { StyleSheet, PanResponder, Animated, ImageBackground, TouchableOpacity } from 'react-native';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions';
 
-const W = 100,
-	H = 100,
+const W = Dims.itemSide(),
+	H = Dims.itemSide(),
 	INROW = 4;
 
 class DraggableItem extends DragComponent {
@@ -15,7 +16,7 @@ class DraggableItem extends DragComponent {
 		this.block = 0;
 	}
 	isDropArea(gesture) {
-    return gesture.moveY < 200;
+    return gesture.moveY < H*2;
 	}
 	renderContent(){
 		return C.getManager('stuff').image(this.props.item);

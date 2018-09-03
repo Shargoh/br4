@@ -4,16 +4,17 @@ import DraggableItem from './DraggableItem';
 import { StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions';
 
-const TOP = 400,
-	LEFT = 150
+const TOP = Dims.itemSide()*3,
+	LEFT = Dims.itemSide()*1.5;
 
 const styles = StyleSheet.create({
   item: {
     flex:1,
 		justifyContent:'center',
-		width:100,
-		height:100,
+		width:Dims.itemSide(),
+		height:Dims.itemSide(),
 		marginTop:TOP,
 		marginLeft:LEFT,
 		marginRight:LEFT

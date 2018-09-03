@@ -3,14 +3,15 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions.js';
 
 const styles = StyleSheet.create({
   item: {
     flex:1,
 		justifyContent:'center',
-		margin:5,
-		width:100,
-		height:100
+		flexDirection:'row',
+		width:Dims.itemSide(),
+		height:Dims.itemSide()
 	},
 	inside: {
 		flex:1,
@@ -33,13 +34,11 @@ class Inventory extends RefluxComponent {
 		});
 	}
 	onAction(action,index){
-		console.log(action,Number(index))
 		if(action == 'highlight'){
 			this.setState({
 				highlighted:this.props.index == index
 			});
 		}else if(action == 'dropped' && this.props.index == index){
-			console.log('D3',index)
 			InventoryActions.event('change_item',this.props.slot);
 		}
 	}
