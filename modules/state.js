@@ -75,7 +75,7 @@ class Module extends Proto{
 			// GlobalActions.initAnimations();
 			// this.showGame();
 			// dispatch(setRealCurrency(config.references.real_currency));
-			C.getModule('ChatConnection').connect();
+			return C.getModule('ChatConnection').connect();
 		}).catch((error) => {
 			GlobalActions.error(error);
       C.unlock();

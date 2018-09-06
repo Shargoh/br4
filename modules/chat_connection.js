@@ -21,7 +21,7 @@ class Module extends Proto{
 
 		ChatConnectionActions.beforeConnect(this);
 
-		request('game','connect',{
+		return request('game','connect',{
 			localtime: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')
 		}).then((result) => {
 			if (result.success == 1) {

@@ -84,6 +84,12 @@ var DateUtils =  {
                 return arr.join(':');
         }
     },
+    jsCoreDateCreator:(dateString) => { 
+        // dateString *HAS* to be in this format "YYYY-MM-DD HH:MM:SS"  
+        let dateParam = dateString.split(/[\s-:]/)  
+        dateParam[1] = (parseInt(dateParam[1], 10) - 1).toString()  
+        return new Date(...dateParam)  
+    },
     /**
      * Вернет дату в виде таймстампа
      */
@@ -109,7 +115,7 @@ var DateUtils =  {
      * Преобразует серверное время в локальное
      */
     normalizeDate:function(date){
-        return date ? date + this.serverTimeDif : date;
+        return date && this.serverTimeDif ? date + this.serverTimeDif : date;
     },
 };
 

@@ -8,6 +8,7 @@ import User from '../../modules/user.js';
 import Battle from '../../modules/battle.js';
 import BattleResult from '../../modules/battle_result.js';
 import Inventory from '../../modules/inventory';
+import Shop from '../../modules/shop';
 
 class ModuleManager extends Manager{
 	constructor(){
@@ -18,6 +19,7 @@ class ModuleManager extends Manager{
 	init(){
 		var modules = [
 				Inventory,
+				Shop,
 				LocationModule,
 				AccountsModule,
 				SurgingModule,

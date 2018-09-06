@@ -5,12 +5,13 @@ import Reflux from 'reflux';
 import RefluxComponent from '../engine/views/reflux_component.js';
 import Surging from '../components/surging/List.js';
 import Inventory from './inventory';
+import Shop from './shop';
 import MenuButton from '../components/common/MenuButton';
 import { StyleSheet, Text, View, Button, Alert, TextInput } from 'react-native';
 import Swiper from 'react-native-swiper';
 import GlobalActions from '../engine/actions.js';
 
-const COUNT = 2;
+const COUNT = 3;
 
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
@@ -47,6 +48,7 @@ class LocationContainer extends RefluxComponent {
 				>
 					<Surging />
 					<Inventory />
+					<Shop />
 				</Swiper>
 				<View style={{
 					width:'100%',
@@ -56,6 +58,7 @@ class LocationContainer extends RefluxComponent {
 				}}>
 					<MenuButton title="Монстры" bcount={COUNT} index={0} active={this.state.active_menu} />
 					<MenuButton title="Рюкзак" bcount={COUNT} index={1} active={this.state.active_menu} />
+					<MenuButton title="Магазин" bcount={COUNT} index={2} active={this.state.active_menu} />
 				</View>
 			</View>
 		)

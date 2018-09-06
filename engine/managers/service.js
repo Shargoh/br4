@@ -11,6 +11,8 @@ import Room from '../../services/Room.js';
 import ShowComponent from '../../services/ShowComponent.js';
 import Surging from '../../services/Surging.js';
 import Inventory from '../../services/Inventory.js';
+import SpecialDeal from '../../services/SpecialDeal.js';
+import Shop from '../../services/Shop.js';
 
 const classes = {
 	Empty,
@@ -18,7 +20,9 @@ const classes = {
 	Room,
 	ShowComponent,
 	Surging,
-	Inventory
+	Inventory,
+	SpecialDeal,
+	Shop
 }
 
 class ServiceManager extends Manager{

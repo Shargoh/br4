@@ -51,6 +51,8 @@ class Module extends Proto{
 		switch(active_menu){
 			case 0:
 				return C.getModule('Surging').show();
+			case 2:
+				return C.getModule('Shop').show();
 			default:
 				return Promise.resolve();
 		}
