@@ -37,6 +37,8 @@ class Module extends Proto{
 		this.service.store.set({
 			active_menu:index
 		});
+
+		this.show();
 	}
 	show(){
 		var active_menu = this.service.store.get('active_menu');

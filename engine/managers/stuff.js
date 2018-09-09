@@ -1,5 +1,6 @@
 import Manager from './proto';
 import Item from '../stuff/item/stuff';
+import Currency from '../stuff/currency/stuff';
 
 class StuffManager extends Manager {
 	constructor(){
@@ -14,6 +15,7 @@ class StuffManager extends Manager {
 
 		// регистрирую классы базовых типов имущества
 		this.register({'item':Item});
+		this.register({'currency':Currency});
 		// this.register({'ability':require("engine/stuff/ability/stuff")});
 		// this.register({'bonus':require("engine/stuff/bonus/stuff")});
 		// this.register({'other':require("engine/stuff/bonus/stuff")});

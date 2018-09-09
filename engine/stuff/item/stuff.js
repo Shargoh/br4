@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from './image';
+import Print from './print';
 import Proto from '../proto';
 import C from '../../c';
 
@@ -12,9 +13,9 @@ class Item extends Proto{
     this.config = config;
 	}
 	print(){
-		// return (
-		// 	<Print config={this.config} proto={this.proto} item={this.item} key={Math.random().toString()} />
-		// );
+		return (
+			<Print config={this.config} proto={this.proto} item={this.item} key={Math.random().toString()} />
+		);
 	}
 	image(){
 		return (

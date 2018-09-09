@@ -3,6 +3,7 @@ import Reflux from 'reflux';
 import images from '../image_paths';
 // import image_uris from '../image_uri_paths';
 import * as constants from '../constants/common';
+import request from '../utils/request';
 
 class C {
 	constructor(){
@@ -94,16 +95,16 @@ class C {
 			ids = [].concat(ids);
 		}
 
-		var me = this,
-			elements,
+		var elements,
 			i = ids.length;
 
 		switch(type){
 			case 'item':
-				elements = this.config.prototypes.items;
+				elements = this.refs.ref('item_proto');
 				break;
 			case 'ability':
-				elements = this.getManager('stuff').abilities;
+				return Promise.resolve();
+				// elements = this.getManager('stuff').abilities;
 				break;
 		}
 
@@ -114,18 +115,14 @@ class C {
 		}
 
 		if(ids && ids.length){
-			return this.promise(function(resolve,reject){
-				me.api('user:loadProto',{
-					type:type,
-					ids:ids
-				}).then(function(protos){
-					if(elements){
-						_.each(protos,function(proto,id){
-							elements[id] = proto;
-						});
-					}
-					resolve();
-				});
+			return request('game','item.proto',{
+				ids:JSON.stringify(ids)
+			}).then((json) => {
+				if(json.success){
+					json.list.forEach((item) => {
+						elements[item.entry] = item;
+					});
+				}
 			});
 		}else{
 			return Promise.resolve();

@@ -1,43 +1,39 @@
-/*global define
-*/
-define(function(require){
-    'use strict';
-    var _ = require("lodash"),
-        C = require("C"),
-        React = require("react"),
-        Mixin = require("engine/stuff/mixin"),
-        CurrencyMixin = require("./mixin"),
-        RDOM = require("reactDom"),
-        Dialog = require("dialog/description"),
+// var _ = require("lodash"),
+// 	C = require("C"),
+// 	React = require("react"),
+// 	Mixin = require("engine/stuff/mixin"),
+// 	RDOM = require("reactDom"),
+// 	Dialog = require("dialog/item"),
+// 	DateUtils = require("engine/utils/date"),
+// 	Factory = require("engine/factory"),
+// 	GlobalActions = require("engine/actions"),
 
-    ImageStuff = React.createClass({
-        mixins:[Mixin],
-        componentWillMount:function(){
-            this.dialog = Dialog;
+import React from 'react';
+import StuffComponent from '../proto_component';
+import { View, ImageBackground } from 'react-native';
+import C from '../../c';
 
-            for(var key in CurrencyMixin){
-                this[key] = CurrencyMixin[key];
-            }
-        },
-        render:function(){
-            var config = this.props.config;
-            
-            return React.createElement(
-                'div',
-                _.extend(this.getElementDefaults(),{
-                    className:'d-stuff-imaged d-stuff-item'
-                },config.props),
-                this.getDecoratorsBefore('image'),
-                React.createElement('div',{
-                    className:'d-stuff-image',
-                    style:{
-                        backgroundImage:'url('+this.props.item.image.big+')'
-                    }
-                }),
-                this.getDecoratorsAfter('image')
-            );
-        }
-    });
+class ImageStuff extends StuffComponent {
+	componentWillMount(){
+		this.decorators = [];
+	}
+	render(){
+		var decorators = this.getDecorators(),
+			config = this.props.config,
+			proto = this.props.proto;
 
-    return ImageStuff;
-});
+		return (
+			<View style={{flex:1}}>
+				{decorators[0]}
+				<ImageBackground key={'itemimage'+config.params.id} style={{
+					flex:1,
+					justifyContent:'center'
+				}} source={C.getImage(proto.image_big)} resizeMode="contain">
+					{decorators[1]}
+				</ImageBackground>
+			</View>
+		)
+	}
+}
+
+export default ImageStuff;

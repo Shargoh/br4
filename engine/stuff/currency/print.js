@@ -1,36 +1,32 @@
-/*global define
-*/
-define(function(require){
-    'use strict';
-    var _ = require("lodash"),
-        C = require("C"),
-        React = require("react"),
-        Mixin = require("engine/stuff/mixin"),
-        RDOM = require("reactDom"),
-        Dialog = require("dialog/description"),
+import React from 'react';
+import StuffComponent from '../proto_component';
+import { Text, View, Image } from 'react-native';
+import Dims from '../../../utils/dimensions';
+import C from '../../c';
 
-    PrintStuff = React.createClass({
-        mixins:[Mixin],
-        componentWillMount:function(){
-            this.dialog = Dialog;
-        },
-        render:function(){
-            var config = this.props.config;
-            
-            return React.createElement(
-                'span',
-                _.extend(this.getElementDefaults(),{
-                    className:'d-stuff-printed d-stuff-item'
-                },config.props),
-                React.createElement('span',{
-                    className:'d-stuff-print',
-                    style:{
-                        backgroundImage:'url('+this.props.item.image.small+')'
-                    }
-                },React.createElement('span',{className:'d-stuff-print-value'},config.params.value))
-            );
-        }
-    });
+const W = Dims.width(15);
 
-    return PrintStuff;
-});
+class TextStuff extends StuffComponent {
+	render(){
+		var config = this.props.config,
+			proto = this.props.proto;
+
+		return (
+			<View style={{
+				flexDirection:'row',
+				justifyContent:'center',
+				flex:1
+			}}>
+				<Image source={C.getImage(proto.image)} style={{
+					width:W,
+					height:W
+				}}/>
+				<Text style={{
+					fontSize:21
+				}}>{config.params.quantity}</Text>
+			</View>
+		)
+	}
+}
+
+export default TextStuff;
