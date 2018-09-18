@@ -18,40 +18,21 @@ const Payment = {
 					reject(new Error());
 				}else{
 					InAppUtils.purchaseProduct(id, (error, response) => {
-						// NOTE for v3.0: User can cancel the payment which will be available as error object here.
-						if(response && response.productIdentifier) {
-							// Alert.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+						if(error){
+							GlobalActions.error('IOS buy product error: ',id,error);
+							reject(error);
+								// NOTE for v3.0: User can cancel the payment which will be available as error object here.
+						}else if(response && response.productIdentifier) {
+							GlobalActions.log('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
 							//unlock store here.
+							resolve(response);
+						}else{
+							GlobalActions.error('IOS buy product unknown error');
+							reject(new Error());
 						}
 					});
 				}
 			});
-		});
-
-
-		return InAppBilling.close().then(() => {
-			return InAppBilling.open();
-		}).then(() => {
-			return InAppBilling.isPurchased(id);
-		}).then((is_purchased) => {
-			if(!is_purchased){
-				return InAppBilling.purchase(id);
-			}
-		}).then((details) => {
-			if(details){
-				GlobalActions.log('Item purchased: ',details);
-			}
-
-			return InAppBilling.getPurchaseTransactionDetails(id);
-		}).then((transaction_status) => {
-			GlobalActions.log('Transaction Status',transaction_status);
-		}).then(() => {
-			return InAppBilling.consumePurchase(id);
-		}).then(() => {
-			return InAppBilling.close();
-		}).catch((error) => {
-			GlobalActions.error('buy product error: ',error);
-			throw new Error();
 		});
 	},
 	getProducts(ids){
@@ -62,10 +43,28 @@ const Payment = {
 				if(error){
 					GlobalActions.error('IOS getProducts error:',error);
 				}else{
-					products = data;
+					products = [];
 
-					products.forEach((product) => {
-						Alert.alert(JSON.stringify(product));
+					/**
+						identifier	string	The product identifier
+						price	number	The price as a number
+						currencySymbol	string	The currency symbol, i.e. "$" or "SEK"
+						currencyCode	string	The currency code, i.e. "USD" of "SEK"
+						priceString	string	Localised string of price, i.e. "$1,234.00"
+						countryCode	string	Country code of the price, i.e. "GB" or "FR"
+						downloadable	boolean	Whether the purchase is downloadable
+						description	string	Description string
+						title	string	Title string
+					 */
+
+					data.forEach((product) => {
+						products.push({
+							price:product.price,
+							localizedPrice:product.priceString,
+							productId:product.identifier,
+							currency:product.currencyCode,
+							title:product.title
+						});
 					});
 				}
 
