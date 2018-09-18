@@ -5,6 +5,7 @@ import { StatusBar, StyleSheet, Text, View, ImageBackground } from 'react-native
 import GameApp from './engine/app.js';
 import BaseLayer from './layers/base.js';
 import LoaderLayer from './layers/loader.js';
+import { IS_TEST } from './constants/common.js';
 // import AnimatedSprite from 'react-native-animated-sprite';
 
 C.App = new GameApp().start(['module','lock','service','log','stuff'/*,'animation'*/]);
@@ -12,6 +13,7 @@ C.App = new GameApp().start(['module','lock','service','log','stuff'/*,'animatio
 export default class App extends React.Component {
   render() {
     var resizeMode = 'center';
+
     return (
       <ImageBackground style={{
         flex: 1,

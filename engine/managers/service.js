@@ -13,6 +13,7 @@ import Surging from '../../services/Surging.js';
 import Inventory from '../../services/Inventory.js';
 import SpecialDeal from '../../services/SpecialDeal.js';
 import Shop from '../../services/Shop.js';
+import Payment from '../../services/Payment.js';
 
 const classes = {
 	Empty,
@@ -22,6 +23,7 @@ const classes = {
 	Surging,
 	Inventory,
 	SpecialDeal,
+	Payment,
 	Shop
 }
 
@@ -82,7 +84,7 @@ class ServiceManager extends Manager{
 				id: service_id
 			});
 		} else {
-			GlobalActions.error(!info ? 'Не найдена спрвочная информация для сервиса ' + service_id  : 'Не определён класс сервиса ' + name);
+			GlobalActions.warn(!info ? 'Не найдена спрвочная информация для сервиса ' + service_id  : 'Не определён класс сервиса ' + name);
 			return;
 		}
 	}

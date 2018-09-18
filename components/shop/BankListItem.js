@@ -6,27 +6,27 @@ import { ShopActions } from '../../engine/actions.js';
 
 const k = 2,
 	W = Dims.width(3),
-	ITEM = 'item',
+	I = Dims.itemSide(),
 	CURRENCY = 'currency';
 
 class Item extends React.Component {
   render() {
 		var StuffManager = C.getManager('stuff'),
-			item = this.props.item;
+			item = this.props.item,
 			item_config = {
-				type:ITEM,
-				params:{
-					id:item.item.item,
-					quantity:1
-				}
-			},
-			price_config = {
 				type:CURRENCY,
 				params:{
-					id:item.price[0].name,
-					quantity:item.price[0].value
+					id:item.game_currency,
+					quantity:item.count
 				}
-			}
+			},
+			price;
+
+		if(item.appstore_data){
+			price = (
+				<Text>{item.appstore_data.localizedPrice}</Text>
+			);
+		}
 
 		return (
 			<TouchableOpacity style={{
@@ -36,17 +36,20 @@ class Item extends React.Component {
 				borderColor:'black',
 				borderWidth:2
 			}} onPress={() => {
-				ShopActions.event('buy',item);
+				ShopActions.event('purchase',item);
 			}}>
 				<Text style={{
 					textAlign:'center',
 					height:88,
 					fontSize:21
 				}}>
-					{StuffManager.print(item_config)}
+					{item.title}
 				</Text>
-				{StuffManager.image(item_config)}
-				{StuffManager.print(price_config)}
+				<Image source={C.getImage(item.image)} style={{
+					width:I,
+					height:I
+				}} />
+				{price}
 			</TouchableOpacity>
     )
   }

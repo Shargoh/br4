@@ -3,6 +3,7 @@ import { FlatList, Text, View, Image, TouchableOpacity, ImageBackground } from '
 import Dims from '../../utils/dimensions.js';
 import C from '../../engine/c';
 import Timer from '../common/Timer';
+import { ShopActions } from '../../engine/actions.js';
 
 const k = 480/240,
 	W = Dims.width(1);
@@ -18,7 +19,7 @@ class Main extends React.Component {
 					height:W/k
 				}}
 				onPress={() => {
-					console.log('press!',this.props.deal.name);
+					ShopActions.event('deal',this.props.deal);
 				}}
 			>
 				<ImageBackground 
