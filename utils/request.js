@@ -58,7 +58,7 @@ export function baseRequest(script,cmd,data = {},options = {}) {
 			body:form
 		}
 	).catch((error) => {
-		GlobalActions.error(error);
+		GlobalActions.error('request error on cmd: ',script,cmd,error);
 		throw error;
 	});
 }
