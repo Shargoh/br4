@@ -4,11 +4,11 @@ import Dims from '../../utils/dimensions.js';
 /**
  * Посчитаем высоту и ширину карты
  */
-const card_size = Dims.cardSize(),
-	screen_width = Dims.width(1),
-	turn_block_width = (card_size.w + 2*card_size.mx)*3,
-	slots_block_width = (card_size.w + 2*card_size.mx)*5,
-	block_height = card_size.h + 2*card_size.my
+export const card_size = Dims.cardSize();
+export const screen_width = Dims.width(1);
+export const turn_block_width = (card_size.w + 2*card_size.mx)*3;
+export const slots_block_width = (card_size.w + 2*card_size.mx)*5;
+export const block_height = card_size.h + 2*card_size.my;
 
 const styles = StyleSheet.create({
   text:{

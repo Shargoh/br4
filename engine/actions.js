@@ -42,7 +42,8 @@ export const ChatConnectionActions = Reflux.createActions([
 export const BattleActions = Reflux.createActions([
 	'reroll',
 	'kick',
-	'prep'
+	'prep',
+	'event'
 ]);
 
 export const InventoryActions = Reflux.createActions([

@@ -5,7 +5,7 @@ import { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 import styles from './css.js';
 
-class Turn extends RefluxComponent {
+class Slots extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setSlots();
@@ -58,9 +58,13 @@ class Turn extends RefluxComponent {
 						)
 					}else{
 						return (
-							<View key={slot_id} style={styles.card}>
+							<TouchableOpacity key={slot_id} style={styles.card} onPress={() => {
+								if(!this.props.enemy){
+									BattleActions.event('select_slot',slot_id);
+								}
+							}}>
 								
-							</View>
+							</TouchableOpacity>
 						)
 					}
 				})}
@@ -69,4 +73,4 @@ class Turn extends RefluxComponent {
   }
 }
   
-export default Turn;
+export default Slots;

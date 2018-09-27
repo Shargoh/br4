@@ -22,6 +22,10 @@ class ChangeItem extends React.Component {
     this.state.pan.addListener((value) => this._val = value);
     // Initialize PanResponder with move handling
     this.panResponder = PanResponder.create({
+			onMoveShouldSetPanResponder: (e, gesture) => {
+				//return true if user is swiping, return false if it's a single click
+				return !(gesture.dx === 0 && gesture.dy === 0);
+			},
       onStartShouldSetPanResponder: (e, gesture) => true,
       onPanResponderMove: (e,gesture) => {
 				this.onMove(e,gesture);

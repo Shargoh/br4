@@ -11,10 +11,16 @@ class Module extends Proto{
 		this.name = "Battle";
 	}
 	onInit(){
+		var me = this;
+
 		this.store = C.createStore('Battle',battle_store_config);
 		// Reflux.ListenerMethods.listenTo(GlobalActions.updateLocation,(data) => {
 		// 	this.updateLocation(data);
 		// });
+		Reflux.ListenerMethods.listenTo(BattleActions.event,function(){
+			me.onEvent.apply(me,arguments);
+		});
+
 		this.listenTo(BattleActions.reroll,'doReroll');
 		this.listenTo(BattleActions.kick,'doKick');
 		this.listenTo(BattleActions.prep,'doPrep');
@@ -101,16 +107,17 @@ class Module extends Proto{
 	/**
 	 * Выполение базового действия. Coбытия 'before_kick', 'kick'
 	 */
-	doKick(name) {
+	doKick(name,slot) {
 		var state = this.store.get('state');
 
-		if(!state.can_kick){
+		if(!state.can_kick || !name){
 			GlobalActions.warn("Can't kick :(");
 			return Promise.resolve();
 		}
 
 		var info,
-			event;
+			event,
+			param;
 
 		for(let i = 0; i < state.av_kick.length; i++){
 			let item = state.av_kick[i];
@@ -127,13 +134,23 @@ class Module extends Proto{
 			event = 'kick';
 		}
 
+		if(info.is_slot){
+			if(!slot){
+				this.selecting = name;
+				return Promise.resolve();
+			}else{
+				param = slot;
+			}
+		}
+
 		GlobalActions.log('Kick!',name);
 
 		this.store.trigger('before_'+event,this.store);
 
 		return this.request('battle_kick',{
 			kick:name,
-			round:state.round
+			round:state.round,
+			param:param
 		}).then((json) => {
 			GlobalActions.log('Kicked!',json);
 
@@ -278,6 +295,12 @@ class Module extends Proto{
 	 */
 	restartBattle() {
 		this.loadStart();
+	}
+	onSelectSlot(slot_id){
+		if(this.selecting){
+			this.doKick(this.selecting,slot_id);
+			delete this.selecting;
+		}
 	}
 	/**
 	 * Обработка команд сервера
