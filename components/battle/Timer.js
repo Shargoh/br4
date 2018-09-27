@@ -3,6 +3,9 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { View } from 'react-native';
 import Timer from '../common/Timer';
 import DateUtils from '../../engine/utils/date.js';
+import Dims from '../../utils/dimensions';
+
+const w = Dims.widthPercent(4);
 
 class BattleTimer extends RefluxComponent {
 	componentWillMount(){
@@ -32,13 +35,16 @@ class BattleTimer extends RefluxComponent {
 	render() {
 		return (
 			<View style={{
-				flex:1,
 				justifyContent:'center',
 				alignItems:'center',
 				borderWidth:1,
 				borderColor:'#000',
-				borderRadius:50,
-				margin:5
+				borderRadius:w,
+				position:'absolute',
+				top:w,
+				left:w,
+				width:w*6,
+				backgroundColor:'yellow'
 			}}>
 				<Timer textStyle={{
 					fontSize:24

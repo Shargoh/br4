@@ -54,6 +54,7 @@ class Module extends Proto{
 
 			this.store.set({
 				pairs:json.pairs,
+				slots:json.slots,
 				list:json.list,
 				hints:hints,
 				started:true,
@@ -222,6 +223,8 @@ class Module extends Proto{
 				if (json.buser && json.buser.user) {
 					GlobalActions.setUser(json.buser.user);
 				}
+				
+				var to_set;
 
 				if (json.buser) {
 					let round = Number(json.buser.round);
@@ -230,15 +233,30 @@ class Module extends Proto{
 						round = this.store.get('round');
 					}
 
-					this.store.set({
+					to_set = {
 						state:json.buser,
 						round:round
-					});
+					};
+
 					// if (json.buser.marks) {
 					// 	/***/
 					// 	me.fireEvent('apply_marks', json.buser.marks);
 					// 	me.battleView.applyMarks(json.buser.marks);
 					// }
+				}
+
+				if(json.slots){
+					if(to_set){
+						to_set.slots = json.slots;
+					}else{
+						to_set = {
+							slots:json.slots
+						}
+					}
+				}
+
+				if(to_set){
+					this.store.set(to_set);
 				}
 	
 				if (json.battle_is_done) {

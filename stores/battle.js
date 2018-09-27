@@ -21,8 +21,10 @@ const store = {
 		this.set({
 			list:[],
 			state:{},
+			slots:{},
 			preload_changes:[],
-			pairs:{}
+			pairs:{},
+			ekey_map:{}
 		});
 	},
 	applyChanges(data){
@@ -110,55 +112,16 @@ const store = {
 				}
 			}
 
-			if(changed){
-				this.setKick();
-			}
-		}else if(!this.get('kick') && this.get('state') && this.get('state').av_kick){
-			this.setKick();
-		}
-	},
-	/**
-	 * Метод находит доступный удар, по возможности не равный предыдущему
-	 */
-	setKick(){
-		var state = this.get('state'),
-			current = this.get('kick'),
-			kicks = state.av_kick,
-			l = kicks.length,
-			available_kicks = [],
-			current_available = false;
-
-		for(let i = 0; i < l; i++){
-			let kick = kicks[i];
-
-			if(current && current.name == kick.name){
-				current_available = true;
-				continue;
-			}
-
-			if(kick.priority != -1){
-				available_kicks.push(kick);
+			if(!changed){
+				delete this.changed.state.av_kick;
 			}
 		}
 
-		l = available_kicks.length;
+		if(!this.changed || this.changed.list){
+			let ekey_map = this.get('ekey_map');
 
-		var index = Math.floor(Math.random()*l),
-			kick = available_kicks[index];
-
-		if(kick){
-			kick.can_kick = state.can_kick;
-
-			this.set({
-				kick:kick
-			});
-
-			return;
-		}
-
-		if(!current_available){
-			this.set({
-				kick:null
+			this.get('list').forEach((el) => {
+				ekey_map[el.battle.ekey] = el;
 			});
 		}
 	}

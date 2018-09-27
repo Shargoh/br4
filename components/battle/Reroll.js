@@ -2,6 +2,9 @@ import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
 import { Text, TouchableOpacity } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
+import Dims from '../../utils/dimensions.js';
+
+const w = Dims.widthPercent(4);
 
 class Info extends RefluxComponent {
 	componentWillMount(){
@@ -27,14 +30,16 @@ class Info extends RefluxComponent {
 	render() {
 		return (
 			<TouchableOpacity style={{
-				flex:1,
 				justifyContent:'center',
 				alignItems:'center',
 				borderWidth:1,
 				borderColor:'#000',
-				borderRadius:50,
-				backgroundColor:this.state.can_reroll ? 'lime' : 'red',
-				margin:5
+				borderRadius:w,
+				position:'absolute',
+				bottom:w,
+				left:w,
+				width:w*6,
+				backgroundColor:this.state.can_reroll ? 'lime' : 'red'
 			}} onPress={() => {
 				if(this.state.can_reroll){
 					BattleActions.reroll();
