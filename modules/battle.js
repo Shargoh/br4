@@ -5,6 +5,8 @@ import battle_store_config from '../stores/battle.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
 
+const TESTING_ANIMATION = true;
+
 class Module extends Proto{
 	constructor(){
 		super();
@@ -36,7 +38,7 @@ class Module extends Proto{
 		/**
 	 * Подгружает данные боя. Генерирует события: 'load_start' и 'start' или 'finish'
 	 */
-	loadStart(callback){
+	loadStart(){
 		this.store.clear();
 
 		/***/ GlobalActions.log('Подгружаю данные боя');
@@ -107,7 +109,7 @@ class Module extends Proto{
 	/**
 	 * Выполение базового действия. Coбытия 'before_kick', 'kick'
 	 */
-	doKick(name,slot) {
+	doKick(name,turn_cmp,slot) {
 		var state = this.store.get('state');
 
 		if(!state.can_kick || !name){
@@ -116,13 +118,15 @@ class Module extends Proto{
 		}
 
 		var info,
+			index,
 			event,
 			param;
-
+console.log(name,state)
 		for(let i = 0; i < state.av_kick.length; i++){
 			let item = state.av_kick[i];
 
 			if(item.name == name){
+				index = 1;
 				info = item;
 				break;
 			}
@@ -136,7 +140,10 @@ class Module extends Proto{
 
 		if(info.is_slot){
 			if(!slot){
-				this.selecting = name;
+				this.selecting = {
+					name:name,
+					cmp:turn_cmp
+				};
 				return Promise.resolve();
 			}else{
 				param = slot;
@@ -156,7 +163,17 @@ class Module extends Proto{
 
 			this.store.trigger(event,this.store);
 
-			return json;
+			if(param){
+				console.log(param)
+				return turn_cmp.animateCorrectSelection(param);
+			}
+		}).then(() => {
+			// state.av_kick.splice(index,1);
+
+			// if(param){
+			// 	this.store.get('slots')['1'][param] = 
+			// }
+			return turn_cmp;
 		});
 	}
 	/**
@@ -220,7 +237,6 @@ class Module extends Proto{
 		return this.request('battle_reroll',{
 			round:this.store.get('round')
 		}).then((json) => {
-			this.store.setKick();
 			this.store.trigger('reroll',this.store);
 
 			return json;
@@ -235,6 +251,12 @@ class Module extends Proto{
 		return this.request('battle_current');
 	}
 	request(cmd,data,options){
+		if(TESTING_ANIMATION && cmd == 'battle_kick'){
+			return Promise.resolve({
+				success:1
+			});
+		}
+
 		return request('battle',cmd,data,options).then((json) => {
 			if (json && json.success) {
 				if (json.buser && json.buser.user) {
@@ -248,6 +270,10 @@ class Module extends Proto{
 
 					if(this.store.get('round') > round){
 						round = this.store.get('round');
+					}
+
+					if(!json.buser.av_kick){
+						json.buser.av_kick = this.store.get('state').av_kick;
 					}
 
 					to_set = {
@@ -298,8 +324,11 @@ class Module extends Proto{
 	}
 	onSelectSlot(slot_id){
 		if(this.selecting){
-			this.doKick(this.selecting,slot_id);
-			delete this.selecting;
+			this.doKick(this.selecting.name,this.selecting.cmp,slot_id).then((turn_cmp) => {
+				delete this.selecting;
+			}).catch(() => {
+				delete this.selecting;
+			});
 		}
 	}
 	/**

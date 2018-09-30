@@ -47,7 +47,7 @@ class LogManager extends Manager{
 
 		Reflux.ListenerMethods.listenTo(GlobalActions.log,function(){
 			if(IS_TEST){
-				// log('LOG',arguments);
+				log('LOG',arguments);
 			}
 		});
 

@@ -61,15 +61,18 @@ class ChangeItem extends React.Component {
 						this.onDrop(e,gesture,true);
 					});
 				} else {
-					Animated.spring(this.state.pan, {
-						toValue: { x: 0, y: 0 },
-						friction: 5
-					}).start(() => {
-						this.onDrop(e,gesture,false);
-					});
+					this.animateWrongDrop(e,gesture);
 				}
 			}
     });
+	}
+	animateWrongDrop(e, gesture){
+		Animated.spring(this.state.pan, {
+			toValue: { x: 0, y: 0 },
+			friction: 5
+		}).start(() => {
+			this.onDrop(e,gesture,false);
+		});
 	}
 	onDrop(e,gesture,in_drop_area){}
 	onStartDrag(e,gesture){}

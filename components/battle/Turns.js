@@ -18,23 +18,9 @@ class Turns extends RefluxComponent {
 			this.setState({
 				av_kick:store.changed.state.av_kick
 			});
-		}else if(action == 'before_kick'){
-			this.setState({
-				disabled:true
-			});
 		}
 	}
 	render(){
-		var disabledView;
-
-		if(this.state.disabled){
-			disabledView = <View style={{
-				width:'100%',
-				height:'100%',
-				backgroundColor:'rgba(0,0,0,0.5)',
-			}}></View>
-		}
-
 		return (
 			<View style={styles.turn_block}>
 				{this.state.av_kick.map((kick,index) => {
@@ -46,7 +32,6 @@ class Turns extends RefluxComponent {
 						<Turn style={styles.card} key={index} kick={kick} container={this} top={top} left={left} />
 					)
 				})}
-				{disabledView}
 			</View>
     )
   }

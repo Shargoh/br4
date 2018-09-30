@@ -33,10 +33,14 @@ class Turn extends DragComponent {
 			ref = C.refs.ref('battle_turn|'+kick.name);
 
 		return (
-			<TouchableOpacity key={kick.name} style={styles.card} onPress={() => {
+			<TouchableOpacity ref={'turn'} key={kick.name} style={styles.card} onPress={() => {
 				if(!this.isDisabled(kick)){
-					BattleActions.kick(kick.name);
+					BattleActions.kick(kick.name,this);
 				}
+			}} onLayout={() => {
+				this.refs.turn.measure((x, y, width, height, pageX, pageY) => {
+					this.pageX = pageX;
+				});
 			}}>
 				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
 					<Text>123</Text>
@@ -61,11 +65,22 @@ class Turn extends DragComponent {
 		if(!in_drop_area){
 			// return BattleActions.event('unselect');
 		}else{
-			return BattleActions.kick(this.props.kick.name,Math.max(1,Math.min(5,this.block + 1)));
+			return BattleActions.kick(this.props.kick.name,this,Math.max(1,Math.min(5,this.block + 1)));
 		}
 	}
+	animateCorrectSelection(slot_id){
+		return new Promise((resolve,reject) => {
+			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my;
+
+			Animated.timing(this.state.pan, {
+				toValue: { x: slot_x - this.pageX, y: H*-2.54 },
+			}).start(() => {
+				resolve();
+			});
+		});
+	}
 	getBlock(gesture){
-		let x = gesture.moveX - this.state.dx,
+		let x = gesture.moveX - this.state.dx - card_size.my/2,
 				y = gesture.moveY - this.state.dy;
 
 		return Math.floor(x/W) + 1;

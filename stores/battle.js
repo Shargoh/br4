@@ -18,13 +18,20 @@ const store = {
 		}
 	},
 	clear(){
+		var list = this.get('list') || [],
+			state = this.get('state') || {},
+			slots = this.get('slots') || {},
+			preload_changes = this.get('preload_changes') || [],
+			pairs = this.get('pairs') || {},
+			ekey_map = this.get('ekey_map') || {};
+
 		this.set({
-			list:[],
-			state:{},
-			slots:{},
-			preload_changes:[],
-			pairs:{},
-			ekey_map:{}
+			list:list,
+			state:state,
+			slots:slots,
+			preload_changes:preload_changes,
+			pairs:pairs,
+			ekey_map:ekey_map
 		});
 	},
 	applyChanges(data){
