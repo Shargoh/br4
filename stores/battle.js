@@ -106,7 +106,16 @@ const store = {
 		}
 	},
 	onSet(){
-		if(this.changed && this.changed.state && this.changed.state.av_kick && this.previous.state.av_kick){
+		/**
+		 * Ничего не делаю с состоянием основных, если они не поменялись, кроме случая с новым раундом боя
+		 */
+		if(
+			this.changed &&
+			!this.changed.round && 
+			this.changed.state && 
+			this.changed.state.av_kick && 
+			this.previous.state.av_kick
+		){
 			var changed = false;
 
 			let new_kicks = this.changed.state.av_kick,
@@ -119,9 +128,11 @@ const store = {
 				}
 			}
 
-			if(!changed){
-				delete this.changed.state.av_kick;
+			if(changed){
+				this.trigger('turns_changed',this);
 			}
+		}else{
+			this.trigger('turns_changed',this);
 		}
 
 		if(!this.changed || this.changed.list){
@@ -131,6 +142,24 @@ const store = {
 				ekey_map[el.battle.ekey] = el;
 			});
 		}
+	},
+	/**
+	 * Вызывается при получении сообщения из чата с типом meddle
+	 * компонент Slots реагирует на событие и рисует "прилет" карты в слот
+	 * @param {*} user 
+	 * @param {*} side 
+	 * @param {*} slot 
+	 */
+	addInSlot(user,side,slot){
+		let slots = this.get('slots').slots;
+
+		if(!slots[side]){
+			slots[side] = {};
+		}
+
+		slots[side][slot] = user.battle.ekey;
+
+		this.trigger('add_in_slot',user,side,slot);
 	}
 };
 

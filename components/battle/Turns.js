@@ -14,9 +14,9 @@ class Turns extends RefluxComponent {
 		});
 	}
 	onAction(action,store){
-		if(action == 'change' && store.changed.state && store.changed.state.av_kick != undefined){
+		if(action == 'turns_changed'){
 			this.setState({
-				av_kick:store.changed.state.av_kick
+				av_kick:store.get('state').av_kick
 			});
 		}
 	}

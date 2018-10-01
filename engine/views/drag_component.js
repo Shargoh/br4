@@ -54,17 +54,20 @@ class ChangeItem extends React.Component {
 			},
 			onPanResponderRelease: (e, gesture) => {
         if (this.isDropArea(gesture)) {
-          Animated.timing(this.state.opacity, {
-						toValue: 0,
-						duration: 1000
-					}).start(() => {
-						this.onDrop(e,gesture,true);
-					});
+          this.animateCorrectDrop(e,gesture);
 				} else {
 					this.animateWrongDrop(e,gesture);
 				}
 			}
     });
+	}
+	animateCorrectDrop(e, gesture){
+		Animated.timing(this.state.opacity, {
+			toValue: 0,
+			duration: 1000
+		}).start(() => {
+			this.onDrop(e,gesture,true);
+		});
 	}
 	animateWrongDrop(e, gesture){
 		Animated.spring(this.state.pan, {

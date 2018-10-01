@@ -9,11 +9,35 @@ class Slots extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setSlots();
-	}
-	onAction(action,store){
-		if(action == 'change' && store.changed.slots){
-			this.setSlots();
+
+		this.animation_queue = [];
+
+		if(this.props.enemy){
+			this.animateAddInSlot = this.animateEnemyAddInSlot;
+		}else{
+			this.animateAddInSlot = this.animateFriendlyAddInSlot;
 		}
+	}
+	onAction(action,user,side,slot){
+		if(
+			action == 'add_in_slot' &&
+			(
+				(this.props.enemy && side == 2) ||
+				(!this.props.enemy && side == 1)
+			)
+		){
+			if(this.animation_queue.length){
+				this.animation_queue.push([user,slot]);
+			}else{
+				this.animateAddInSlot(user,slot);
+			}
+		}
+	}
+	animateEnemyAddInSlot(user,slot){
+		
+	}
+	animateFriendlyAddInSlot(user,slot){
+
 	}
 	setSlots(){
 		const slots = {
@@ -24,7 +48,7 @@ class Slots extends RefluxComponent {
 			5:''
 		};
 
-		console.log(this.props.slots)
+		console.log('SLOTS_CMP',this.props.slots)
 
 		for(let slot_id in this.props.slots){
 			if(slot_id <= 5){

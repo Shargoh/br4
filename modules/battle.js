@@ -5,7 +5,7 @@ import battle_store_config from '../stores/battle.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
 
-const TESTING_ANIMATION = true;
+const TESTING_ANIMATION = false;
 
 class Module extends Proto{
 	constructor(){
@@ -153,6 +153,11 @@ console.log(name,state)
 		GlobalActions.log('Kick!',name);
 
 		this.store.trigger('before_'+event,this.store);
+		
+		// анимирую сразу карту на место
+		if(param){
+			turn_cmp.animateCorrectSelection(param);
+		}
 
 		return this.request('battle_kick',{
 			kick:name,
@@ -163,17 +168,11 @@ console.log(name,state)
 
 			this.store.trigger(event,this.store);
 
-			if(param){
-				console.log(param)
-				return turn_cmp.animateCorrectSelection(param);
-			}
-		}).then(() => {
-			// state.av_kick.splice(index,1);
-
-			// if(param){
-			// 	this.store.get('slots')['1'][param] = 
-			// }
 			return turn_cmp;
+		}).catch((error) => {
+			turn_cmp.animateWrongDrop();
+
+			GlobalActions.error('doKick error',error);
 		});
 	}
 	/**
@@ -255,6 +254,7 @@ console.log(name,state)
 			return Promise.resolve({
 				success:1
 			});
+			// return Promise.reject('ERROR');
 		}
 
 		return request('battle',cmd,data,options).then((json) => {
@@ -297,6 +297,8 @@ console.log(name,state)
 						}
 					}
 				}
+
+				console.log(to_set);
 
 				if(to_set){
 					this.store.set(to_set);
@@ -360,6 +362,11 @@ console.log(name,state)
 
 					if(!exists){
 						list.push(data.user);
+
+						if(data.slot && data.side){
+							this.store.addInSlot(data.user,data.side,data.slot);
+						}
+
 						this.store.set({
 							list:list
 						});
@@ -389,9 +396,22 @@ console.log(name,state)
 					this.loadRound(data.round);
 				}
 
-				this.store.set({
+				var to_set = {
 					pairs:data.pairs
-				});
+				}
+
+				if (data.slots) {
+					let slots = this.store.get('slots');
+
+					if(slots){
+console.log('S_L_O_T_S',data.slots);
+
+						slots.slots = data.slots;
+						to_set.slots = slots;
+					}
+				}
+
+				this.store.set(to_set);
 				break;
 			case 'exit':
 				// if (me.started && me.list.getByKey(data.user.battle.ekey)) {

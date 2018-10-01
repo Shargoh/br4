@@ -68,11 +68,15 @@ class Turn extends DragComponent {
 			return BattleActions.kick(this.props.kick.name,this,Math.max(1,Math.min(5,this.block + 1)));
 		}
 	}
+	animateCorrectDrop(e, gesture){
+		return this.onDrop(e,gesture,true);
+	}
 	animateCorrectSelection(slot_id){
 		return new Promise((resolve,reject) => {
 			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my;
 
 			Animated.timing(this.state.pan, {
+				duration: 200,
 				toValue: { x: slot_x - this.pageX, y: H*-2.54 },
 			}).start(() => {
 				resolve();
