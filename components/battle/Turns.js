@@ -22,7 +22,7 @@ class Turns extends RefluxComponent {
 	}
 	render(){
 		return (
-			<View style={styles.turn_block}>
+			<View style={[styles.turn_block,styles.my_turn_block]}>
 				{this.state.av_kick.map((kick,index) => {
 					const minW = (screen_width - turn_block_width)/2,
 						top = block_height*5,

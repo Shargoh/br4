@@ -25,15 +25,25 @@ const styles = StyleSheet.create({
 		alignItems:'center',
 		justifyContent:'center'
 	},
+	card_size:{
+		height:card_size.h,
+		width:card_size.w,
+		borderRadius:card_size.mx,
+	},
 	turn_block:{
 		height:block_height,
 		width:turn_block_width,
 		flexDirection:'row',
 		position:'absolute',
-		bottom:0,
 		left:(screen_width - turn_block_width)/2,
 		alignItems:'center',
 		justifyContent:'center'
+	},
+	my_turn_block:{
+		bottom:0
+	},
+	enemy_turn_block:{
+		top:0
 	},
 	slots_block:{
 		height:block_height,

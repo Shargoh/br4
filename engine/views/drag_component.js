@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-class ChangeItem extends React.Component {
+class DragComponent extends React.Component {
 	constructor(props) {
     super(props);
     this.state = {
@@ -102,4 +102,4 @@ class ChangeItem extends React.Component {
   }
 }
   
-export default ChangeItem;
+export default DragComponent;

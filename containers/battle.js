@@ -7,8 +7,10 @@ import Reroll from '../components/battle/Reroll';
 import Timer from '../components/battle/Timer';
 import Surrender from '../components/battle/Surrender';
 import Turns from '../components/battle/Turns.js';
+import EnemyTurns from '../components/battle/EnemyTurns.js';
 import Slots from '../components/battle/Slots';
 import { View } from 'react-native';
+import Desk from '../components/battle/Desk.js';
 
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
@@ -45,12 +47,14 @@ class LocationContainer extends RefluxComponent {
 				}}>
 					<Info user={this.state.enemy} />
 				</View>
+				<EnemyTurns />
 				<Slots enemy={true} slots={this.store.get('slots').slots[2] || {}} />
 				<Slots enemy={false} slots={this.store.get('slots').slots[1] || {}} />
 				<Timer />
 				<Surrender />
 				<Reroll />
 				<Turns />
+				<Desk />
 				<View style={{
 					flexDirection: 'row',
 					flex:1,

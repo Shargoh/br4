@@ -6,27 +6,122 @@ import C from '../../engine/c';
 import styles, { screen_width, slots_block_width, block_height, card_size } from './css';
 
 const minW = (screen_width - slots_block_width)/2,
+	cardW = card_size.w + card_size.my,
 	maxW = minW + slots_block_width,
 	W = card_size.w,
-	H = card_size.h;
+	H = card_size.h,
+	bh2 = block_height*2,
+	bh3 = block_height*3,
+	bh4 = block_height*4,
+	bh5 = block_height*5,
+	cl = minW + 2*cardW,
+	cr = maxW - 2*cardW
 
 class Turn extends DragComponent {
 	constructor(props){
 		super(props);
 
 		this.block = 0;
+
+		switch(this.getTargetType()){
+			case 1:
+			case 3:
+				this.isDropArea = this.isInSlotDropArea;
+				break;
+			case 2:
+				this.isDropArea = this.isEnemySlotDropArea;
+				break;
+			case 4:
+				this.isDropArea = this.isEnemyHeroDropArea;
+				break;
+			case 5:
+				this.isDropArea = this.isHeroDropArea;
+				break;
+			case 6:
+				this.isDropArea = this.isEnemyDropArea;
+				break;
+			case 7:
+				this.isDropArea = this.isMyDropArea;
+				break;
+		}
 	}
-	isDropArea(gesture) {
-		return gesture.moveY < block_height*4 && 
-			gesture.moveY > block_height*3 && 
+	isInSlotDropArea(gesture) {
+		return gesture.moveY < bh4 && 
+			gesture.moveY > bh3 && 
 			gesture.moveX < maxW && 
 			gesture.moveX > minW;
+	}
+	isEnemySlotDropArea(gesture) {
+		return gesture.moveY < bh3 && 
+			gesture.moveY > bh2 && 
+			gesture.moveX < maxW && 
+			gesture.moveX > minW;
+	}
+	isEnemyHeroDropArea(gesture) {
+		return gesture.moveY < bh2 && 
+			gesture.moveY > block_height && 
+			gesture.moveX < cr && 
+			gesture.moveX > cl;
+	}
+	isHeroDropArea(gesture) {
+		return gesture.moveY < bh5 && 
+			gesture.moveY > bh4 && 
+			gesture.moveX < cr && 
+			gesture.moveX > cl;
+	}
+	isEnemyDropArea(gesture) {
+		return (
+			gesture.moveY < bh2 && 
+			gesture.moveY > block_height && 
+			gesture.moveX < cr && 
+			gesture.moveX > cl
+		) || (
+			gesture.moveY < bh3 && 
+			gesture.moveY > bh2 && 
+			gesture.moveX < maxW && 
+			gesture.moveX > minW
+		);
+	}
+	isMyDropArea(gesture) {
+		return (
+			gesture.moveY < bh5 && 
+			gesture.moveY > bh4 && 
+			gesture.moveX < cr && 
+			gesture.moveX > cl
+		) || (
+			gesture.moveY < bh4 && 
+			gesture.moveY > bh3 && 
+			gesture.moveX < maxW && 
+			gesture.moveX > minW
+		);
 	}
 	isDisabled(){
 		if(!this.props.kick) return true;
 		if(this.props.kick.priority == -1) return true;
 
 		return false;
+	}
+	/**
+	 * 1 - карта ставится в слот
+	 * 2 - карта воздействует на противника в слоте
+	 * 3 - карта воздействует на своего в слоте
+	 * 4 - карта воздействует на вражеского героя
+	 * 5 - карта воздействует на себя
+	 * 6 - карта воздействует на вражеского героя или противника в слоте
+	 * 7 - карта воздействует на себя или своего в слоте
+	 */
+	getTargetType(){
+		var kick = this.props.kick,
+			slot = Number(kick.slot),
+			side = kick.side;
+
+		if(kick.is_slot) return 1;
+		if(slot == 1 && side == 2) return 2;
+		if(slot == 1 && side == 1) return 3;
+		if(slot == 2 && side == 2) return 4;
+		if(slot == 2 && side == 1) return 5;
+		if(!slot && side == 2) return 6;
+		if(!slot && side == 1) return 7;
 	}
 	renderContent(){
 		var kick = this.props.kick,
@@ -43,7 +138,10 @@ class Turn extends DragComponent {
 				});
 			}}>
 				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
-					<Text>123</Text>
+					<Text style={{
+						fontSize:40,
+						color:'blue'
+					}}>{this.getTargetType()}</Text>
 				</ImageBackground>
 			</TouchableOpacity>
 		)
@@ -65,29 +163,54 @@ class Turn extends DragComponent {
 		if(!in_drop_area){
 			// return BattleActions.event('unselect');
 		}else{
-			return BattleActions.kick(this.props.kick.name,this,Math.max(1,Math.min(5,this.block + 1)));
+			let block = this.block == 100 ? 100 : Math.max(1,Math.min(5,this.block));
+
+			return BattleActions.kick(this.props.kick.name,this,block);
 		}
 	}
 	animateCorrectDrop(e, gesture){
 		return this.onDrop(e,gesture,true);
 	}
-	animateCorrectSelection(slot_id){
+	animateCorrectSelection(slot_id,side){
 		return new Promise((resolve,reject) => {
+			var y;
+
+			if(slot_id == 100){
+				slot_id = 3;
+
+				if(side == 1){
+					y = -1*block_height;
+				}else{
+					y = -4*block_height;
+				}
+			}else if(side == 2){
+				y = -3*block_height;
+			}else{
+				y = -2*block_height;
+			}
+
+			y += card_size.my/2;
+
 			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my;
 
 			Animated.timing(this.state.pan, {
 				duration: 200,
-				toValue: { x: slot_x - this.pageX, y: H*-2.54 },
+				toValue: { x: slot_x - this.pageX, y: y },
 			}).start(() => {
 				resolve();
 			});
 		});
 	}
+	/**
+	 * если блок находится вне слотов (по высоте) - значит он равен 100, т.к. это герой
+	 */
 	getBlock(gesture){
 		let x = gesture.moveX - this.state.dx - card_size.my/2,
-				y = gesture.moveY - this.state.dy;
+			y = gesture.moveY - this.state.dy;
 
-		return Math.floor(x/W) + 1;
+		if(y < bh2 || y > bh4){
+			return 100;
+		}else return Math.floor(x/W) + 1;
 	}
 	onMove(e,gesture){
 		if(this.isDropArea(gesture)){

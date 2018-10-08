@@ -5,7 +5,7 @@ import battle_store_config from '../stores/battle.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
 
-const TESTING_ANIMATION = false;
+const TESTING_ANIMATION = true;
 
 class Module extends Proto{
 	constructor(){
@@ -120,8 +120,9 @@ class Module extends Proto{
 		var info,
 			index,
 			event,
-			param;
-console.log(name,state)
+			param,
+			target;
+
 		for(let i = 0; i < state.av_kick.length; i++){
 			let item = state.av_kick[i];
 
@@ -138,16 +139,55 @@ console.log(name,state)
 			event = 'kick';
 		}
 
+		/**
+		 * если действие - призвать бота в слот
+		 */
 		if(info.is_slot){
 			if(!slot){
 				this.selecting = {
 					name:name,
+					info:info,
 					cmp:turn_cmp
 				};
 				return Promise.resolve();
 			}else{
 				param = slot;
 			}
+		}else if(slot == 100 || info.slot == 2){
+			/**
+			 * если действие на героя
+			 */
+			slot = 100;
+
+			if(info.side == 1){
+				target = state.user.battle.ekey;
+			}else{
+				let enemy = this.store.getEnemy();
+
+				if(enemy){
+					target = enemy.battle.ekey;
+				}
+			}
+		}else{
+			if(!slot){
+				this.selecting = {
+					name:name,
+					info:info,
+					cmp:turn_cmp
+				};
+				return Promise.resolve();
+			}else{
+				let hash = this.store.get('slots').slots[info.side];
+
+				if(hash){
+					target = hash[slot];
+				}
+			}
+		}
+
+		if(!target && !param && (info.slot == 1 || info.is_slot == 1)){
+			GlobalActions.warn("Ability requires target :(");
+			return Promise.resolve();
 		}
 
 		GlobalActions.log('Kick!',name);
@@ -155,14 +195,15 @@ console.log(name,state)
 		this.store.trigger('before_'+event,this.store);
 		
 		// анимирую сразу карту на место
-		if(param){
-			turn_cmp.animateCorrectSelection(param);
+		if(param || target){
+			turn_cmp.animateCorrectSelection(slot,info.side);
 		}
 
 		return this.request('battle_kick',{
 			kick:name,
 			round:state.round,
-			param:param
+			param:param,
+			target:target
 		}).then((json) => {
 			GlobalActions.log('Kicked!',json);
 
@@ -326,11 +367,52 @@ console.log(name,state)
 	}
 	onSelectSlot(slot_id){
 		if(this.selecting){
+			var info = this.selecting.info;
+
+			if(!info.is_slot) return;
+
 			this.doKick(this.selecting.name,this.selecting.cmp,slot_id).then((turn_cmp) => {
 				delete this.selecting;
 			}).catch(() => {
 				delete this.selecting;
 			});
+		}
+	}
+	onSelectHero(is_enemy){
+		if(this.selecting){
+			var info = this.selecting.info;
+
+			if(info.slot == 1) return;
+
+			if(
+				(info.side == 2 && is_enemy) ||
+				!is_enemy
+			){
+				this.doKick(this.selecting.name,this.selecting.cmp,100).then((turn_cmp) => {
+					delete this.selecting;
+				}).catch(() => {
+					delete this.selecting;
+				});
+			}
+		}
+	}
+	onSelectTarget(slot_id,is_enemy){
+		if(this.selecting){
+			var info = this.selecting.info;
+
+			if(Number(info.is_slot)) return;
+			if(info.slot == 2) return;
+
+			if(
+				(info.side == 2 && is_enemy) ||
+				!is_enemy
+			){
+				this.doKick(this.selecting.name,this.selecting.cmp,slot_id).then((turn_cmp) => {
+					delete this.selecting;
+				}).catch(() => {
+					delete this.selecting;
+				});
+			}
 		}
 	}
 	/**
@@ -465,6 +547,30 @@ console.log('S_L_O_T_S',data.slots);
 	}
 	commandBattleExit(data){
 		GlobalActions.updateUser();
+	}
+	onTestEnemyAnimation(){
+		// сначала сброшу слоты у противника
+		this.store.trigger('remove_from_slot',null,2,1);
+		this.store.trigger('remove_from_slot',null,2,2);
+		this.store.trigger('remove_from_slot',null,2,3);
+		this.store.trigger('remove_from_slot',null,2,4);
+		this.store.trigger('remove_from_slot',null,2,5);
+
+		setTimeout(() => {
+			let ekey_map = this.store.get('ekey_map'),
+				slots = this.store.get('slots').slots[2];
+
+			for(let slot_id in slots){
+				let user = ekey_map[slots[slot_id]];
+
+				if(!user || slot_id > 5) continue;
+
+				this.store.addInSlot(user,2,slot_id);
+			}
+		},500);
+	}
+	onEnemyAddedInSlot(user,slot){
+		this.store.trigger('added_in_slot',user,2,slot);
 	}
 };
 
