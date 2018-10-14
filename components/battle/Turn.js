@@ -1,4 +1,5 @@
 import React from 'react';
+import Reflux from 'reflux';
 import DragComponent from '../../engine/views/drag_component';
 import { StyleSheet, PanResponder, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
 import { BattleActions } from '../../engine/actions';
@@ -16,6 +17,12 @@ const minW = (screen_width - slots_block_width)/2,
 	bh5 = block_height*5,
 	cl = minW + 2*cardW,
 	cr = maxW - 2*cardW
+
+/**
+ * flags
+ * _animating_kick_success
+ * _waiting_reset_animation
+ */
 
 class Turn extends DragComponent {
 	constructor(props){
@@ -43,6 +50,16 @@ class Turn extends DragComponent {
 			case 7:
 				this.isDropArea = this.isMyDropArea;
 				break;
+		}
+	}
+	componentDidMount(){
+		Reflux.ListenerMixin.listenTo(C.getStore('Battle'),(action,store) => {
+			this.onAction(action,store);
+		});
+	}
+	onAction(action,store){
+		if(action == 'round'){
+			this.animatedResetPosition();
 		}
 	}
 	isInSlotDropArea(gesture) {
@@ -168,8 +185,29 @@ class Turn extends DragComponent {
 			return BattleActions.kick(this.props.kick.name,this,block);
 		}
 	}
-	animateCorrectDrop(e, gesture){
+	animateCorrectDrop(e,gesture){
 		return this.onDrop(e,gesture,true);
+	}
+	animateKickSuccess(){
+		this._animating_kick_success = true;
+
+		Animated.sequence([
+			Animated.timing(this.state.opacity, {
+				toValue: 0,
+				duration: 1000,
+				delay:500
+			}),
+			Animated.timing(this.state.pan, {
+				duration: 0,
+				toValue: { x: screen_width - cardW - card_size.my, y: 0 },
+			})
+		]).start(() => {
+			this._animating_kick_success = false;
+
+			if(this._waiting_reset_animation){
+				this.animatedResetPosition();
+			}
+		})
 	}
 	animateCorrectSelection(slot_id,side){
 		return new Promise((resolve,reject) => {
@@ -201,16 +239,39 @@ class Turn extends DragComponent {
 			});
 		});
 	}
+	animatedResetPosition(){
+		if(this._animating_kick_success){
+			this._waiting_reset_animation = true;
+			return;
+		}else{
+			Animated.sequence([
+				Animated.timing(this.state.opacity, {
+					toValue: 1,
+					duration: 1000
+				}),
+				Animated.timing(this.state.pan, {
+					duration: 500,
+					delay: 200,
+					toValue: { x: 0, y: 0 }
+				})
+			]).start(() => {
+				this._waiting_reset_animation = false;
+			});
+		}
+	}
 	/**
 	 * если блок находится вне слотов (по высоте) - значит он равен 100, т.к. это герой
 	 */
 	getBlock(gesture){
-		let x = gesture.moveX - this.state.dx - card_size.my/2,
+		let x = gesture.moveX - this.state.dx,
 			y = gesture.moveY - this.state.dy;
 
-		if(y < bh2 || y > bh4){
+		if(y < bh2 || y > bh5){
 			return 100;
-		}else return Math.floor(x/W) + 1;
+		}else{
+			console.log(Math.floor(x/cardW) + 1);
+			return Math.floor(x/cardW) + 1;
+		}
 	}
 	onMove(e,gesture){
 		if(this.isDropArea(gesture)){

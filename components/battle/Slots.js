@@ -36,6 +36,9 @@ class Slots extends RefluxComponent {
 			)
 		){
 			this.state.slots[slot - 1] = user.battle.ekey;
+			this.setState({
+				slots:this.state.slots
+			});
 
 			if(this.animated_slots[slot]){
 				this.animateAddInSlot(user,slot);
@@ -98,7 +101,7 @@ class Slots extends RefluxComponent {
 				{this.state.slots.map((ekey,index) => {
 					const slot_id = index + 1;
 
-					if(ekey && ekey_map[ekey]){
+					if(ekey && ekey_map[ekey] && ekey_map[ekey].timed.hp[0]){
 						let mob = ekey_map[ekey],
 							shape = C.refs.ref('user_shape|'+mob.shape);
 

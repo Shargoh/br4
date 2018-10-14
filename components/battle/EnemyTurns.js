@@ -38,13 +38,35 @@ class Turns extends RefluxComponent {
 			}
 
 			this.animation_queue.push([user,slot]);
+		}else if(action == 'enemy_kick'){
+			if(!this.animation_queue.length){
+				/**
+				 * user - это turn_name
+				 * side - это линия цели (1 - герой врага, 2 - бот врага, 3 - свой бот, 4 - свой герой)
+				 */
+				this.animateKick(user,side,slot);
+			}
+
+			this.animation_queue.push([user,side,slot]);
 		}
 	}
-	animateAddInSlot(user,slot){
+	/**
+	 * 
+	 * @param {Object} user - конфиг юзера/бота 
+	 * @param {Number} slot - номер слота
+	 * @param {Number} line - (default 1) - строка, куда будет лететь карта
+	 * 	0 - в своего героя
+	 * 	1 - в свой слот
+	 * 	2 - в чужой слот
+	 * 	3 - в чужого героя
+	 */
+	animateAddInSlot(user,slot,line){
 		var rand = Math.floor(Math.random()*this.state.turns.length),
 			card = this.refs['card'+rand];
 
-		card.runAnimation(user,slot).then(() => {
+		line = line || 1;
+
+		card.runAnimation(user,slot,line).then(() => {
 			BattleActions.event('enemy_added_in_slot',user,slot);
 			return card.resetAnimation();
 		}).then(() => {
@@ -52,7 +74,30 @@ class Turns extends RefluxComponent {
 
 			let data = this.animation_queue[0];
 
-			if(data){
+			if(data && data[2]){
+				this.animateKick(data[0],data[1],data[2]);
+			}else if(data){
+				this.animateAddInSlot(data[0],data[1]);
+			}
+		});
+	}
+	animateKick(turn_name,line,slot){
+		var rand = Math.floor(Math.random()*this.state.turns.length),
+			card = this.refs['card'+rand];
+
+		line = line || 1;
+
+		card.runAnimation(turn_name,slot,line).then(() => {
+			BattleActions.event('enemy_kicked',turn_name,slot,line);
+			return card.resetAnimation();
+		}).then(() => {
+			this.animation_queue.shift();
+
+			let data = this.animation_queue[0];
+
+			if(data && data[2]){
+				this.animateKick(data[0],data[1],data[2]);
+			}else if(data){
 				this.animateAddInSlot(data[0],data[1]);
 			}
 		});

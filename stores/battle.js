@@ -1,5 +1,5 @@
 import C from '../engine/c.js';
-import GlobalActions from '../engine/actions.js';
+import GlobalActions, { BattleActions } from '../engine/actions.js';
 
 const store = {
 	/**
@@ -160,6 +160,10 @@ const store = {
 		slots[side][slot] = user.battle.ekey;
 
 		this.trigger('add_in_slot',user,side,slot);
+
+		if(side == 1){
+			BattleActions.event('bot_added_in_slot',user,slot);
+		}
 	}
 };
 

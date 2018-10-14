@@ -10,12 +10,14 @@ class Info extends RefluxComponent {
 		this.bindStore('Battle');
 	}
 	render() {
-		var user_image;
+		var user_image,
+			hp;
 
 		if(this.props.user){
 			let shape = C.refs.ref('user_shape|'+this.props.user.shape);
 
 			user_image = C.getImage(shape.thumb);
+			hp = this.props.user.timed.hp[0];
 		}
 
 		return (
@@ -26,7 +28,7 @@ class Info extends RefluxComponent {
 			}}>
 				<ImageBackground style={styles.card} source={user_image}>
 					<Text style={styles.text}>
-						{this.props.user.timed.hp[0]}
+						{hp}
 					</Text>
 				</ImageBackground>
 			</TouchableOpacity>

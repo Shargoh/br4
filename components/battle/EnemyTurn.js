@@ -32,7 +32,7 @@ class EnemyTurn extends React.Component {
 	 * @param {Object} user - данные бота
 	 * @param {Number} slot - куда карта полетит 
 	 */
-	runAnimation(user,slot){
+	runAnimation(user,slot,line){
 		return new Promise((resolve,reject) => {
 			Animated.sequence([
 				Animated.parallel([
@@ -66,7 +66,7 @@ class EnemyTurn extends React.Component {
 						delay:DELAY
 					}),
 					Animated.timing(this.state.anim.top,{
-						toValue:block_height*2,
+						toValue:block_height*(line + 1),
 						duration:D2,
 						delay:DELAY
 					})
@@ -123,7 +123,18 @@ class EnemyTurn extends React.Component {
 	render(){
 		var inside;
 
-		if(this.state.flipped){
+		if(this.state.flipped && typeof this.state.user == 'string'){
+			let ref = C.refs.ref('battle_turn|'+this.state.user);
+
+			inside = (
+				<ImageBackground style={styles.card_size} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
+					<Text style={{
+						fontSize:30,
+						color:'lime'
+					}}>{ref.entry}</Text>
+				</ImageBackground>
+			)
+		}else if(this.state.flipped){
 			let mob = this.state.user,
 				shape = C.refs.ref('user_shape|'+mob.shape);
 

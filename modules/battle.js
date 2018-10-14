@@ -4,8 +4,9 @@ import Proto from '../engine/proto_module.js';
 import battle_store_config from '../stores/battle.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
+import { Alert } from 'react-native';
 
-const TESTING_ANIMATION = true;
+const TESTING_ANIMATION = false;
 
 class Module extends Proto{
 	constructor(){
@@ -16,6 +17,7 @@ class Module extends Proto{
 		var me = this;
 
 		this.store = C.createStore('Battle',battle_store_config);
+		this.user = C.getStore('User');
 		// Reflux.ListenerMethods.listenTo(GlobalActions.updateLocation,(data) => {
 		// 	this.updateLocation(data);
 		// });
@@ -114,6 +116,7 @@ class Module extends Proto{
 
 		if(!state.can_kick || !name){
 			GlobalActions.warn("Can't kick :(");
+			turn_cmp.animateWrongDrop();
 			return Promise.resolve();
 		}
 
@@ -181,16 +184,18 @@ class Module extends Proto{
 
 				if(hash){
 					target = hash[slot];
+					param = slot;
 				}
 			}
 		}
 
 		if(!target && !param && (info.slot == 1 || info.is_slot == 1)){
 			GlobalActions.warn("Ability requires target :(");
+			turn_cmp.animateWrongDrop();
 			return Promise.resolve();
 		}
 
-		GlobalActions.log('Kick!',name);
+		GlobalActions.log('Kick:',name,'at round',state.round,'param:',param,'target:',target);
 
 		this.store.trigger('before_'+event,this.store);
 		
@@ -205,11 +210,16 @@ class Module extends Proto{
 			param:param,
 			target:target
 		}).then((json) => {
-			GlobalActions.log('Kicked!',json);
+			if(json.success && !json.msg){
+				GlobalActions.log('Kicked!',json);
 
-			this.store.trigger(event,this.store);
+				this.store.trigger(event,this.store);
+				turn_cmp.animateKickSuccess();
 
-			return turn_cmp;
+				return turn_cmp;
+			}else{
+				throw json.msg;
+			}
 		}).catch((error) => {
 			turn_cmp.animateWrongDrop();
 
@@ -339,8 +349,6 @@ class Module extends Proto{
 					}
 				}
 
-				console.log(to_set);
-
 				if(to_set){
 					this.store.set(to_set);
 				}
@@ -419,7 +427,17 @@ class Module extends Proto{
 	 * Обработка команд сервера
 	 */
 	commandBattleLog(data){
-		/***/ GlobalActions.log('Сообщение лога боя с типом battle_log', data);
+		var log_data = {};
+
+		for(let key in data){
+			if(typeof data[key] == 'object'){
+				log_data[key] = 'OBJECT';
+			}else{
+				log_data[key] = data[key];
+			}
+		}
+
+		/***/ GlobalActions.log('Сообщение лога боя с типом battle_log:',log_data.type, log_data);
 
 		switch (data.type) {
 			case 'start':
@@ -433,6 +451,9 @@ class Module extends Proto{
 						list = this.store.get('list'),
 						exists = false;
 
+					// интерфейс не предполагает больше 5 слотов
+					if(data.slot > 5) break;
+
 					for(let i = 0; i < list.length; i++){
 						let member = list[i];
 
@@ -443,15 +464,16 @@ class Module extends Proto{
 					}
 
 					if(!exists){
-						list.push(data.user);
-
-						if(data.slot && data.side){
-							this.store.addInSlot(data.user,data.side,data.slot);
-						}
+						// list.push(data.user);
+						list = list.concat([data.user]);
 
 						this.store.set({
 							list:list
 						});
+
+						if(data.slot && data.side){
+							this.store.addInSlot(data.user,data.side,data.slot);
+						}
 					}
 				}
 				// TODO добавление юзеров вроде работает, но не работает updateTitles - на будущее надо ввести
@@ -486,8 +508,6 @@ class Module extends Proto{
 					let slots = this.store.get('slots');
 
 					if(slots){
-console.log('S_L_O_T_S',data.slots);
-
 						slots.slots = data.slots;
 						to_set.slots = slots;
 					}
@@ -509,20 +529,72 @@ console.log('S_L_O_T_S',data.slots);
 		}
 
 		// отлавливаю основные действия юзера и врага и генерирую события "user_kick", "enemy_kick"
-		// if (me.state.live != "0" && data.turn_name) {
-		// 	var u = data.u || data.u1,
-		// 		enemyBattleEkey = me.state.enemy;
-		// 	if (u && u[2] == me.user.getBattleEkey()) {
-		// 		/***/
-		// 		me.fireEvent('user_kick', data.turn_name);
-		// 		me.battleView.onBattleUserKick(data.turn_name);
-		// 	}
-		// 	else if (u && enemyBattleEkey && u[2] == enemyBattleEkey) {
-		// 		/***/
-		// 		me.fireEvent('enemy_kick', data.turn_name);
-		// 		me.battleView.onBattleEnemyKick(data.turn_name);
-		// 	}
-		// }
+		if (data.turn_name) {
+			let u = data.u || data.u1,
+				ekey = this.user.get('battle').ekey,
+				enemy = this.store.getEnemy();
+
+			if(u && u[2] == ekey){
+				/***/
+				// значит мой удар. Но по идее я и так знаю что это мой удар на момент, когда за запрос
+				// на battle_kick приходит success, поэтому тут ничего не делаю
+			}else if(u && enemy && enemy.battle.ekey && u[2] == enemy.battle.ekey){
+				// а вот тут надо проверить что за способность использовал противник и если это не карта в слот -
+				// анимировать
+				this.doEnemyKick(data);
+			}
+		}
+	}
+	doEnemyKick(data){
+		var ref = C.refs.ref('battle_turn|'+data.turn_name),
+			slots = this.store.get('slots').slots,
+			line,
+			slot;
+
+		// карты, которые попадают в слоты, приходят в meddle - их тут отображать не нужно
+		// ну или потом надо будет сделать какую-то доп. анимацию тут
+		if(!ref || ref.is_slot == 1) return;
+
+		if(!data.u2){
+			line = 0;
+			slot = 3;
+		}else if(data.u2 && data.u2[0] == 1){
+			// бьет моего
+			for(let slot_id in slots[1]){
+				let ekey = slots[1][slot_id];
+
+				if(ekey == data.u2[2]){
+					line = 2;
+					slot = slot_id;
+					break;
+				}
+			}
+
+			if(!slot){
+				// значит цель не в слоте, значит герой
+				line = 3;
+				slot = 3;
+			}
+		}else{
+			// бьет своего
+			for(let slot_id in slots[2]){
+				let ekey = slots[2][slot_id];
+
+				if(ekey == data.u2[2]){
+					line = 1;
+					slot = slot_id;
+					break;
+				}
+			}
+
+			if(!slot){
+				// значит цель не в слоте, значит герой
+				line = 0;
+				slot = 3;
+			}
+		}
+
+		this.store.trigger('enemy_kick',data.turn_name,line,slot);
 	}
 	commandBattleChanges(data){
 		/***/ GlobalActions.log('Сообщение battle_changes', data);
@@ -571,6 +643,9 @@ console.log('S_L_O_T_S',data.slots);
 	}
 	onEnemyAddedInSlot(user,slot){
 		this.store.trigger('added_in_slot',user,2,slot);
+	}
+	onBotAddedInSlot(user,slot){
+		this.store.trigger('added_in_slot',user,1,slot);
 	}
 };
 

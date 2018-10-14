@@ -127,7 +127,7 @@ class Module extends Proto{
 			return;
 		}
 
-		/***/ GlobalActions.log('Сообщение по сокету:', data);
+		/***/ GlobalActions.log('Сообщение по сокету:', Object.keys(data));
 
 		if(!Array.isArray(data)) return;
 
