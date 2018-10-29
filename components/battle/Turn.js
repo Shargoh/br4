@@ -31,9 +31,12 @@ class Turn extends DragComponent {
 		super(props);
 
 		this.block = 0;
-
+	}
+	setDropArea(){
 		switch(this.getTargetType()){
 			case 1:
+				this.isDropArea = this.isInSlotDropArea;
+				break;
 			case 3:
 				this.isDropArea = this.isInSlotDropArea;
 				break;
@@ -136,6 +139,8 @@ class Turn extends DragComponent {
 		var kick = this.props.kick,
 			ref = C.refs.ref('battle_turn|'+kick.name);
 
+		this.setDropArea();
+
 		return (
 			<TouchableOpacity ref={'turn'} key={kick.name} style={styles.card} onPress={() => {
 				if(!this.isDisabled(kick)){
@@ -225,7 +230,7 @@ class Turn extends DragComponent {
 
 			y += card_size.my/2;
 
-			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my;
+			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my/2;
 
 			Animated.timing(this.state.pan, {
 				duration: 200,
