@@ -85,7 +85,7 @@ class Turns extends RefluxComponent {
 		var rand = Math.floor(Math.random()*this.state.turns.length),
 			card = this.refs['card'+rand];
 
-		line = line || 1;
+		line = typeof line == 'undefined' ? 1 : line;
 
 		card.runAnimation(turn_name,slot,line).then(() => {
 			BattleActions.event('enemy_kicked',turn_name,slot,line);

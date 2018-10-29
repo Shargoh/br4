@@ -3,6 +3,7 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { Text, TouchableOpacity } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import Dims from '../../utils/dimensions.js';
+import { TEST_ANIM } from '../../constants/common.js';
 
 const w = Dims.widthPercent(4);
 
@@ -27,7 +28,9 @@ class Desk extends RefluxComponent {
 				width:w*3,
 				backgroundColor:'yellow'
 			}} onPress={() => {
-				BattleActions.event('test_enemy_animation');
+				if(TEST_ANIM){
+					BattleActions.event('test_enemy_animation');
+				}
 			}}>
 				<Text style={{
 					fontSize:24

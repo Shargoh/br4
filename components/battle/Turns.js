@@ -18,6 +18,10 @@ class Turns extends RefluxComponent {
 			this.setState({
 				av_kick:store.get('state').av_kick
 			});
+		}else if(action == 'round'){
+			if(this.refs.turn0) this.refs.turn0.animatedResetPosition();
+			if(this.refs.turn1) this.refs.turn1.animatedResetPosition();
+			if(this.refs.turn2) this.refs.turn2.animatedResetPosition();
 		}
 	}
 	render(){
@@ -29,7 +33,7 @@ class Turns extends RefluxComponent {
 						left = minW + index*(card_size.w + card_size.my);
 
 					return (
-						<Turn style={styles.card} key={index} kick={kick} container={this} top={top} left={left} />
+						<Turn ref={'turn'+index} style={styles.card} key={index} kick={kick} container={this} top={top} left={left} />
 					)
 				})}
 			</View>

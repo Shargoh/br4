@@ -14,6 +14,10 @@ const minW = (screen_width - slots_block_width)/2,
 	D3 = 200, // длительность скрывания карты
 	D4 = 500; // длительность прилетания карты
 
+export function calcActionDuration(){
+	return D1 + DELAY + D2 + D3 + D4;
+}
+
 class EnemyTurn extends React.Component {
 	componentWillMount(){
 		this.setState({

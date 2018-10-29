@@ -1,14 +1,28 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { FlatList, StyleSheet, View, Button, Text } from 'react-native';
+import { FlatList, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import InventoryItem from './InventoryItem.js';
 import { InventoryActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
+import { ACTIVE_SLOT } from '../../constants/common.js';
+import Dims from '../../utils/dimensions.js';
 
-const TYPE = 14;
+const item_side = Dims.itemSide();
+
 const styles = StyleSheet.create({
   button: {
-    fontSize:10
+		flex:1,
+		width:item_side,
+		height:item_side/4,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent:'center'
+	},
+	text:{
+		fontSize:item_side/8,
+		color:'#fff',
+		flex:1,
+		textAlign:'center'
 	}
 });
 
@@ -43,7 +57,7 @@ class Inventory extends RefluxComponent {
 
 				if(!item_type) return;
 
-				if(item_type.slot_on == TYPE){
+				if(item_type.slot_on == ACTIVE_SLOT){
 					arr.push(item);
 				}
 			});
@@ -79,33 +93,38 @@ class Inventory extends RefluxComponent {
 			context = (
 				<View style={{
 					position:'absolute',
-					top:this.state.context.y + 100,
+					top:this.state.context.y + item_side/3,
 					left:this.state.context.x,
-					width:100
+					width:item_side,
+					height:item_side*2/3
 				}}>
-					<Button
-						style={styles.button}
+					<TouchableOpacity
+						style={[styles.button,{
+							backgroundColor:'blue'
+						}]}
 						onPress={() => {
 							console.log(1)
 						}}
-						title={'Информация'}
-						color={'blue'}
-					/>
-					<Button
-						style={styles.button}
+					>
+						<Text style={styles.text}>Информация</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[styles.button,{
+							backgroundColor:'red'
+						}]}
 						onPress={() => {
 							InventoryActions.event('select');
 						}}
-						title={'Использовать'}
-						color={'red'}
-					/>
+					>
+						<Text style={styles.text}>Использовать</Text>
+					</TouchableOpacity>
 				</View>
 			)
 		}
 
 		return (
 			<View style={{
-				flex:1,
+				// flex:1,
 				borderTopColor:'lime'//нужно оставить - магическим образом добавляет возможность абсолютного позиционирования контекстного меню
 			}} ref={'view'}>
 				<Text style={{
@@ -115,9 +134,6 @@ class Inventory extends RefluxComponent {
 					Инвентарь
 				</Text>
 				<FlatList
-					// style={{
-					// 	marginTop:70
-					// }}
 					horizontal={false}
 					numColumns={4}
 					data={this.state.items}

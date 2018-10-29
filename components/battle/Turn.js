@@ -2,7 +2,7 @@ import React from 'react';
 import Reflux from 'reflux';
 import DragComponent from '../../engine/views/drag_component';
 import { StyleSheet, PanResponder, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
-import { BattleActions } from '../../engine/actions';
+import GlobalActions, { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
 import styles, { screen_width, slots_block_width, block_height, card_size } from './css';
 
@@ -16,7 +16,9 @@ const minW = (screen_width - slots_block_width)/2,
 	bh4 = block_height*4,
 	bh5 = block_height*5,
 	cl = minW + 2*cardW,
-	cr = maxW - 2*cardW
+	cr = maxW - 2*cardW,
+	KS_DELAY = 500,
+	KS = 1000;
 
 /**
  * flags
@@ -50,16 +52,6 @@ class Turn extends DragComponent {
 			case 7:
 				this.isDropArea = this.isMyDropArea;
 				break;
-		}
-	}
-	componentDidMount(){
-		Reflux.ListenerMixin.listenTo(C.getStore('Battle'),(action,store) => {
-			this.onAction(action,store);
-		});
-	}
-	onAction(action,store){
-		if(action == 'round'){
-			this.animatedResetPosition();
 		}
 	}
 	isInSlotDropArea(gesture) {
@@ -191,11 +183,13 @@ class Turn extends DragComponent {
 	animateKickSuccess(){
 		this._animating_kick_success = true;
 
+		GlobalActions.log('Animating user kick success');
+
 		Animated.sequence([
 			Animated.timing(this.state.opacity, {
 				toValue: 0,
-				duration: 1000,
-				delay:500
+				duration: KS,
+				delay:KS_DELAY
 			}),
 			Animated.timing(this.state.pan, {
 				duration: 0,
@@ -204,10 +198,12 @@ class Turn extends DragComponent {
 		]).start(() => {
 			this._animating_kick_success = false;
 
+			GlobalActions.log('User kick successfully animated. Waiting?',this._waiting_reset_animation);
+
 			if(this._waiting_reset_animation){
 				this.animatedResetPosition();
 			}
-		})
+		});
 	}
 	animateCorrectSelection(slot_id,side){
 		return new Promise((resolve,reject) => {
@@ -241,9 +237,13 @@ class Turn extends DragComponent {
 	}
 	animatedResetPosition(){
 		if(this._animating_kick_success){
+			GlobalActions.log('Cannot animate reset. User still kicking');
+
 			this._waiting_reset_animation = true;
 			return;
 		}else{
+			GlobalActions.log('Animating user card reset');
+
 			Animated.sequence([
 				Animated.timing(this.state.opacity, {
 					toValue: 1,
@@ -263,13 +263,13 @@ class Turn extends DragComponent {
 	 * если блок находится вне слотов (по высоте) - значит он равен 100, т.к. это герой
 	 */
 	getBlock(gesture){
-		let x = gesture.moveX - this.state.dx,
+		let x = gesture.moveX - this.state.dx - minW,
 			y = gesture.moveY - this.state.dy;
 
 		if(y < bh2 || y > bh5){
 			return 100;
 		}else{
-			console.log(Math.floor(x/cardW) + 1);
+			// console.log(Math.floor(x/cardW) + 1,x,minW);
 			return Math.floor(x/cardW) + 1;
 		}
 	}

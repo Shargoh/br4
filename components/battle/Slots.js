@@ -3,74 +3,83 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { TouchableOpacity, ImageBackground, View, Text, Animated } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
-import styles from './css.js';
-
-const D1 = 500, // время на исчезновение
-	D2 = 200; // время на появление
+import styles from './css';
+import Bot from './Bot';
 
 class Slots extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setSlots();
-
-		if(this.props.enemy){
-			this.animateAddInSlot = this.animateEnemyAddInSlot;
-		}else{
-			this.animateAddInSlot = this.animateFriendlyAddInSlot;
-		}
-
-		this.animated_slots = {};
 	}
 	/**
 	 * @param {String} action 
-	 * @param {Object} user - user data 
-	 * @param {Number} side - 1 (friend) or 2 (enemy)
-	 * @param {Number} slot - 1-5
+	 * @param {Object} data 
+	 *  @param {Object} user - user data 
+	 *  @param {Number} side - 1 (friend) or 2 (enemy)
+	 *  @param {Number} slot - 1-5
 	 */
-	onAction(action,user,side,slot){
+	onAction(action,data){
 		if(
 			action == 'added_in_slot' &&
 			(
-				(this.props.enemy && side == 2) ||
-				(!this.props.enemy && side == 1)
+				(this.props.enemy && data.side == 2) ||
+				(!this.props.enemy && data.side == 1)
 			)
 		){
-			this.state.slots[slot - 1] = user.battle.ekey;
+			this.state.slots[data.slot - 1] = data.user.battle.ekey;
 			this.setState({
 				slots:this.state.slots
 			});
 
-			if(this.animated_slots[slot]){
-				this.animateAddInSlot(user,slot);
+			let cmp = this.refs['slot'+data.slot];
+
+			if(cmp){
+				cmp.animateAddInSlot(data.user,data.slot);
 			}
 		}else if(
 			action == 'remove_from_slot' &&
 			(
-				(this.props.enemy && side == 2) ||
-				(!this.props.enemy && side == 1)
+				(this.props.enemy && data.side == 2) ||
+				(!this.props.enemy && data.side == 1)
 			)
 		){
-			// тут анимация по идее параллельна
-			this.animateRemoveFromSlot(slot);
+			let cmp = this.refs['slot'+data.slot];
+
+			if(cmp){
+				// тут анимация по идее параллельна
+				cmp.animateRemoveFromSlot(data.slot);
+			}
+		}else if(
+			action == 'slot_kick' &&
+			(
+				(this.props.enemy && data.side == 2) ||
+				(!this.props.enemy && data.side == 1)
+			)
+		){
+			// на всякий пожарный, вдруг после F5 придут данные до отрисовки
+			if(!this.state) return;
+
+			// временно не обрабатываю если нет цели. Потом будет анимация в зависимости от удара
+			if(!data.data.u2) return;
+
+			let u = data.data.u || data.data.u1,
+				slots = this.state.slots,
+				i = slots.length,
+				slot;
+
+			while(i--){
+				if(slots[i] == u[2]){
+					slot = i + 1;
+					break;
+				}
+			}
+
+			let cmp = this.refs['slot'+slot];
+
+			if(cmp){
+				cmp.animateKick(data.data,slot,data.resolve);
+			}
 		}
-	}
-	animateEnemyAddInSlot(user,slot){
-		Animated.timing(this.animated_slots[slot].opacity,{
-			toValue:1,
-			duration:D2
-		}).start();
-	}
-	animateFriendlyAddInSlot(user,slot){
-		Animated.timing(this.animated_slots[slot].opacity,{
-			toValue:1,
-			duration:D2
-		}).start();
-	}
-	animateRemoveFromSlot(slot){
-		Animated.timing(this.animated_slots[slot].opacity,{
-			toValue:0,
-			duration:D1
-		}).start();
 	}
 	setSlots(){
 		const slots = {
@@ -99,29 +108,12 @@ class Slots extends RefluxComponent {
 		return (
 			<View style={[this.props.enemy ? styles.enemy_slots : styles.my_slots,styles.slots_block]}>
 				{this.state.slots.map((ekey,index) => {
-					const slot_id = index + 1;
+					const slot_id = index + 1,
+						mob = ekey_map[ekey];
 
-					if(ekey && ekey_map[ekey] && ekey_map[ekey].timed.hp[0]){
-						let mob = ekey_map[ekey],
-							shape = C.refs.ref('user_shape|'+mob.shape);
-
-						this.animated_slots[slot_id] = {
-							opacity:new Animated.Value(1)
-						}
-
+					if(mob && !mob.isDead()){
 						return (
-							<TouchableOpacity key={slot_id} style={styles.card} onPress={() => {
-								BattleActions.event('select_target',slot_id,this.props.enemy);
-							}}>
-								<Animated.View ref={'slot'+slot_id} style={this.animated_slots[slot_id]}>
-									<ImageBackground style={styles.card_size} source={C.getImage(shape.thumb)} resizeMode="contain">
-										<Text style={{
-											fontSize:30,
-											color:'lime'
-										}}>{mob.timed.hp[0]}</Text>
-									</ImageBackground>
-								</Animated.View>
-							</TouchableOpacity>
+							<Bot key={slot_id} ref={'slot'+slot_id} enemy={this.props.enemy} slot_id={slot_id} store={mob} />
 						)
 					}else{
 						return (

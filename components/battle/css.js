@@ -6,8 +6,8 @@ import Dims from '../../utils/dimensions.js';
  */
 export const card_size = Dims.cardSize();
 export const screen_width = Dims.width(1);
-export const turn_block_width = (card_size.w + 2*card_size.mx)*3;
-export const slots_block_width = (card_size.w + 2*card_size.mx)*5;
+export const turn_block_width = (card_size.w + card_size.my)*3;
+export const slots_block_width = (card_size.w + card_size.my)*5;
 export const block_height = card_size.h + 2*card_size.my;
 
 const styles = StyleSheet.create({

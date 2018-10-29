@@ -1,5 +1,6 @@
 import C from '../engine/c.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
+import battleavatar_config from './battleavatar';
 
 const store = {
 	/**
@@ -17,11 +18,33 @@ const store = {
 			}
 		}
 	},
+	getUser() {
+		var state = this.get('state'),
+			user = state.user;
+
+		if(user && user.battle){
+			return user;
+		}else{
+			let list = this.get('list'),
+				user_store = C.getStore('User');
+
+			for(let i = 0; i < list.length; i++){
+				let el = list[i];
+	
+				if(el.display_title == user_store.get('display_title')){
+					state.user = el;
+
+					return el;
+				}
+			}
+		}
+	},
 	clear(){
 		var list = this.get('list') || [],
 			state = this.get('state') || {},
 			slots = this.get('slots') || {},
 			preload_changes = this.get('preload_changes') || [],
+			delayed_changes = this.get('delayed_changes') || {},
 			pairs = this.get('pairs') || {},
 			ekey_map = this.get('ekey_map') || {};
 
@@ -30,6 +53,7 @@ const store = {
 			state:state,
 			slots:slots,
 			preload_changes:preload_changes,
+			delayed_changes:delayed_changes,
 			pairs:pairs,
 			ekey_map:ekey_map
 		});
@@ -59,21 +83,114 @@ const store = {
 			}
 		}
 	},
-	_applyChanges(data,silent){
-		/***/ GlobalActions.log('Изменения', data);
+	delayChanges(data){
+		if(!data.list) return;
 
+		var delayed_changes = this.get('delayed_changes');
+
+		for(let ekey in data.list){
+			if(delayed_changes[ekey]){
+				let changes = delayed_changes[ekey];
+
+				if(changes.timed && data.list[ekey].timed){
+					Object.assign(changes.timed,data.list[ekey].timed);
+				}
+
+				Object.assign(delayed_changes[ekey],data.list[ekey]);
+			}else{
+				delayed_changes[ekey] = Object.assign({},data.list[ekey]);
+			}
+		}
+
+		this.set({
+			delayed_changes:delayed_changes
+		});
+	},
+	applyDelayedChanges(ekey){
+		var delayed_changes = this.get('delayed_changes');
+
+		if(ekey){
+			let changes = delayed_changes[ekey];
+
+			if(changes){
+				let list = {};
+
+				list[ekey] = changes;
+
+				this._applyChanges({
+					list:list
+				});
+
+				delete delayed_changes[ekey];
+			}
+		}else{
+			this._applyChanges({
+				list:delayed_changes
+			});
+
+			this.set({
+				delayed_changes:{}
+			});
+		}
+	},
+	/**
+	 * Во время анимации ударов нельзя накатывать изменения, в которых карта умирает (ломается интерфейс),
+	 * поэтому если кто-то умер - нужно запустить анимацию, а изменения уже накатить позже
+	 * @param {String} ekey 
+	 */
+	applyChangesWhileAnimating(ekey){
+		var changes = this.get('delayed_changes')[ekey];
+
+		if(
+			changes && 
+			(
+				(changes.timed && changes.timed.hp[0] == 0) ||
+				changes.died == 1
+			)
+		){
+			let slots = this.get('slots').slots,
+				side, slot;
+
+			for(let s in slots){
+				let sl = slots[s];
+
+				for(let slot_id in sl){
+					if(sl[slot_id] == ekey){
+						side = s;
+						slot = slot_id;
+						break;
+					}
+				}
+
+				if(side) break;
+			}
+
+			this.trigger('remove_from_slot',{
+				side:side,
+				slot:slot
+			})
+		}else{
+			this.applyDelayedChanges(ekey);
+		}
+	},
+	_applyChanges(data,silent){
 		var list = this.get('list');
 
 		if(!list || !list.length || !data.list) return;
 
+		/***/ GlobalActions.log('Накладываю изменения игроков', Object.keys(data.list));
+
 		for(let i = 0; i < list.length; i++){
 			let user = list[i],
-				changes = data.list[user.battle.ekey];
+				changes = data.list[user.battle.ekey],
+				to_set = {};
 
 			if(!changes) continue;
 
 			if (changes.timed) {
-				Object.assign(user.timed, changes.timed); // в изменениях timed приходят частично, поэтому нельзя накатить напрямую changes.timed
+				// в изменениях timed приходят частично, поэтому нельзя накатить напрямую changes.timed
+				Object.assign(user.timed, changes.timed);
+				to_set.timed = user.timed;
 			}
 
 			if (changes.aura) {
@@ -83,10 +200,14 @@ const store = {
 				}else{
 					user.aura = changes.aura;
 				}
+
+				to_set.aura = user.aura;
 			}
 
 			if (changes.stats) {
 				Object.assign(user.stats.stats, changes.stats);
+
+				to_set.stats = user.stats;
 			}
 
 			if (changes.died == "1") {
@@ -96,14 +217,38 @@ const store = {
 					user.timed.hp[0] = 0; // обнуляю вручную hp когда мёртв
 					user.timed.shield[0] = 0; // обнуляю вручную shield когда мёртв
 				}
+
+				to_set.died = 1;
+				to_set.battle = user.battle;
+				to_set.timed = user.timed;
 			}
 
 			if (changes.shape) {
 				user.shape = changes.shape;
+				to_set.shape = user.shape;
+			}
+
+			let battleavatar = this.get('ekey_map')[user.battle.ekey];
+
+			if(battleavatar){
+				battleavatar.set(to_set);
 			}
 
 			this.trigger('userchange',user);
 		}
+	},
+	/**
+	 * @param {Object} data - состояние боя после запроса после команды чата finish
+	 */
+	finishBattle(data){
+		this.trigger('finish',this.store);
+
+		// сброшу все баттлаватары
+		this.set({
+			ekey_map:{}
+		});
+
+		this.clear();
 	},
 	onSet(){
 		/**
@@ -139,7 +284,14 @@ const store = {
 			let ekey_map = this.get('ekey_map');
 
 			this.get('list').forEach((el) => {
-				ekey_map[el.battle.ekey] = el;
+				if(ekey_map[el.battle.ekey]){
+					let store = ekey_map[el.battle.ekey];
+
+					store.set(Object.assign({},el));
+				}else{
+					ekey_map[el.battle.ekey] = C.createStore(el.battle.ekey,battleavatar_config);
+					ekey_map[el.battle.ekey].set(Object.assign({},el));
+				}
 			});
 		}
 	},

@@ -23,6 +23,7 @@ class BattleTimer extends RefluxComponent {
 				backgroundColor:'red'
 			}} onPress={() => {
 				GlobalActions.log('Surrender!');
+				BattleActions.prep('defeat');
 			}}>
 				<Text style={{
 					fontSize:24

@@ -5,8 +5,16 @@ import battle_store_config from '../stores/battle.js';
 import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
 import { Alert } from 'react-native';
+import { calcActionDuration } from '../components/battle/EnemyTurn.js';
 
 const TESTING_ANIMATION = false;
+
+const ekey_priority = {},
+	actions = [],
+	first_delay = 500;
+
+var _timeout,
+	_doing_action = false;
 
 class Module extends Proto{
 	constructor(){
@@ -62,6 +70,8 @@ class Module extends Proto{
 				}
 			}
 
+			console.log(json.buser)
+
 			this.store.set({
 				pairs:json.pairs,
 				slots:json.slots,
@@ -84,7 +94,7 @@ class Module extends Proto{
 		this.store.trigger('load_finish',this.store);
 
 		return this.reloadState().then((json) => {
-			this.store.trigger('finish',this.store);
+			this.store.finishBattle(json);
 
 			return json;
 		});
@@ -103,6 +113,8 @@ class Module extends Proto{
 		this.store.trigger('load_round',this.store);
 
 		return this.reloadState().then((json) => {
+			/***/	GlobalActions.log('Данные раунда #', round_num, 'успешно загружены. Генерирую событие round');
+
 			this.store.trigger('round',this.store);
 
 			return json;
@@ -115,13 +127,12 @@ class Module extends Proto{
 		var state = this.store.get('state');
 
 		if(!state.can_kick || !name){
-			GlobalActions.warn("Can't kick :(");
+			GlobalActions.warn("Can't kick :(",state.can_kick,name);
 			turn_cmp.animateWrongDrop();
 			return Promise.resolve();
 		}
 
 		var info,
-			index,
 			event,
 			param,
 			target;
@@ -130,7 +141,6 @@ class Module extends Proto{
 			let item = state.av_kick[i];
 
 			if(item.name == name){
-				index = 1;
 				info = item;
 				break;
 			}
@@ -223,53 +233,30 @@ class Module extends Proto{
 		}).catch((error) => {
 			turn_cmp.animateWrongDrop();
 
-			GlobalActions.error('doKick error',error);
+			GlobalActions.error('doKick error. Kick:',name,'Slot:',param,'Target:',target,error);
 		});
 	}
 	/**
-	 * Выполение моментального действия. Coбытия 'before_prep', 'prep'
+	 * Выполение моментального действия.
 	 */
-	doPrep(prep) {
-		return this.doClientBeforePrep(prep).then(() => {
-			return this.selectTarget(prep);
-		}).then((ekey) => {
+	doPrep(prep_name) {
+		return this.doClientBeforePrep(prep_name).then(() => {
 			/***/ GlobalActions.log('Запрос на выполнение предварительного действия');
-			// me.fireEvent('before_prep', me);
-			// me.battleView.onBattleBeforePrep(me);
 			return this.request('battle_instant',{
-				kick: prep.name,
-				target: ekey,
+				kick: prep_name,
 				round: this.store.get('round')
 			});
 		}).then((json) => {
 			GlobalActions.log('Успешный запрос на выполнение предварительного действия',json);
+		}).catch((error) => {
+			GlobalActions.error('Ошибка запрос на выполнение предварительного действия',prep_name,error);
 		});
 	}
-	doClientBeforePrep(prep){
+	doClientBeforePrep(prep_name){
 		// if (prepData.client) {
 		// 	if (prepData.client == 'invite') {
 		// 		me.app.getSocialController().invite(callback);
 		// 	}
-		// }
-		// else {
-		// 	callback();
-		// }
-		return Promise.resolve();
-	}
-	selectTarget(prep){
-		// if (prepData.strike) {
-		// 	ExGods.Components.factory('USER_TARGET_PANEL', {
-		// 		windowTitle: refData.label,
-		// 		source: 'battle',
-		// 		side: prepData.strike.side == 0 ? user.getBattleSide() : 2,
-		// 		dead: prepData.strike.is_dead,
-		// 		listeners: {
-		// 			select: function(wnd, rec) {
-		// 				callback(rec.get('battle').ekey);
-		// 				wnd.up().close();
-		// 			}
-		// 		}
-		// 	});
 		// }
 		// else {
 		// 	callback();
@@ -430,7 +417,7 @@ class Module extends Proto{
 		var log_data = {};
 
 		for(let key in data){
-			if(typeof data[key] == 'object'){
+			if(typeof data[key] == 'object' && (key.charAt(0) != 'u' || key == 'user')){
 				log_data[key] = 'OBJECT';
 			}else{
 				log_data[key] = data[key];
@@ -472,7 +459,14 @@ class Module extends Proto{
 						});
 
 						if(data.slot && data.side){
-							this.store.addInSlot(data.user,data.side,data.slot);
+							this.queueAction({
+								priority:10 + Number(data.side),
+								ekey:data.user.battle.ekey,
+								callback:() => {
+									this.store.addInSlot(data.user,data.side,data.slot);
+								}
+							})
+							// this.store.addInSlot(data.user,data.side,data.slot);
 						}
 					}
 				}
@@ -496,24 +490,7 @@ class Module extends Proto{
 				this.loadFinish();
 				break;
 			case 'newround':
-				if (data.round != 1) {
-					this.loadRound(data.round);
-				}
-
-				var to_set = {
-					pairs:data.pairs
-				}
-
-				if (data.slots) {
-					let slots = this.store.get('slots');
-
-					if(slots){
-						slots.slots = data.slots;
-						to_set.slots = slots;
-					}
-				}
-
-				this.store.set(to_set);
+				this.applyRoundData(data);
 				break;
 			case 'exit':
 				// if (me.started && me.list.getByKey(data.user.battle.ekey)) {
@@ -524,7 +501,28 @@ class Module extends Proto{
 				// }
 				break;
 			case 'changes':
-				this.store.applyChanges(data);
+				if(this._doing_actions){
+					this.store.delayChanges(data);
+				}else{
+					this.store.applyChanges(data);
+				}
+				break;
+			case 'die':
+				// дохлые бьют первым делом
+				let list = {};
+
+				list[data.u[2]] = {
+					died:1
+				};
+
+				this.store.delayChanges({
+					list:list
+				});
+
+				// this.queueAction({
+				// 	priority:1,
+				// 	ekey:data.u[2]
+				// });
 				break;
 		}
 
@@ -542,11 +540,14 @@ class Module extends Proto{
 				// а вот тут надо проверить что за способность использовал противник и если это не карта в слот -
 				// анимировать
 				this.doEnemyKick(data);
+			}else if(u){
+				this.doBotKick(data);
 			}
 		}
 	}
 	doEnemyKick(data){
 		var ref = C.refs.ref('battle_turn|'+data.turn_name),
+			u = data.u || data.u1,
 			slots = this.store.get('slots').slots,
 			line,
 			slot;
@@ -594,7 +595,206 @@ class Module extends Proto{
 			}
 		}
 
-		this.store.trigger('enemy_kick',data.turn_name,line,slot);
+		this.queueAction({
+			priority:12,
+			ekey:u[2],
+			callback:() => {
+				this.store.trigger('enemy_kick',data.turn_name,line,slot);
+			},
+			delay:calcActionDuration()
+		})
+
+		// this.store.trigger('enemy_kick',data.turn_name,line,slot);
+	}
+	doBotKick(data){
+		var u = data.u || data.u1,
+			side = Number(u[0]),
+			slots = this.store.get('slots').slots[side],
+			priority = 4;
+
+		for(let slot_id in slots){
+			if(slots[slot_id] == u[2]){
+				priority += Number(slot_id);
+				break;
+			}
+		}
+
+		this.queueAction({
+			priority:priority,
+			ekey:u[2],
+			callback:() => {
+				return new Promise((resolve,reject) => {
+					this.store.trigger('slot_kick',{
+						data:data,
+						side:side,
+						resolve:resolve
+					});
+				});
+			}
+		});
+	}
+	/**
+	 * В бою показываем все по порядку. Для этого передаем дату в виде:
+	 * @param {Object} data 
+	 * 	priority:{Number} - приоритет. Натуральное число. Чем выше - тем позже действие
+	 * 	ekey:{String} - ekey исполнителя. Исполнители выполняют все свои действия сразу,
+	 * 		используя наименьший приоритет для порядка.
+	 * 	callback:{Function} - метод, который вызовется
+	 * 	delay:{Number} - задержка перед следующим действием
+	 */
+	queueAction(data){
+		var ekey = data.ekey;
+
+		// добавим приоритет в список по ekey. Если такой ekey уже есть и приоритет ниже - заменим приоритет в дате.
+		// если такой ekey уже есть и приоритет выше - заменим приоритет в списке
+		if(ekey_priority[ekey] && ekey_priority[ekey] > data.priority){
+			let priority_acts = actions[ekey_priority[ekey]],
+				acts;
+
+			if(priority_acts){
+				acts = priority_acts[ekey];
+
+				delete priority_acts[ekey];
+
+				if(Object.values(priority_acts).length == 0){
+					delete actions[ekey_priority[ekey]];
+				}
+			}
+
+			if(!actions[data.priority]){
+				let _acts = {};
+
+				_acts[ekey] = acts || [];
+
+				actions[data.priority] = _acts;
+			}
+		}else if(ekey_priority[ekey]){
+			data.priority = ekey_priority[ekey];
+		}else if(data.callback){
+			ekey_priority[ekey] = data.priority;
+		}
+
+		GlobalActions.log('setting priority',data.priority,ekey);
+
+		/**
+		 * можно прислать дату без колбека чтобы пересортировать действия по приоритетам
+		 */
+		if(!data.callback) return;
+
+		// добавим действие в список действие
+		if(!actions[data.priority]){
+			actions[data.priority] = {};
+		}
+
+		if(!actions[data.priority][data.ekey]){
+			actions[data.priority][data.ekey] = [];
+		}
+
+		actions[data.priority][data.ekey].push(data);
+
+		// first_delay
+		if(_timeout){
+			clearTimeout(_timeout);
+		}
+
+		_timeout = setTimeout(() => {
+			this.doAction();
+		},first_delay);
+	}
+	/**
+	 * Выполняются все действия с одним приоритетом одновременно
+	 */
+	doAction(){
+		var acts = [],
+			delay = 0;
+
+		if(this._doing_action) return;
+
+		this._doing_action = true;
+		this._doing_actions = true;
+
+		for(let i = 0; i < actions.length; i++){
+			if(!actions[i]) continue;
+
+			for(let ekey in actions[i]){
+				let arr = actions[i][ekey];
+
+				if(!arr.length) continue;
+				GlobalActions.log('doing priority',i,ekey);
+
+				Array.prototype.push.apply(acts,arr);
+
+				delete actions[i][ekey];
+			}
+
+			if(acts.length) break;
+		}
+
+		if(acts.length){
+			let cb = () => {
+				if(delay){
+					setTimeout(() => {
+						this._doing_action = false;
+						this.doAction();
+					},delay);
+				}else{
+					this._doing_action = false;
+					this.doAction();
+				}
+			}
+
+			let map = [];
+
+			for(let i in acts){
+				let action = acts[i];
+
+				if(action.delay > delay){
+					delay = action.delay;
+				}
+
+				if(!action.callback) continue;
+
+				map.push(action.callback());
+			}
+
+			Promise.all(map).then(cb).catch(cb);
+		}else{
+			this._doing_action = false;
+			this._doing_actions = false;
+			this.store.applyDelayedChanges();
+			this.applyRoundData(this._round_data);
+		}
+	}
+	applyRoundData(data){
+		if(this._doing_actions){
+			this._round_data = data;
+		}else this._applyRoundData(data);
+	}
+	_applyRoundData(data){
+		data = data || this._round_data;
+
+		delete this._round_data;
+
+		if(!data) return;
+
+		if (data.round != 1) {
+			this.loadRound(data.round);
+		}
+
+		var to_set = {
+			pairs:data.pairs
+		}
+
+		if (data.slots) {
+			let slots = this.store.get('slots');
+
+			if(slots){
+				slots.slots = data.slots;
+				to_set.slots = slots;
+			}
+		}
+
+		this.store.set(to_set);
 	}
 	commandBattleChanges(data){
 		/***/ GlobalActions.log('Сообщение battle_changes', data);
@@ -622,11 +822,26 @@ class Module extends Proto{
 	}
 	onTestEnemyAnimation(){
 		// сначала сброшу слоты у противника
-		this.store.trigger('remove_from_slot',null,2,1);
-		this.store.trigger('remove_from_slot',null,2,2);
-		this.store.trigger('remove_from_slot',null,2,3);
-		this.store.trigger('remove_from_slot',null,2,4);
-		this.store.trigger('remove_from_slot',null,2,5);
+		this.store.trigger('remove_from_slot',{
+			side:2,
+			slot:1
+		});
+		this.store.trigger('remove_from_slot',{
+			side:2,
+			slot:2
+		});
+		this.store.trigger('remove_from_slot',{
+			side:2,
+			slot:3
+		});
+		this.store.trigger('remove_from_slot',{
+			side:2,
+			slot:4
+		});
+		this.store.trigger('remove_from_slot',{
+			side:2,
+			slot:5
+		});
 
 		setTimeout(() => {
 			let ekey_map = this.store.get('ekey_map'),
@@ -642,10 +857,23 @@ class Module extends Proto{
 		},500);
 	}
 	onEnemyAddedInSlot(user,slot){
-		this.store.trigger('added_in_slot',user,2,slot);
+		this.store.trigger('added_in_slot',{
+			user:user,
+			side:2,
+			slot:slot
+		});
 	}
 	onBotAddedInSlot(user,slot){
-		this.store.trigger('added_in_slot',user,1,slot);
+		this.store.trigger('added_in_slot',{
+			user:user,
+			side:1,
+			slot:slot
+		});
+	}
+	onApplySlotChanges(ekey){
+		// this.store.applyDelayedChanges(ekey);
+
+		this.store.applyChangesWhileAnimating(ekey);
 	}
 };
 

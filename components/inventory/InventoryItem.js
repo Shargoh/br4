@@ -7,7 +7,6 @@ import Dims from '../../utils/dimensions';
 
 const styles = StyleSheet.create({
   item: {
-    flex:1,
 		justifyContent:'center',
 		width:Dims.itemSide(),
 		height:Dims.itemSide()

@@ -3,9 +3,8 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
 import QuickSlot from './QuickSlot';
 import Dims from '../../utils/dimensions';
+import { ACTIVE_SLOT } from '../../constants/common.js';
 
-// тип слота, который рисовать
-const TYPE = 14;
 const COUNT = 8;
 
 class QuickSlots extends RefluxComponent {
@@ -29,7 +28,7 @@ class QuickSlots extends RefluxComponent {
 
 			if(count >= COUNT) break;
 
-			if(slot.type == TYPE){
+			if(slot.type == ACTIVE_SLOT){
 				slots[ekey] = slot;
 				count++;
 			}

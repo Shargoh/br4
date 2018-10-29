@@ -84,6 +84,9 @@ class C {
 	getStore(storeName){
 		return this.stores[storeName];
 	}
+	removeStore(storeName){
+		delete this.stores[storeName];
+	}
 	getManager(name) {
 		return this.App.managers[name];
 	}
