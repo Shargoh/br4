@@ -132,7 +132,8 @@ class Module extends Proto{
 			return Promise.resolve();
 		}
 
-		var info,
+		var round = state.round,
+			info,
 			event,
 			param,
 			target;
@@ -205,7 +206,7 @@ class Module extends Proto{
 			return Promise.resolve();
 		}
 
-		GlobalActions.log('Kick:',name,'at round',state.round,'param:',param,'target:',target);
+		GlobalActions.log('Kick:',name,'at round',round,'param:',param,'target:',target);
 
 		this.store.trigger('before_'+event,this.store);
 		
@@ -216,15 +217,34 @@ class Module extends Proto{
 
 		return this.request('battle_kick',{
 			kick:name,
-			round:state.round,
+			round:round,
 			param:param,
 			target:target
 		}).then((json) => {
 			if(json.success && !json.msg){
-				GlobalActions.log('Kicked!',json);
+				GlobalActions.log('Kicked!',name);
 
 				this.store.trigger(event,this.store);
 				turn_cmp.animateKickSuccess();
+
+				GlobalActions.logEvent({
+					am:{
+						method:'logEvent',
+						data:['kick',{
+							kick:name,
+							round:round,
+							slot:param,
+							target:target
+						}]
+					},
+					af:{
+						method:'trackEvent',
+						data:['af_content_view',{
+							af_content_type:'kick',
+							af_content_id:name
+						}]
+					}
+				})
 
 				return turn_cmp;
 			}else{
@@ -271,13 +291,33 @@ class Module extends Proto{
 
 		GlobalActions.log('Rerolling... round:',this.store.get('round'));
 
-		return this.request('battle_reroll',{
-			round:this.store.get('round')
-		}).then((json) => {
-			this.store.trigger('reroll',this.store);
+		var turn = this.store.getRerollTurn(),
+			state = this.store.get('state');
 
-			return json;
-		});
+		if(turn){
+			return this.request('battle_kick',{
+				kick:turn.name,
+				round:state.round
+			}).then((json) => {
+				if(json.success && !json.msg){
+					GlobalActions.log('Rerolled!');
+	
+					this.store.trigger('reroll',this.store);
+				}else{
+					throw json.msg;
+				}
+			}).catch((error) => {
+				GlobalActions.error('doReroll error',error);
+			});
+		}
+
+		// return this.request('battle_reroll',{
+		// 	round:this.store.get('round')
+		// }).then((json) => {
+		// 	this.store.trigger('reroll',this.store);
+
+		// 	return json;
+		// });
 	}
 		/**
 	 * @private Обновить состояние боя

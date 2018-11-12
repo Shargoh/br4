@@ -25,15 +25,41 @@ class Turns extends RefluxComponent {
 		}
 	}
 	render(){
+		var reroll_name = C.refs.ref('constants|turn_reroll').value,
+			hidden_turns = 0;
+
 		return (
 			<View style={[styles.turn_block,styles.my_turn_block]}>
 				{this.state.av_kick.map((kick,index) => {
+					if(kick.name == reroll_name){
+						hidden_turns++;
+						return;
+					}
+
+					var i = index - hidden_turns,
+						style;
+
 					const minW = (screen_width - turn_block_width)/2,
 						top = block_height*5,
-						left = minW + index*(card_size.w + card_size.my);
+						left = minW + i*(card_size.w + card_size.my);
+
+					if(i == 1){
+						style = {
+							marginTop:-card_size.my/2
+						}
+					}
 
 					return (
-						<Turn ref={'turn'+index} style={styles.card} key={index} kick={kick} container={this} top={top} left={left} />
+						<Turn 
+							ref={'turn'+i} 
+							style={[styles.turn,style]} 
+							index={i} 
+							key={i} 
+							kick={kick} 
+							container={this} 
+							top={top} 
+							left={left} 
+						/>
 					)
 				})}
 			</View>

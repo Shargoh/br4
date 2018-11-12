@@ -55,6 +55,7 @@ export function baseRequest(script,cmd,data = {},options = {}) {
 	return fetch(HOST_URL+script+'.pl?cmd='+cmd,
 		{
 			method:'POST',
+			credentials:'same-origin',
 			body:form
 		}
 	).catch((error) => {
@@ -73,7 +74,7 @@ function request(script,cmd,data = {},options = {}){
 
 		return json;
 	}).catch((error) => {
-		GlobalActions.error(error);
+		GlobalActions.error(script,cmd,data,error);
 		throw error;
 	});
 }

@@ -30,6 +30,17 @@ const styles = StyleSheet.create({
 		width:card_size.w,
 		borderRadius:card_size.mx,
 	},
+	turn:{
+		height:card_size.h,
+		width:card_size.w,
+		marginLeft:-card_size.my/4,
+		marginRight:-card_size.my/4,
+		borderRadius:card_size.mx,
+		borderWidth:1,
+		borderColor:'#000',
+		alignItems:'center',
+		justifyContent:'center'
+	},
 	turn_block:{
 		height:block_height,
 		width:turn_block_width,

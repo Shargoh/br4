@@ -129,7 +129,34 @@ class Bot extends RefluxComponent {
 	}
 	render() {
 		var store = this.props.store,
-			shape = store.getShape('thumb');
+			shape = store.getShape('thumb'),
+			auras = store.get('aura'),
+			start_cd = 0,
+			start_cd_cmp;
+
+		if(auras && auras.length){
+			let i = auras.length,
+				cd_auras = C.refs.ref('constants|cd_auras').value.split(',');
+
+			while(i--){
+				let aura = auras[i];
+
+				if(cd_auras.indexOf(aura[0].toString()) != -1){
+					start_cd = Math.max(start_cd,aura[1]);
+				}
+			}
+		}
+
+		if(start_cd){
+			start_cd_cmp = (
+				<Text style={{
+					fontSize:30,
+					color:'red',
+					textAlign:'center',
+					// marginTop:30
+				}}>{start_cd}</Text>
+			)
+		}
 
 		return (
 			<Animated.View style={[styles.card,{
@@ -147,6 +174,7 @@ class Bot extends RefluxComponent {
 								fontSize:30,
 								color:'lime'
 							}}>{store.get('timed').hp[0]}</Text>
+							{start_cd_cmp}
 						</ImageBackground>
 					</Animated.View>
 				</TouchableOpacity>

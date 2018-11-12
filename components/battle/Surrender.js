@@ -4,6 +4,7 @@ import { TouchableOpacity, Text } from 'react-native';
 import DateUtils from '../../engine/utils/date.js';
 import Dims from '../../utils/dimensions.js';
 import GlobalActions, { BattleActions } from '../../engine/actions.js';
+import C from '../../engine/c';
 
 const w = Dims.widthPercent(4);
 
@@ -23,7 +24,7 @@ class BattleTimer extends RefluxComponent {
 				backgroundColor:'red'
 			}} onPress={() => {
 				GlobalActions.log('Surrender!');
-				BattleActions.prep('defeat');
+				BattleActions.prep(C.refs.ref('constants|prep_defeat').value);
 			}}>
 				<Text style={{
 					fontSize:24

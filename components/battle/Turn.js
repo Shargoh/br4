@@ -135,6 +135,36 @@ class Turn extends DragComponent {
 		if(!slot && side == 2) return 6;
 		if(!slot && side == 1) return 7;
 	}
+	getTransformData(){
+		var transform = this.state.pan.getTranslateTransform();
+
+		if(!this.deg){
+			this.deg = {
+				anim:new Animated.Value(0)
+			};
+
+			switch(this.props.index){
+				case 0:
+					this.deg.value = '-5deg';
+					break;
+				case 2:
+					this.deg.value = '5deg';
+					break;
+				default:
+					this.deg.value = '0deg';
+					break;
+			}
+
+			this.deg.interpolate = this.deg.anim.interpolate({
+				inputRange: [0,1],
+				outputRange: [this.deg.value,'0deg']
+			});
+		}
+
+		transform.push({rotate:this.deg.interpolate});
+
+		return transform;
+	}
 	renderContent(){
 		var kick = this.props.kick,
 			ref = C.refs.ref('battle_turn|'+kick.name);
@@ -147,9 +177,9 @@ class Turn extends DragComponent {
 					BattleActions.kick(kick.name,this);
 				}
 			}} onLayout={() => {
-				this.refs.turn.measure((x, y, width, height, pageX, pageY) => {
-					this.pageX = pageX;
-				});
+				if(!this._animating_kick_success && !this._waiting_reset_animation){
+					this.setPageX();
+				}
 			}}>
 				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
 					<Text style={{
@@ -169,13 +199,32 @@ class Turn extends DragComponent {
 			dy:y - this.props.top - H/2
 		});
 
+		Animated.timing(this.deg.anim,{
+			toValue:1,
+			duration:200
+		}).start();
+
 		// this.props.container.onStartDrag(e,gesture);
+	}
+	animateWrongDrop(e, gesture){
+		Animated.parallel([
+			Animated.spring(this.state.pan, {
+				toValue: { x: 0, y: 0 },
+				friction: 5
+			}),
+			Animated.timing(this.deg.anim,{
+				toValue:0,
+				duration:200
+			})
+		]).start(() => {
+			this.onDrop(e,gesture,false);
+		});
 	}
 	onDrop(e,gesture,in_drop_area){
 		// this.props.container.onDrop(e,gesture,in_drop_area);
 
 		if(!in_drop_area){
-			// return BattleActions.event('unselect');
+			//
 		}else{
 			let block = this.block == 100 ? 100 : Math.max(1,Math.min(5,this.block));
 
@@ -232,10 +281,16 @@ class Turn extends DragComponent {
 
 			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my/2;
 
-			Animated.timing(this.state.pan, {
-				duration: 200,
-				toValue: { x: slot_x - this.pageX, y: y },
-			}).start(() => {
+			Animated.parallel([
+				Animated.timing(this.state.pan, {
+					duration: 200,
+					toValue: { x: slot_x - this.pageX, y: y },
+				}),
+				Animated.timing(this.deg.anim, {
+					duration: 200,
+					toValue: 0,
+				})
+			]).start(() => {
 				resolve();
 			});
 		});
@@ -249,20 +304,35 @@ class Turn extends DragComponent {
 		}else{
 			GlobalActions.log('Animating user card reset');
 
+			this._waiting_reset_animation = true;
+
 			Animated.sequence([
 				Animated.timing(this.state.opacity, {
 					toValue: 1,
 					duration: 1000
 				}),
-				Animated.timing(this.state.pan, {
-					duration: 500,
-					delay: 200,
-					toValue: { x: 0, y: 0 }
-				})
+				Animated.parallel([
+					Animated.timing(this.state.pan, {
+						duration: 500,
+						delay: 200,
+						toValue: { x: 0, y: 0 }
+					}),
+					Animated.timing(this.deg.anim, {
+						duration: 500,
+						delay: 200,
+						toValue: 1
+					})
+				])
 			]).start(() => {
 				this._waiting_reset_animation = false;
+				this.setPageX();
 			});
 		}
+	}
+	setPageX(){
+		this.refs.turn.measure((x, y, width, height, pageX, pageY) => {
+			this.pageX = pageX;
+		});
 	}
 	/**
 	 * если блок находится вне слотов (по высоте) - значит он равен 100, т.к. это герой

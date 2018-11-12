@@ -57,10 +57,14 @@ class Slots extends RefluxComponent {
 			)
 		){
 			// на всякий пожарный, вдруг после F5 придут данные до отрисовки
-			if(!this.state) return;
-
 			// временно не обрабатываю если нет цели. Потом будет анимация в зависимости от удара
-			if(!data.data.u2) return;
+			if(!this.state || !data.data.u2){
+				if(data.resolve){
+					data.resolve();
+				}
+
+				return;
+			}
 
 			let u = data.data.u || data.data.u1,
 				slots = this.state.slots,

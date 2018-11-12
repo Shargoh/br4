@@ -311,11 +311,41 @@ const store = {
 
 		slots[side][slot] = user.battle.ekey;
 
+		this.set({
+			slots:this.get('slots')
+		});
+
+		GlobalActions.log('New ekey',user.battle.ekey,' added in slot',slot);
+
 		this.trigger('add_in_slot',user,side,slot);
 
 		if(side == 1){
 			BattleActions.event('bot_added_in_slot',user,slot);
 		}
+	},
+	getRerollTurn(){
+		var turns = this.get('state').av_kick,
+			i = turns.length,
+			reroll_name = C.refs.ref('constants|turn_reroll').value;
+
+		while(i--){
+			let turn = turns[i];
+
+			if(turn.name == reroll_name){
+				return turn;
+			}
+		}
+	},
+	canReroll(){
+		var state = this.get('state');
+
+		if(state.can_kick){
+			let turn = this.getRerollTurn();
+			
+			if(turn && turn.priority != -1){
+				return true;
+			}else return false;
+		}else return false;
 	}
 };
 

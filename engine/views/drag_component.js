@@ -84,9 +84,12 @@ class DragComponent extends React.Component {
     return gesture.moveY < 200;
 	}
 	renderContent(){}
+	getTransformData(){
+		return this.state.pan.getTranslateTransform();
+	}
   render() {
 		const pan_style = {
-			transform: this.state.pan.getTranslateTransform()
+			transform: this.getTransformData()
 		};
 
 		const view_style = this.props.style || styles.inside;

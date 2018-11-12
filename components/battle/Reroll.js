@@ -10,7 +10,7 @@ class Info extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setState({
-			can_reroll:this.store.get('state').can_reroll
+			can_reroll:this.store.canReroll()
 		});
 	}
 	onAction(action,store){
@@ -19,7 +19,7 @@ class Info extends RefluxComponent {
 			action == 'reroll'
 		){
 			this.setState({
-				can_reroll:store.get('state').can_reroll
+				can_reroll:store.canReroll()
 			});
 		}else if(action == 'before_reroll'){
 			this.setState({
