@@ -288,7 +288,7 @@ class Turn extends DragComponent {
 				}),
 				Animated.timing(this.deg.anim, {
 					duration: 200,
-					toValue: 0,
+					toValue: 1,
 				})
 			]).start(() => {
 				resolve();
@@ -320,7 +320,7 @@ class Turn extends DragComponent {
 					Animated.timing(this.deg.anim, {
 						duration: 500,
 						delay: 200,
-						toValue: 1
+						toValue: 0
 					})
 				])
 			]).start(() => {

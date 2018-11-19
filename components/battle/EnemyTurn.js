@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, PanResponder, Animated, ImageBackground, TouchableOpacity, Text, View } from 'react-native';
+import { Animated, ImageBackground, TouchableOpacity, Text, View, Image } from 'react-native';
 import { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
 import styles, { screen_width, slots_block_width, block_height, card_size } from './css';
+import { b_card_back } from '../../constants/images';
 
 const minW = (screen_width - slots_block_width)/2,
 	maxW = minW + slots_block_width,
@@ -30,6 +31,29 @@ class EnemyTurn extends React.Component {
 			},
 			flipped:false
 		});
+
+		if(!this.deg){
+			this.deg = {
+				anim:new Animated.Value(0)
+			};
+
+			switch(this.props.index){
+				case 0:
+					this.deg.value = '5deg';
+					break;
+				case 2:
+					this.deg.value = '-5deg';
+					break;
+				default:
+					this.deg.value = '0deg';
+					break;
+			}
+
+			this.deg.interpolate = this.deg.anim.interpolate({
+				inputRange: [0,1],
+				outputRange: [this.deg.value,'0deg']
+			});
+		}
 	}
 	/**
 	 * 
@@ -51,6 +75,10 @@ class EnemyTurn extends React.Component {
 					Animated.timing(this.state.anim.zIndex,{
 						toValue:1,
 						duration:0
+					}),
+					Animated.timing(this.deg.anim,{
+						toValue:1,
+						duration:D1
 					}),
 					Animated.sequence([
 						Animated.timing(this.state.anim.rotate,{
@@ -111,6 +139,10 @@ class EnemyTurn extends React.Component {
 				Animated.timing(this.state.anim.left,{
 					toValue:0,
 					duration:D4
+				}),
+				Animated.timing(this.deg.anim,{
+					toValue:0,
+					duration:D4
 				})
 			]).start(() => {
 				resolve();
@@ -125,7 +157,8 @@ class EnemyTurn extends React.Component {
 		});
 	}
 	render(){
-		var inside;
+		var inside,
+			style;
 
 		if(this.state.flipped && typeof this.state.user == 'string'){
 			let ref = C.refs.ref('battle_turn|'+this.state.user);
@@ -152,16 +185,18 @@ class EnemyTurn extends React.Component {
 			)
 		}else{
 			inside = (
-				<View style={[styles.card_size,{
-					backgroundColor:'lime',
-				}]}>
-					<Text>Card</Text>
-				</View>
+				<Image style={styles.card_size} source={C.getImage(b_card_back)} resizeMode="cover" />
 			)
 		}
 
+		if(this.props.index == 1){
+			style = {
+				marginTop:card_size.h/8
+			}
+		}
+
 		return (
-			<Animated.View ref={'turn'} style={[styles.card,{
+			<Animated.View ref={'turn'} style={[styles.turn,style,{
 				left:this.state.anim.left,
 				top:this.state.anim.top,
 				width:this.state.anim.width,
@@ -169,7 +204,8 @@ class EnemyTurn extends React.Component {
 				opacity:this.state.anim.opacity,
 				transform:[
 					{scaleX: this.state.anim.rotate},
-					{perspective: 1000}
+					{perspective: 1000},
+					{rotate:this.deg.interpolate}
 				]
 			}]} onLayout={() => {
 				// this.refs.turn.measure((x, y, width, height, pageX, pageY) => {

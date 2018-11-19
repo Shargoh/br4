@@ -9,8 +9,29 @@ import Surrender from '../components/battle/Surrender';
 import Turns from '../components/battle/Turns.js';
 import EnemyTurns from '../components/battle/EnemyTurns.js';
 import Slots from '../components/battle/Slots';
-import { View } from 'react-native';
+import { View, ImageBackground, Image } from 'react-native';
 import Desk from '../components/battle/Desk.js';
+import { b_bg, b_flag_left, b_flag_right, b_field } from '../constants/images.js';
+import Dims from '../utils/dimensions.js';
+import { block_height } from '../components/battle/css';
+
+const W = Dims.width(1),
+	H = Dims.height(1),
+	margin_top = Dims.battleMarginTop(),
+	field_height = H + margin_top,
+	// e_height = Dims.eHeight*H/field_height,
+	left_flag_w = Dims.height(Dims.eHeight/367),
+	right_flag_h = Dims.height(Dims.eHeight/2074),
+	right_flag_w = Dims.height(Dims.eHeight/373),
+	field_bg_h = Dims.height(Dims.eHeight/964),
+	field_bg_w = Dims.height(Dims.eHeight/1577);
+
+// посчитаем отступ флагов для узких экранов
+var width_k = H/Dims.eHeight,
+	flags_margin = (W/width_k - Dims.eWidth)*width_k;
+
+flags_margin = Math.min(0,flags_margin);
+flags_margin = Math.max(-left_flag_w*0.6,flags_margin);
 
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
@@ -31,39 +52,79 @@ class LocationContainer extends RefluxComponent {
 			enemy:this.store.getEnemy()
 		});
 	}
+	/**
+	 * тут везде независимое абсолютное позиционирование
+	 */
   render() {
 		return (
-			<View style={{
+			<ImageBackground style={{
 				// flexDirection: 'row',
 				flex:1,
 				width:'100%',
-				backgroundColor:'white'
-			}}>
+			}} source={C.getImage(b_bg)} resizeMode="cover">
+				<Image style={{
+					position:'absolute',
+					left:flags_margin,
+					top:0,
+					height:H,
+					width:left_flag_w
+				}} source={C.getImage(b_flag_left)} />
+				<Image style={{
+					position:'absolute',
+					right:flags_margin,
+					top:0,
+					height:right_flag_h,
+					width:right_flag_w
+				}} source={C.getImage(b_flag_right)} />
 				<View style={{
-					flexDirection: 'row',
-					flex:1,
-					alignItems:'center',
-					justifyContent:'center',
+					width:'100%',
+					height:field_height,
+					marginTop:-margin_top
 				}}>
-					<Info user={this.state.enemy} />
+					<EnemyTurns />
+					<View style={{
+						alignItems:'center',
+						justifyContent:'center',
+						position:'absolute',
+						top:block_height,
+						height:field_bg_h*2,
+						width:'100%'
+					}}>
+						<Image style={{
+							height:field_bg_h,
+							width:field_bg_w
+						}} source={C.getImage(b_field)} />
+						<Image style={{
+							height:field_bg_h,
+							width:field_bg_w,
+							transform:[{rotateX:'180deg'}]
+						}} source={C.getImage(b_field)} />
+					</View>
+					<View style={{
+						flexDirection: 'row',
+						flex:1,
+						alignItems:'center',
+						justifyContent:'center',
+					}}>
+						<Info user={this.state.enemy} />
+					</View>
+					<Slots enemy={true} slots={this.store.get('slots').slots[2] || {}} />
+					<Slots enemy={false} slots={this.store.get('slots').slots[1] || {}} />
+					<Timer />
+					<Surrender />
+					<Reroll />
+					<Turns />
+					<Desk />
+					<View style={{
+						flexDirection: 'row',
+						flex:1,
+						alignItems:'center',
+						justifyContent:'center',
+					}}>
+						<Info user={this.user.attributes} />
+					</View>
 				</View>
-				<EnemyTurns />
-				<Slots enemy={true} slots={this.store.get('slots').slots[2] || {}} />
-				<Slots enemy={false} slots={this.store.get('slots').slots[1] || {}} />
-				<Timer />
-				<Surrender />
-				<Reroll />
-				<Turns />
-				<Desk />
-				<View style={{
-					flexDirection: 'row',
-					flex:1,
-					alignItems:'center',
-					justifyContent:'center',
-				}}>
-					<Info user={this.user.attributes} />
-				</View>
-			</View>
+			</ImageBackground>
 		)
   }
 }

@@ -45,7 +45,7 @@ class Turns extends RefluxComponent {
 
 					if(i == 1){
 						style = {
-							marginTop:-card_size.my/2
+							marginTop:-card_size.h/8
 						}
 					}
 

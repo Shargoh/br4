@@ -6,9 +6,10 @@ import Dims from '../../utils/dimensions.js';
  */
 export const card_size = Dims.cardSize();
 export const screen_width = Dims.width(1);
-export const turn_block_width = (card_size.w + card_size.my)*3;
-export const slots_block_width = (card_size.w + card_size.my)*5;
-export const block_height = card_size.h + 2*card_size.my;
+export const battle_height = Dims.height(1) + Dims.battleMarginTop();
+export const turn_block_width = card_size.w*3;
+export const slots_block_width = card_size.w*5;
+export const block_height = battle_height/6;
 
 const styles = StyleSheet.create({
   text:{
@@ -18,26 +19,19 @@ const styles = StyleSheet.create({
 	card:{
 		height:card_size.h,
 		width:card_size.w,
-		margin:card_size.my/2,
-		borderRadius:card_size.mx,
-		borderWidth:1,
-		borderColor:'#000',
+		margin:card_size.my/4,
 		alignItems:'center',
 		justifyContent:'center'
 	},
 	card_size:{
 		height:card_size.h,
 		width:card_size.w,
-		borderRadius:card_size.mx,
 	},
 	turn:{
 		height:card_size.h,
 		width:card_size.w,
-		marginLeft:-card_size.my/4,
-		marginRight:-card_size.my/4,
-		borderRadius:card_size.mx,
-		borderWidth:1,
-		borderColor:'#000',
+		marginLeft:-card_size.w/6,
+		marginRight:-card_size.w/6,
 		alignItems:'center',
 		justifyContent:'center'
 	},

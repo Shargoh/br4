@@ -113,7 +113,14 @@ class Turns extends RefluxComponent {
 						left = minW + index*(card_size.w + card_size.my);
 
 					return (
-						<EnemyTurn ref={'card'+index} style={styles.card} key={index} kick={data} container={this} left={left} />
+						<EnemyTurn 
+							ref={'card'+index} 
+							index={index} 
+							key={index} 
+							kick={data} 
+							container={this} 
+							left={left} 
+						/>
 					)
 				})}
 			{/* </TouchableOpacity> */}
