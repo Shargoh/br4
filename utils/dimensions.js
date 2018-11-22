@@ -4,6 +4,9 @@ const card_width = 346,
 	card_height = 468;
 
 const Dims = {
+	pixel(number){
+		return this.height(this.eHeight/number);
+	},
 	widthPercent(percent){
 		return Dimensions.get('window').width*percent/100;
 	},
@@ -26,38 +29,14 @@ const Dims = {
 		return this.width(4);
 	},
 	cardSize(){
-		// var field_width = this.height(this.eHeight/1577),
-		// 	marginX = Dims.widthPercent(0),
-		// 	marginY = Dims.heightPercent(0),
-		// 	sw = this.width(1),
-		// 	sh = this.height(1) + this.battleMarginTop(),
-		// 	width, height;
-
-		// if(sw/sh > this.bWidth/this.bHeight){
-		// 	// значит экран скорее широкий. За основу берем высоту экрана
-		// 	height = (sh/6 - 2*marginY);
-		// 	width = height*card_width/card_height;
-		// }else{
-		// 	width = (sw/5 - 2*marginX);
-		// 	height = width*card_height/card_width;
-		// }
-
-		// return {
-		// 	w:width,
-		// 	h:height,
-		// 	mx:marginX,
-		// 	my:marginY
-		// };
-
-		var field_width = this.height(this.eHeight/1577),
-			width = field_width/5,
-			height = width*card_height/card_width;
+		var width = this.height(this.eHeight/346),
+			height = width*card_height/card_width,
+			my = (this.height(this.eHeight/(1577 - 66)) - width*5)/10;
 
 		return {
 			w:width,
 			h:height,
-			mx:0,
-			my:0
+			my:my
 		};
 	},
 	/**

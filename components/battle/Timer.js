@@ -1,11 +1,17 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { View } from 'react-native';
+import { ImageBackground } from 'react-native';
 import Timer from '../common/Timer';
 import DateUtils from '../../engine/utils/date.js';
 import Dims from '../../utils/dimensions';
+import C from '../../engine/c.js';
+import { b_timer_bg } from '../../constants/images.js';
+import styles from './css';
 
-const w = Dims.widthPercent(4);
+const w = Dims.pixel(308),
+	h = Dims.pixel(362),
+	font_size = Dims.pixel(75),
+	margin_top = Dims.battleMarginTop();
 
 class BattleTimer extends RefluxComponent {
 	componentWillMount(){
@@ -34,22 +40,13 @@ class BattleTimer extends RefluxComponent {
 	}
 	render() {
 		return (
-			<View style={{
-				justifyContent:'center',
-				alignItems:'center',
-				borderWidth:1,
-				borderColor:'#000',
-				borderRadius:w,
-				position:'absolute',
-				top:w,
-				left:w,
-				width:w*6,
-				backgroundColor:'yellow'
-			}}>
+			<ImageBackground style={styles.timer_box} source={C.getImage(b_timer_bg)}>
 				<Timer textStyle={{
-					fontSize:24
+					fontFamily:'GothamMedium',
+					color:'#fcf23d',
+					fontSize:font_size
 				}} time={this.state.time} />
-			</View>
+			</ImageBackground>
     )
   }
 }

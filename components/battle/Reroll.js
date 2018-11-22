@@ -1,8 +1,11 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { Text, TouchableOpacity } from 'react-native';
+import { Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import Dims from '../../utils/dimensions.js';
+import C from '../../engine/c';
+import styles from './css.js';
+import { b_reroll, b_reroll_bg } from '../../constants/images.js';
 
 const w = Dims.widthPercent(4);
 
@@ -29,26 +32,18 @@ class Info extends RefluxComponent {
 	}
 	render() {
 		return (
-			<TouchableOpacity style={{
-				justifyContent:'center',
-				alignItems:'center',
-				borderWidth:1,
-				borderColor:'#000',
-				borderRadius:w,
-				position:'absolute',
-				bottom:w,
-				left:w,
-				width:w*6,
-				backgroundColor:this.state.can_reroll ? 'lime' : 'red'
-			}} onPress={() => {
-				if(this.state.can_reroll){
-					BattleActions.reroll();
-				}
-			}}>
-				<Text style={{
-					fontSize:24
-				}}>Reroll</Text>
-			</TouchableOpacity>
+			<ImageBackground style={styles.reroll_box} source={C.getImage(b_reroll_bg)}>
+				<TouchableOpacity onPress={() => {
+					if(this.state.can_reroll){
+						BattleActions.reroll();
+					}
+				}}>
+					<Image style={[styles.surrender_btn,{
+						marginLeft:Dims.pixel(98),
+						marginTop:Dims.pixel(125)
+					}]} source={C.getImage(b_reroll)} />
+				</TouchableOpacity>
+			</ImageBackground>
     )
   }
 }

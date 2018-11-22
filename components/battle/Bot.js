@@ -8,9 +8,10 @@
 import React from 'react';
 import C from '../../engine/c.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { Text, ImageBackground, TouchableOpacity, Animated } from 'react-native';
+import { Text, ImageBackground, TouchableOpacity, Animated, Image } from 'react-native';
 import styles, { block_height, card_size } from './css';
 import { BattleActions } from '../../engine/actions.js';
+import { b_slot_bg_wait, b_ribbon_gray, b_knife, b_heart, b_timer } from '../../constants/images.js';
 
 const W = card_size.w + card_size.my,
 	DK1 = 500, // время полета на цель
@@ -149,12 +150,17 @@ class Bot extends RefluxComponent {
 
 		if(start_cd){
 			start_cd_cmp = (
-				<Text style={{
-					fontSize:30,
-					color:'red',
-					textAlign:'center',
-					// marginTop:30
-				}}>{start_cd}</Text>
+				<ImageBackground style={[styles.card_size,{
+					position:'absolute',
+					marginTop:-1,
+					marginLeft:-1,
+					justifyContent:'center',
+					alignItems:'center',
+					flexDirection:'row'
+				}]} source={C.getImage(b_slot_bg_wait)} resizeMode="contain">
+					<Image style={styles.icon} source={C.getImage(b_timer)} resizeMode="contain" />
+					<Text style={styles.wait_text}>{start_cd}</Text>
+				</ImageBackground>
 			)
 		}
 
@@ -170,12 +176,16 @@ class Bot extends RefluxComponent {
 						opacity:this.state.animated.opacity
 					}}>
 						<ImageBackground style={styles.card_size} source={C.getImage(shape)} resizeMode="contain">
-							<Text style={{
-								fontSize:30,
-								color:'lime'
-							}}>{store.get('timed').hp[0]}</Text>
-							{start_cd_cmp}
+							<ImageBackground style={styles.dmg_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+								<Image style={styles.icon} source={C.getImage(b_knife)} resizeMode="contain" />
+								<Text style={styles.card_text}>{store.get('stats').stats.damage}</Text>
+							</ImageBackground>
+							<ImageBackground style={styles.hp_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+								<Image style={styles.icon} source={C.getImage(b_heart)} resizeMode="contain" />
+								<Text style={styles.card_text}>{store.get('timed').hp[0]}</Text>
+							</ImageBackground>
 						</ImageBackground>
+						{start_cd_cmp}
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>

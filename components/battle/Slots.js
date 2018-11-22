@@ -1,10 +1,11 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { TouchableOpacity, ImageBackground, View, Text, Animated } from 'react-native';
+import { TouchableOpacity, Image, View, Text, Animated } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 import styles from './css';
 import Bot from './Bot';
+import { b_slot_bg } from '../../constants/images.js';
 
 class Slots extends RefluxComponent {
 	componentWillMount(){
@@ -126,7 +127,7 @@ class Slots extends RefluxComponent {
 									BattleActions.event('select_slot',slot_id);
 								}
 							}}>
-								
+								<Image style={styles.card_size} source={C.getImage(b_slot_bg)} />
 							</TouchableOpacity>
 						)
 					}
