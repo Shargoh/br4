@@ -6,8 +6,7 @@ import GlobalActions, { BattleActions } from '../engine/actions.js';
 import request from '../utils/request.js';
 import { Alert } from 'react-native';
 import { calcActionDuration } from '../components/battle/EnemyTurn.js';
-
-const TESTING_ANIMATION = false;
+import { TEST_ANIM } from '../constants/common.js';
 
 const ekey_priority = {},
 	actions = [],
@@ -125,6 +124,8 @@ class Module extends Proto{
 	 */
 	doKick(name,turn_cmp,slot) {
 		var state = this.store.get('state');
+
+		this.onUnhighlightAvailableSlot();
 
 		if(!state.can_kick || !name){
 			GlobalActions.warn("Can't kick :(",state.can_kick,name);
@@ -328,7 +329,11 @@ class Module extends Proto{
 		return this.request('battle_current');
 	}
 	request(cmd,data,options){
-		if(TESTING_ANIMATION && cmd == 'battle_kick'){
+		if(TEST_ANIM && cmd == 'battle_kick'){
+			setTimeout(() => {
+				this.store.trigger('round',this.store);
+			},1000);
+
 			return Promise.resolve({
 				success:1
 			});
@@ -892,7 +897,7 @@ class Module extends Proto{
 
 				if(!user || slot_id > 5) continue;
 
-				this.store.addInSlot(user,2,slot_id);
+				this.store.addInSlot(user.attributes,2,slot_id);
 			}
 		},500);
 	}
@@ -914,6 +919,36 @@ class Module extends Proto{
 		// this.store.applyDelayedChanges(ekey);
 
 		this.store.applyChangesWhileAnimating(ekey);
+	}
+	onHighlightAvailableSlot(kick,target_type){
+		switch(target_type){
+			case 1:
+				this.store.trigger('hl_my_slots');
+				break;
+			case 3:
+				this.store.trigger('hl_my_bots');
+				break;
+			case 2:
+				this.store.trigger('hl_enemy_bots');
+				break;
+			case 4:
+				this.store.trigger('hl_enemy_hero');
+				break;
+			case 5:
+				this.store.trigger('hl_my_hero');
+				break;
+			case 6:
+				this.store.trigger('hl_enemy_hero');
+				this.store.trigger('hl_enemy_bots');
+				break;
+			case 7:
+				this.store.trigger('hl_my_hero');
+				this.store.trigger('hl_my_bots');
+				break;
+		}
+	}
+	onUnhighlightAvailableSlot(){
+		this.store.trigger('unhl');
 	}
 };
 

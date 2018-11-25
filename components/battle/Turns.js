@@ -3,7 +3,7 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { TouchableOpacity, ImageBackground, View, Text } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
-import styles, { block_height, turn_block_width, screen_width, card_size } from './css.js';
+import styles, { block_height, turn_block_width, screen_width, card_size, battle_height } from './css.js';
 import Turn from './Turn.js';
 
 class Turns extends RefluxComponent {
@@ -36,29 +36,40 @@ class Turns extends RefluxComponent {
 						return;
 					}
 
-					var i = index - hidden_turns,
-						style;
+					var top = battle_height - block_height,
+						style = {
+							position:'absolute',
+							zIndex:100
+						};
 
 					const minW = (screen_width - turn_block_width)/2,
-						top = block_height*5,
-						left = minW + i*(card_size.w + card_size.my);
+						i = index - hidden_turns,
+						w = card_size.w,
+						k = 1/3.5;
 
-					if(i == 1){
-						style = {
-							marginTop:-card_size.h/8
-						}
+					if(i == 0){
+						style.left = turn_block_width/2 - w*1.5 + w*k;
+						style.zIndex += 2;
+					}else if(i == 1){
+						style.left = turn_block_width/2 - w/2;
+						style.top = -card_size.h/24;
+						top += style.top;
+						style.zIndex += 1;
+					}else if(i == 2){
+						style.left = turn_block_width/2 + w/2 - w*k;
 					}
 
 					return (
 						<Turn 
 							ref={'turn'+i} 
-							style={[styles.turn,style]} 
+							style={[styles.my_turn,style]} 
 							index={i} 
 							key={i} 
 							kick={kick} 
 							container={this} 
-							top={top} 
-							left={left} 
+							margin_top = {style.top || 0} //нужно чтобы правильно анимировать
+							top={top} // вроде не нужно
+							left={style.left + minW} 
 						/>
 					)
 				})}

@@ -1,18 +1,40 @@
 import React from 'react';
 import C from '../../engine/c.js';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { Text, View, ImageBackground, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, Animated, ImageBackground, Image, TouchableOpacity } from 'react-native';
 import styles from './css';
 import { BattleActions } from '../../engine/actions.js';
 import { b_avatar_border, b_avatar_signs, b_avatar_heart } from '../../constants/images.js';
 import Dims from '../../utils/dimensions.js';
 
-const top = Dims.pixel(68),
-	bottom = Dims.pixel(62);
+const top = Dims.pixel(56),
+	bottom = Dims.pixel(73);
 
 class Info extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
+
+		this.setState({
+			animated:{
+				hl_opacity:new Animated.Value(0)
+			}
+		});
+	}
+	onAction(action,store){
+		if(
+			(action == 'hl_enemy_hero' && this.props.enemy) ||
+			(action == 'hl_my_hero' && !this.props.enemy)
+		){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:1,
+				duration:200
+			}).start();
+		}else if(action == 'unhl'){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:0,
+				duration:200
+			}).start();
+		}
 	}
 	render() {
 		var user_image,
@@ -49,9 +71,10 @@ class Info extends RefluxComponent {
 					height:Dims.pixel(390),
 					width:Dims.pixel(364)
 				},flip]} source={C.getImage(b_avatar_border)} />
-				<Image style={[styles.avatar_size,{
+				<Animated.Image style={[styles.avatar_size,{
 					position:'absolute',
-					top:0
+					top:0,
+					opacity:this.state.animated.hl_opacity
 				}]} source={C.getImage(b_avatar_signs)} />
 				<ImageBackground style={styles.avatar_heart} source={C.getImage(b_avatar_heart)}>
 					<Text style={styles.avatar_hp}>

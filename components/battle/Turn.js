@@ -1,10 +1,12 @@
 import React from 'react';
 import Reflux from 'reflux';
 import DragComponent from '../../engine/views/drag_component';
-import { StyleSheet, PanResponder, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
+import { Image, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, slots_block_width, block_height, card_size } from './css';
+import styles, { screen_width, slots_block_width, block_height, card_size, info_height } from './css';
+import { b_heart, b_ribbon_gray, b_knife, b_card_back } from '../../constants/images';
+import Dims from '../../utils/dimensions';
 
 const minW = (screen_width - slots_block_width)/2,
 	cardW = card_size.w + card_size.my,
@@ -18,7 +20,10 @@ const minW = (screen_width - slots_block_width)/2,
 	cl = minW + 2*cardW,
 	cr = maxW - 2*cardW,
 	KS_DELAY = 500,
-	KS = 1000;
+	KS = 1000,
+	D1 = 1000, // время появления карты на колоде
+	D2 = 500, // время полета карты из колоды
+	D2_DELAY = 200; // задержка перед полетом карты из колоды
 
 /**
  * flags
@@ -156,24 +161,58 @@ class Turn extends DragComponent {
 			}
 
 			this.deg.interpolate = this.deg.anim.interpolate({
-				inputRange: [0,1],
-				outputRange: [this.deg.value,'0deg']
+				inputRange: [0,1,2],
+				outputRange: [this.deg.value,'0deg','5deg']
 			});
 		}
 
+		if(!this.scale){
+			this.scale = {
+				anim:new Animated.Value(1)
+			}
+		}
+
 		transform.push({rotate:this.deg.interpolate});
+		transform.push({scaleX:this.scale.anim});
+		transform.push({perspective:1000});
 
 		return transform;
 	}
 	renderContent(){
 		var kick = this.props.kick,
-			ref = C.refs.ref('battle_turn|'+kick.name);
+			ref = C.refs.ref('battle_turn|'+kick.name),
+			prognoz = ref.desc.prognoz.battle,
+			inside;
 
 		this.setDropArea();
+
+		if(this.state.flipped){
+			inside = (
+				<Image style={styles.card_size} source={C.getImage(b_card_back)} resizeMode="cover" />
+			)
+		}else{
+			inside = (
+				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
+					<Text style={{
+						fontSize:40,
+						color:'blue'
+					}}>{this.getTargetType()}</Text>
+					<ImageBackground style={styles.dmg_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+						<Image style={styles.icon} source={C.getImage(b_knife)} resizeMode="contain" />
+						<Text style={styles.card_text}>{Number(prognoz.top.prognoz_template) || '?'}</Text>
+					</ImageBackground>
+					<ImageBackground style={styles.hp_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+						<Image style={styles.icon} source={C.getImage(b_heart)} resizeMode="contain" />
+						<Text style={styles.card_text}>{Number(prognoz.bottom.prognoz_template) || '?'}</Text>
+					</ImageBackground>
+				</ImageBackground>
+			)
+		}
 
 		return (
 			<TouchableOpacity ref={'turn'} key={kick.name} style={styles.card} onPress={() => {
 				if(!this.isDisabled(kick)){
+					BattleActions.event('highlight_available_slot',this.props.kick,this.getTargetType());
 					BattleActions.kick(kick.name,this);
 				}
 			}} onLayout={() => {
@@ -181,12 +220,7 @@ class Turn extends DragComponent {
 					this.setPageX();
 				}
 			}}>
-				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
-					<Text style={{
-						fontSize:40,
-						color:'blue'
-					}}>{this.getTargetType()}</Text>
-				</ImageBackground>
+				{inside}
 			</TouchableOpacity>
 		)
 	}
@@ -204,9 +238,12 @@ class Turn extends DragComponent {
 			duration:200
 		}).start();
 
+		BattleActions.event('highlight_available_slot',this.props.kick,this.getTargetType());
+
 		// this.props.container.onStartDrag(e,gesture);
 	}
 	animateWrongDrop(e, gesture){
+		BattleActions.event('unhighlight_available_slot');
 		Animated.parallel([
 			Animated.spring(this.state.pan, {
 				toValue: { x: 0, y: 0 },
@@ -232,6 +269,7 @@ class Turn extends DragComponent {
 		}
 	}
 	animateCorrectDrop(e,gesture){
+		BattleActions.event('unhighlight_available_slot');
 		return this.onDrop(e,gesture,true);
 	}
 	animateKickSuccess(){
@@ -245,12 +283,25 @@ class Turn extends DragComponent {
 				duration: KS,
 				delay:KS_DELAY
 			}),
-			Animated.timing(this.state.pan, {
-				duration: 0,
-				toValue: { x: screen_width - cardW - card_size.my, y: 0 },
-			})
+			Animated.parallel([
+				Animated.timing(this.state.pan, {
+					duration: 0,
+					toValue: {
+						x: screen_width - Dims.pixel(410) - this.pageX, 
+						y: Dims.pixel(-30)
+					},
+				}),
+				Animated.timing(this.deg.anim,{
+					toValue:2,
+					duration:0
+				})
+			])
 		]).start(() => {
 			this._animating_kick_success = false;
+
+			this.setState({
+				flipped:true
+			});
 
 			GlobalActions.log('User kick successfully animated. Waiting?',this._waiting_reset_animation);
 
@@ -267,24 +318,26 @@ class Turn extends DragComponent {
 				slot_id = 3;
 
 				if(side == 1){
-					y = -1*block_height;
+					y = -1*info_height;
 				}else{
-					y = -4*block_height;
+					y = -2*block_height - 2*info_height;
 				}
 			}else if(side == 2){
-				y = -3*block_height;
+				y = -2*block_height - info_height;
 			}else{
-				y = -2*block_height;
+				y = -1*block_height - info_height;
 			}
 
-			y += card_size.my/2;
+			y -= Dims.pixel(32);
+			y -= this.props.margin_top;
 
-			var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my/2;
+			// var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my/2;
+			var slot_x = screen_width/2 + (slot_id - 1 - 2.5)*(W + card_size.my*2) + card_size.my;
 
 			Animated.parallel([
 				Animated.timing(this.state.pan, {
 					duration: 200,
-					toValue: { x: slot_x - this.pageX, y: y },
+					toValue: { x: slot_x - this.props.left, y: y },
 				}),
 				Animated.timing(this.deg.anim, {
 					duration: 200,
@@ -301,25 +354,42 @@ class Turn extends DragComponent {
 
 			this._waiting_reset_animation = true;
 			return;
-		}else{
+		}else if(this.state.flipped){
 			GlobalActions.log('Animating user card reset');
 
 			this._waiting_reset_animation = true;
 
+			setTimeout(() => {
+				this.setState({
+					flipped:false
+				});
+			},D1 + D2_DELAY + D2/2);
+
 			Animated.sequence([
 				Animated.timing(this.state.opacity, {
 					toValue: 1,
-					duration: 1000
+					duration: D1
 				}),
 				Animated.parallel([
+					Animated.sequence([
+						Animated.timing(this.scale.anim,{
+							toValue:0,
+							delay:D2_DELAY,
+							duration:D2/2
+						}),
+						Animated.timing(this.scale.anim,{
+							toValue:1,
+							duration:D2/1
+						})
+					]),
 					Animated.timing(this.state.pan, {
-						duration: 500,
-						delay: 200,
+						duration: D2,
+						delay: D2_DELAY,
 						toValue: { x: 0, y: 0 }
 					}),
 					Animated.timing(this.deg.anim, {
-						duration: 500,
-						delay: 200,
+						duration: D2,
+						delay: D2_DELAY,
 						toValue: 0
 					})
 				])

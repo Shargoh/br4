@@ -12,7 +12,8 @@ export const screen_height = Dims.height(1);
 export const battle_height = screen_height + margin_top;
 export const turn_block_width = card_size.w*3;
 export const slots_block_width = card_size.w*5;
-export const block_height = battle_height/6;
+export const block_height = card_size.h;
+export const info_height = Dims.pixel(490);
 
 var width_k = screen_height/Dims.eHeight,
 	_flags_margin = (screen_width/width_k - Dims.eWidth)*width_k,
@@ -24,7 +25,6 @@ _flags_margin = Math.max(-left_flag_w*0.6,_flags_margin);
 export const flags_margin = _flags_margin;
 
 const sin45 = Math.sin(45*Math.PI/180);
-const info_height = Dims.pixel(490);
 
 const styles = StyleSheet.create({
   text:{
@@ -48,6 +48,12 @@ const styles = StyleSheet.create({
 		width:card_size.w,
 		marginLeft:-card_size.w/6,
 		marginRight:-card_size.w/6,
+		alignItems:'center',
+		justifyContent:'center'
+	},
+	my_turn:{
+		height:card_size.h,
+		width:card_size.w,
 		alignItems:'center',
 		justifyContent:'center'
 	},
@@ -76,10 +82,10 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	enemy_slots:{
-		top:block_height*2
+		top:block_height + info_height
 	},
 	my_slots:{
-		top:block_height*3
+		top:block_height*2 + info_height
 	},
 	dmg_bg:{
 		position:'absolute',
@@ -151,7 +157,8 @@ const styles = StyleSheet.create({
 		top:margin_top - Dims.pixel(45),
 		right:Dims.pixel(40),
 		width:Dims.pixel(353),
-		height:Dims.pixel(477)
+		height:Dims.pixel(477),
+		transform:[{rotate:'180deg'}]
 	},
 	reroll_box:{
 		position:'absolute',
@@ -162,7 +169,20 @@ const styles = StyleSheet.create({
 	},
 	surrender_btn:{
 		width:Dims.pixel(193),
-		height:Dims.pixel(193)
+		height:Dims.pixel(193),
+		marginLeft:Dims.pixel(98),
+		marginTop:Dims.pixel(125)
+	},
+	deck_box:{
+		position:'absolute',
+		bottom:Dims.pixel(0),
+		right:Dims.pixel(40),
+		width:Dims.pixel(383),
+		height:Dims.pixel(559)
+	},
+	deck:{
+		width:Dims.pixel(383),
+		height:Dims.pixel(559)
 	}
 });
 

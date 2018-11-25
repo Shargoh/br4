@@ -10,7 +10,7 @@ import Turns from '../components/battle/Turns.js';
 import EnemyTurns from '../components/battle/EnemyTurns.js';
 import Slots from '../components/battle/Slots';
 import { View, ImageBackground, Image } from 'react-native';
-import Desk from '../components/battle/Desk.js';
+import Deck from '../components/battle/Deck.js';
 import { b_bg, b_flag_left, b_flag_right, b_field } from '../constants/images.js';
 import Dims from '../utils/dimensions.js';
 import { block_height, flags_margin } from '../components/battle/css';
@@ -114,7 +114,7 @@ class LocationContainer extends RefluxComponent {
 					<Surrender />
 					<Reroll />
 					<Turns />
-					<Desk />
+					<Deck />
 					<View style={{
 						flexDirection: 'row',
 						flex:1,

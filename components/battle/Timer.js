@@ -10,7 +10,7 @@ import styles from './css';
 
 const w = Dims.pixel(308),
 	h = Dims.pixel(362),
-	font_size = Dims.pixel(75),
+	font_size = Dims.pixel(65),
 	margin_top = Dims.battleMarginTop();
 
 class BattleTimer extends RefluxComponent {
@@ -44,8 +44,11 @@ class BattleTimer extends RefluxComponent {
 				<Timer textStyle={{
 					fontFamily:'GothamMedium',
 					color:'#fcf23d',
-					fontSize:font_size
-				}} time={this.state.time} />
+					fontSize:font_size,
+					marginTop:Dims.pixel(50)
+				}} time={this.state.time} options={{
+					type:'short_eng'
+				}} />
 			</ImageBackground>
     )
   }

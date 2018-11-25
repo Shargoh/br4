@@ -1,9 +1,12 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { Text, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import Dims from '../../utils/dimensions.js';
 import { TEST_ANIM } from '../../constants/common.js';
+import styles from './css.js';
+import C from '../../engine/c.js';
+import { b_deck } from '../../constants/images.js';
 
 const w = Dims.widthPercent(4);
 
@@ -16,25 +19,12 @@ class Desk extends RefluxComponent {
 	}
 	render() {
 		return (
-			<TouchableOpacity style={{
-				justifyContent:'center',
-				alignItems:'center',
-				borderWidth:1,
-				borderColor:'#000',
-				borderRadius:w,
-				position:'absolute',
-				bottom:w,
-				right:w,
-				width:w*3,
-				backgroundColor:'yellow'
-			}} onPress={() => {
+			<TouchableOpacity style={styles.deck_box} onPress={() => {
 				if(TEST_ANIM){
 					BattleActions.event('test_enemy_animation');
 				}
 			}}>
-				<Text style={{
-					fontSize:24
-				}}>+</Text>
+				<Image style={styles.deck} source={C.getImage(b_deck)} />
 			</TouchableOpacity>
     )
   }

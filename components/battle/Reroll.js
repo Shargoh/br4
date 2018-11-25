@@ -38,10 +38,7 @@ class Info extends RefluxComponent {
 						BattleActions.reroll();
 					}
 				}}>
-					<Image style={[styles.surrender_btn,{
-						marginLeft:Dims.pixel(98),
-						marginTop:Dims.pixel(125)
-					}]} source={C.getImage(b_reroll)} />
+					<Image style={styles.surrender_btn} source={C.getImage(b_reroll)} />
 				</TouchableOpacity>
 			</ImageBackground>
     )

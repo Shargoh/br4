@@ -5,12 +5,19 @@ import GlobalActions, { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 import styles from './css';
 import Bot from './Bot';
-import { b_slot_bg } from '../../constants/images.js';
+import { b_slot_bg, b_card_hl } from '../../constants/images.js';
+import Dims from '../../utils/dimensions.js';
 
 class Slots extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
 		this.setSlots();
+
+		this.setState({
+			animated:{
+				hl_opacity:new Animated.Value(0)
+			}
+		});
 	}
 	/**
 	 * @param {String} action 
@@ -84,6 +91,16 @@ class Slots extends RefluxComponent {
 			if(cmp){
 				cmp.animateKick(data.data,slot,data.resolve);
 			}
+		}else if(action == 'hl_my_slots' && !this.props.enemy){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:1,
+				duration:200
+			}).start();
+		}else if(action == 'unhl'){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:0,
+				duration:200
+			}).start();
 		}
 	}
 	setSlots(){
@@ -128,6 +145,12 @@ class Slots extends RefluxComponent {
 								}
 							}}>
 								<Image style={styles.card_size} source={C.getImage(b_slot_bg)} />
+								<Animated.Image style={[styles.card_size,{
+									position:'absolute',
+									top:Dims.pixel(12),
+									// left:Dims.pixel(-8),
+									opacity:this.state.animated.hl_opacity
+								}]} source={C.getImage(b_card_hl)} />
 							</TouchableOpacity>
 						)
 					}

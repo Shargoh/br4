@@ -11,7 +11,8 @@ import RefluxComponent from '../../engine/views/reflux_component.js';
 import { Text, ImageBackground, TouchableOpacity, Animated, Image } from 'react-native';
 import styles, { block_height, card_size } from './css';
 import { BattleActions } from '../../engine/actions.js';
-import { b_slot_bg_wait, b_ribbon_gray, b_knife, b_heart, b_timer } from '../../constants/images.js';
+import { b_slot_bg_wait, b_ribbon_gray, b_knife, b_heart, b_timer, b_card_hl } from '../../constants/images.js';
+import Dims from '../../utils/dimensions.js';
 
 const W = card_size.w + card_size.my,
 	DK1 = 500, // время полета на цель
@@ -27,7 +28,8 @@ class Bot extends RefluxComponent {
 			animated:{
 				top:new Animated.Value(0),
 				left:new Animated.Value(0),
-				opacity:new Animated.Value(1)
+				opacity:new Animated.Value(1),
+				hl_opacity:new Animated.Value(0)
 			}
 		});
 
@@ -35,6 +37,22 @@ class Bot extends RefluxComponent {
 			this.animateAddInSlot = this.animateEnemyAddInSlot;
 		}else{
 			this.animateAddInSlot = this.animateFriendlyAddInSlot;
+		}
+	}
+	onAction(action,store){
+		if(
+			(action == 'hl_enemy_bots' && this.props.enemy) ||
+			(action == 'hl_my_bots' && !this.props.enemy)
+		){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:1,
+				duration:200
+			}).start();
+		}else if(action == 'unhl'){
+			Animated.timing(this.state.animated.hl_opacity,{
+				toValue:0,
+				duration:200
+			}).start();
 		}
 	}
 	animateEnemyAddInSlot(user,slot){
@@ -135,6 +153,8 @@ class Bot extends RefluxComponent {
 			start_cd = 0,
 			start_cd_cmp;
 
+		this.hl_opacity = new Animated.Value(0)
+
 		if(auras && auras.length){
 			let i = auras.length,
 				cd_auras = C.refs.ref('constants|cd_auras').value.split(',');
@@ -186,6 +206,12 @@ class Bot extends RefluxComponent {
 							</ImageBackground>
 						</ImageBackground>
 						{start_cd_cmp}
+						<Animated.Image style={[styles.card_size,{
+							position:'absolute',
+							marginTop:Dims.pixel(12),
+							marginLeft:Dims.pixel(-8),
+							opacity:this.state.animated.hl_opacity
+						}]} source={C.getImage(b_card_hl)} />
 					</Animated.View>
 				</TouchableOpacity>
 			</Animated.View>

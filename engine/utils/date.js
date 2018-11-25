@@ -75,6 +75,13 @@ var DateUtils =  {
                 if(s) arr.push(s +' с.');
                 
                 return arr.slice(0,2).join(' ');
+            case 'short_eng':
+                if(d) arr.push(d +'d');
+                if(d || h) arr.push(h +'h');
+                if(d || m) arr.push(m +'m');
+                if(s) arr.push(s +'s');
+                
+                return arr.slice(0,2).join(' ');
             default:
                 h += d*24;
                 if(h) arr.push(d ? h : th);

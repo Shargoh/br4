@@ -2,8 +2,9 @@ import React from 'react';
 import { Animated, ImageBackground, TouchableOpacity, Text, View, Image } from 'react-native';
 import { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, slots_block_width, block_height, card_size } from './css';
-import { b_card_back } from '../../constants/images';
+import styles, { screen_width, slots_block_width, block_height, card_size, info_height } from './css';
+import { b_card_back, b_knife, b_ribbon_gray, b_heart } from '../../constants/images';
+import Dims from '../../utils/dimensions';
 
 const minW = (screen_width - slots_block_width)/2,
 	maxW = minW + slots_block_width,
@@ -50,8 +51,8 @@ class EnemyTurn extends React.Component {
 			}
 
 			this.deg.interpolate = this.deg.anim.interpolate({
-				inputRange: [0,1],
-				outputRange: [this.deg.value,'0deg']
+				inputRange: [0,1,2],
+				outputRange: [this.deg.value,'0deg','5deg']
 			});
 		}
 	}
@@ -62,47 +63,78 @@ class EnemyTurn extends React.Component {
 	 */
 	runAnimation(user,slot,line){
 		return new Promise((resolve,reject) => {
-			Animated.sequence([
-				Animated.parallel([
-					Animated.timing(this.state.anim.top,{
-						toValue:block_height,
-						duration:D1
+			// Animated.sequence([
+			// 	Animated.parallel([
+			// 		// Animated.timing(this.state.anim.top,{
+			// 		// 	toValue:block_height,
+			// 		// 	duration:D1
+			// 		// }),
+			// 		// Animated.timing(this.state.anim.left,{
+			// 		// 	toValue:minW + W + card_size.my - this.props.left,
+			// 		// 	duration:D1
+			// 		// }),
+			// 		Animated.timing(this.state.anim.zIndex,{
+			// 			toValue:1,
+			// 			duration:0
+			// 		}),
+			// 		Animated.timing(this.deg.anim,{
+			// 			toValue:1,
+			// 			duration:D1
+			// 		}),
+			// 		Animated.sequence([
+			// 			Animated.timing(this.state.anim.rotate,{
+			// 				toValue: 0,
+			// 				duration: D1/2
+			// 			}),
+			// 			Animated.timing(this.state.anim.rotate,{
+			// 				toValue: 1,
+			// 				duration: D1/2
+			// 			})
+			// 		])
+			// 	]),
+			// 	Animated.parallel([
+			// 		Animated.timing(this.state.anim.left,{
+			// 			toValue:minW + (slot - 1)*(W + card_size.my) - this.props.left,
+			// 			duration:D2,
+			// 			delay:DELAY
+			// 		}),
+			// 		Animated.timing(this.state.anim.top,{
+			// 			toValue:block_height*(line + 1),
+			// 			duration:D2,
+			// 			delay:DELAY
+			// 		})
+			// 	])
+			// ]).start(() => {
+			// 	resolve();
+			// });
+			Animated.parallel([
+				Animated.timing(this.state.anim.zIndex,{
+					toValue:1,
+					duration:0
+				}),
+				Animated.timing(this.deg.anim,{
+					toValue:1,
+					duration:D1
+				}),
+				Animated.sequence([
+					Animated.timing(this.state.anim.rotate,{
+						toValue: 0,
+						duration: D1/2
 					}),
-					Animated.timing(this.state.anim.left,{
-						toValue:minW + W + card_size.my - this.props.left,
-						duration:D1
-					}),
-					Animated.timing(this.state.anim.zIndex,{
-						toValue:1,
-						duration:0
-					}),
-					Animated.timing(this.deg.anim,{
-						toValue:1,
-						duration:D1
-					}),
-					Animated.sequence([
-						Animated.timing(this.state.anim.rotate,{
-							toValue: 0,
-							duration: D1/2
-						}),
-						Animated.timing(this.state.anim.rotate,{
-							toValue: 1,
-							duration: D1/2
-						})
-					])
-				]),
-				Animated.parallel([
-					Animated.timing(this.state.anim.left,{
-						toValue:minW + (slot - 1)*(W + card_size.my) - this.props.left,
-						duration:D2,
-						delay:DELAY
-					}),
-					Animated.timing(this.state.anim.top,{
-						toValue:block_height*(line + 1),
-						duration:D2,
-						delay:DELAY
+					Animated.timing(this.state.anim.rotate,{
+						toValue: 1,
+						duration: D1/2
 					})
-				])
+				]),
+				Animated.timing(this.state.anim.left,{
+					// toValue:minW + (slot - 1)*(W + card_size.my) - this.props.left,
+					toValue:screen_width/2 + (slot - 1 - 2.5)*(W + card_size.my*2) + card_size.my - this.props.left,
+					duration:D1
+				}),
+				Animated.timing(this.state.anim.top,{
+					toValue:block_height*(line + 1),
+					duration:D1
+				})
 			]).start(() => {
 				resolve();
 			});
@@ -124,11 +156,15 @@ class EnemyTurn extends React.Component {
 				}),
 				Animated.parallel([
 					Animated.timing(this.state.anim.left,{
-						toValue:screen_width + minW,
+						toValue:screen_width - Dims.pixel(410) - this.props.left,
 						duration:0
 					}),
 					Animated.timing(this.state.anim.top,{
-						toValue:0,
+						toValue:3*block_height + 2*info_height + Dims.pixel(-30),
+						duration:0
+					}),
+					Animated.timing(this.deg.anim,{
+						toValue:2,
 						duration:0
 					})
 				]),
@@ -136,14 +172,20 @@ class EnemyTurn extends React.Component {
 					toValue:1,
 					duration:0
 				}),
-				Animated.timing(this.state.anim.left,{
-					toValue:0,
-					duration:D4
-				}),
-				Animated.timing(this.deg.anim,{
-					toValue:0,
-					duration:D4
-				})
+				Animated.parallel([
+					Animated.timing(this.state.anim.left,{
+						toValue:0,
+						duration:D4
+					}),
+					Animated.timing(this.state.anim.top,{
+						toValue:0,
+						duration:D4
+					}),
+					Animated.timing(this.deg.anim,{
+						toValue:0,
+						duration:D4
+					})
+				])
 			]).start(() => {
 				resolve();
 			});
@@ -177,10 +219,14 @@ class EnemyTurn extends React.Component {
 
 			inside = (
 				<ImageBackground style={styles.card_size} source={C.getImage(shape.thumb)} resizeMode="contain">
-					<Text style={{
-						fontSize:30,
-						color:'lime'
-					}}>{mob.timed.hp[0]}</Text>
+					<ImageBackground style={styles.dmg_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+						<Image style={styles.icon} source={C.getImage(b_knife)} resizeMode="contain" />
+						<Text style={styles.card_text}>{mob.stats.stats.damage}</Text>
+					</ImageBackground>
+					<ImageBackground style={styles.hp_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
+						<Image style={styles.icon} source={C.getImage(b_heart)} resizeMode="contain" />
+						<Text style={styles.card_text}>{mob.timed.hp[0]}</Text>
+					</ImageBackground>
 				</ImageBackground>
 			)
 		}else{
@@ -191,7 +237,7 @@ class EnemyTurn extends React.Component {
 
 		if(this.props.index == 1){
 			style = {
-				marginTop:card_size.h/8
+				marginTop:card_size.h/16
 			}
 		}
 
