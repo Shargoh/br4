@@ -13,6 +13,7 @@ import styles, { block_height, card_size } from './css';
 import { BattleActions } from '../../engine/actions.js';
 import { b_slot_bg_wait, b_ribbon_gray, b_knife, b_heart, b_timer, b_card_hl } from '../../constants/images.js';
 import Dims from '../../utils/dimensions.js';
+import BattleUtils from '../../utils/battle.js';
 
 const W = card_size.w + card_size.my,
 	DK1 = 500, // время полета на цель
@@ -149,43 +150,12 @@ class Bot extends RefluxComponent {
 	render() {
 		var store = this.props.store,
 			shape = store.getShape('thumb'),
-			auras = store.get('aura'),
-			start_cd = 0,
-			start_cd_cmp;
+			auras = store.get('aura');
 
-		this.hl_opacity = new Animated.Value(0)
-
-		if(auras && auras.length){
-			let i = auras.length,
-				cd_auras = C.refs.ref('constants|cd_auras').value.split(',');
-
-			while(i--){
-				let aura = auras[i];
-
-				if(cd_auras.indexOf(aura[0].toString()) != -1){
-					start_cd = Math.max(start_cd,aura[1]);
-				}
-			}
-		}
-
-		if(start_cd){
-			start_cd_cmp = (
-				<ImageBackground style={[styles.card_size,{
-					position:'absolute',
-					marginTop:-1,
-					marginLeft:-1,
-					justifyContent:'center',
-					alignItems:'center',
-					flexDirection:'row'
-				}]} source={C.getImage(b_slot_bg_wait)} resizeMode="contain">
-					<Image style={styles.icon} source={C.getImage(b_timer)} resizeMode="contain" />
-					<Text style={styles.wait_text}>{start_cd}</Text>
-				</ImageBackground>
-			)
-		}
+		this.hl_opacity = new Animated.Value(0);
 
 		return (
-			<Animated.View style={[styles.card,{
+			<Animated.View style={[styles.card_size,{
 				top:this.state.animated.top,
 				left:this.state.animated.left
 			}]}>
@@ -205,7 +175,7 @@ class Bot extends RefluxComponent {
 								<Text style={styles.card_text}>{store.get('timed').hp[0]}</Text>
 							</ImageBackground>
 						</ImageBackground>
-						{start_cd_cmp}
+						{BattleUtils.compileBotDelayCmp(auras)}
 						<Animated.Image style={[styles.card_size,{
 							position:'absolute',
 							marginTop:Dims.pixel(12),

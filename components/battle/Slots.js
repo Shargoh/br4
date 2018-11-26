@@ -1,6 +1,6 @@
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { TouchableOpacity, Image, View, Text, Animated } from 'react-native';
+import { TouchableOpacity, Image, View, ImageBackground, Animated } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 import styles from './css';
@@ -135,7 +135,9 @@ class Slots extends RefluxComponent {
 
 					if(mob && !mob.isDead()){
 						return (
-							<Bot key={slot_id} ref={'slot'+slot_id} enemy={this.props.enemy} slot_id={slot_id} store={mob} />
+							<ImageBackground style={styles.card} source={C.getImage(b_slot_bg)} key={slot_id}>
+								<Bot ref={'slot'+slot_id} enemy={this.props.enemy} slot_id={slot_id} store={mob} />
+							</ImageBackground>
 						)
 					}else{
 						return (

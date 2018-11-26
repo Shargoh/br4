@@ -8,11 +8,6 @@ import C from '../../engine/c.js';
 import { b_timer_bg } from '../../constants/images.js';
 import styles from './css';
 
-const w = Dims.pixel(308),
-	h = Dims.pixel(362),
-	font_size = Dims.pixel(65),
-	margin_top = Dims.battleMarginTop();
-
 class BattleTimer extends RefluxComponent {
 	componentWillMount(){
 		this.bindStore('Battle');
@@ -41,12 +36,7 @@ class BattleTimer extends RefluxComponent {
 	render() {
 		return (
 			<ImageBackground style={styles.timer_box} source={C.getImage(b_timer_bg)}>
-				<Timer textStyle={{
-					fontFamily:'GothamMedium',
-					color:'#fcf23d',
-					fontSize:font_size,
-					marginTop:Dims.pixel(50)
-				}} time={this.state.time} options={{
+				<Timer textStyle={styles.timer_text} time={this.state.time} options={{
 					type:'short_eng'
 				}} />
 			</ImageBackground>

@@ -22,3 +22,4 @@ export const b_reroll_p = 'cards/card_game_button_reroll_pressed.png';
 export const b_reroll_na = 'cards/card_game_button_reroll_na.png';
 export const b_deck = 'cards/card_game_card_deck.png';
 export const b_card_hl = 'cards/card_big_up.png';
+export const b_ring = 'cards/card_game_ring.png';

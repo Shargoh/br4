@@ -14,6 +14,7 @@ export const turn_block_width = card_size.w*3;
 export const slots_block_width = card_size.w*5;
 export const block_height = card_size.h;
 export const info_height = Dims.pixel(490);
+export const turn_margin = -card_size.w/6;
 
 var width_k = screen_height/Dims.eHeight,
 	_flags_margin = (screen_width/width_k - Dims.eWidth)*width_k,
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
 	turn:{
 		height:card_size.h,
 		width:card_size.w,
-		marginLeft:-card_size.w/6,
-		marginRight:-card_size.w/6,
+		marginLeft:turn_margin,
+		marginRight:turn_margin,
 		alignItems:'center',
 		justifyContent:'center'
 	},
@@ -112,12 +113,18 @@ const styles = StyleSheet.create({
 		fontFamily:'Kenyan',
 		fontSize:Dims.pixel(50),
 		color:'#fdf9bf',
-		marginTop:Dims.height(-Dims.eHeight/10)
+		marginTop:Dims.height(-Dims.eHeight/10),
+		textShadowColor: 'rgba(0, 0, 0, 0.5)',
+		textShadowOffset: {width: Dims.pixel(5), height: Dims.pixel(5)},
+		textShadowRadius: Dims.pixel(5)
 	},
 	wait_text:{
 		fontFamily:'Kenyan',
 		fontSize:Dims.pixel(160),
-		color:'#b7b7b7'
+		color:'#b7b7b7',
+		textShadowColor: 'rgba(0, 0, 0, 0.5)',
+		textShadowOffset: {width: 1, height: 1},
+		textShadowRadius: Dims.pixel(4),
 	},
 	hero:{
 		width:info_height*sin45,
@@ -141,7 +148,10 @@ const styles = StyleSheet.create({
 		fontFamily:'Kenyan',
 		fontSize:Dims.pixel(55),
 		color:'#fdf9bf',
-		textAlign:'center'
+		textAlign:'center',
+		textShadowColor: 'rgba(0, 0, 0, 0.5)',
+		textShadowOffset: {width: Dims.pixel(5), height: Dims.pixel(5)},
+		textShadowRadius: Dims.pixel(5)
 	},
 	timer_box:{
 		justifyContent:'center',
@@ -151,6 +161,15 @@ const styles = StyleSheet.create({
 		left:Dims.pixel(60),
 		width:Dims.pixel(308),
 		height:Dims.pixel(362)
+	},
+	timer_text:{
+		fontFamily:'GothamMedium',
+		color:'#fcf23d',
+		fontSize:Dims.pixel(65),
+		marginTop:Dims.pixel(50),
+		textShadowColor: 'rgb(255, 0, 0)',
+		textShadowOffset: {width: -1, height: 1},
+		textShadowRadius: Dims.pixel(21)
 	},
 	surrender_box:{
 		position:'absolute',

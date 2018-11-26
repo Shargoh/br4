@@ -1,10 +1,10 @@
 
 import React from 'react';
 import RefluxComponent from '../../engine/views/reflux_component.js';
-import { TouchableOpacity, ImageBackground, View, Text } from 'react-native';
+import { View } from 'react-native';
 import { BattleActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
-import styles, { block_height, turn_block_width, screen_width, card_size } from './css.js';
+import styles, { screen_width, card_size, turn_margin } from './css.js';
 import EnemyTurn from './EnemyTurn.js';
 import { TEST_ANIM } from '../../constants/common.js';
 
@@ -109,8 +109,7 @@ class Turns extends RefluxComponent {
 			// }}>
 			<View style={[styles.turn_block,styles.enemy_turn_block]}>
 				{this.state.turns.map((data,index) => {
-					const minW = (screen_width - turn_block_width)/2,
-						left = minW + index*(card_size.w + card_size.my);
+					const left = screen_width/2 + (index - 1.5)*(card_size.w + turn_margin*2) + turn_margin;
 
 					return (
 						<EnemyTurn 

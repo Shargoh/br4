@@ -2,22 +2,19 @@ import React from 'react';
 import { Animated, ImageBackground, TouchableOpacity, Text, View, Image } from 'react-native';
 import { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, slots_block_width, block_height, card_size, info_height } from './css';
+import styles, { screen_width, block_height, card_size, info_height } from './css';
 import { b_card_back, b_knife, b_ribbon_gray, b_heart } from '../../constants/images';
 import Dims from '../../utils/dimensions';
+import BattleUtils from '../../utils/battle';
 
-const minW = (screen_width - slots_block_width)/2,
-	maxW = minW + slots_block_width,
-	W = card_size.w,
-	H = card_size.h,
-	D1 = 500, // длительность первого переноса карты
-	DELAY = 500, // задержка между переносами
-	D2 = 500, // длительность второго переноса карты
-	D3 = 200, // длительность скрывания карты
+const W = card_size.w,
+	D1 = 500, // длительность переноса карты
+	DELAY = 500, // задержка между переносом и скрыванием
+	D3 = 0, // длительность скрывания карты
 	D4 = 500; // длительность прилетания карты
 
 export function calcActionDuration(){
-	return D1 + DELAY + D2 + D3 + D4;
+	return D1 + D3 + D4;
 }
 
 class EnemyTurn extends React.Component {
@@ -28,9 +25,10 @@ class EnemyTurn extends React.Component {
 				top:new Animated.Value(0),
 				opacity:new Animated.Value(1),
 				rotate: new Animated.Value(1),
-				zIndex: new Animated.Value(0)
+				zIndex: new Animated.Value(0 + this.props.index)
 			},
-			flipped:false
+			flipped:false,
+			margin_top:this.props.index == 1 ? card_size.h/16 : 0
 		});
 
 		if(!this.deg){
@@ -63,53 +61,9 @@ class EnemyTurn extends React.Component {
 	 */
 	runAnimation(user,slot,line){
 		return new Promise((resolve,reject) => {
-			// Animated.sequence([
-			// 	Animated.parallel([
-			// 		// Animated.timing(this.state.anim.top,{
-			// 		// 	toValue:block_height,
-			// 		// 	duration:D1
-			// 		// }),
-			// 		// Animated.timing(this.state.anim.left,{
-			// 		// 	toValue:minW + W + card_size.my - this.props.left,
-			// 		// 	duration:D1
-			// 		// }),
-			// 		Animated.timing(this.state.anim.zIndex,{
-			// 			toValue:1,
-			// 			duration:0
-			// 		}),
-			// 		Animated.timing(this.deg.anim,{
-			// 			toValue:1,
-			// 			duration:D1
-			// 		}),
-			// 		Animated.sequence([
-			// 			Animated.timing(this.state.anim.rotate,{
-			// 				toValue: 0,
-			// 				duration: D1/2
-			// 			}),
-			// 			Animated.timing(this.state.anim.rotate,{
-			// 				toValue: 1,
-			// 				duration: D1/2
-			// 			})
-			// 		])
-			// 	]),
-			// 	Animated.parallel([
-			// 		Animated.timing(this.state.anim.left,{
-			// 			toValue:minW + (slot - 1)*(W + card_size.my) - this.props.left,
-			// 			duration:D2,
-			// 			delay:DELAY
-			// 		}),
-			// 		Animated.timing(this.state.anim.top,{
-			// 			toValue:block_height*(line + 1),
-			// 			duration:D2,
-			// 			delay:DELAY
-			// 		})
-			// 	])
-			// ]).start(() => {
-			// 	resolve();
-			// });
 			Animated.parallel([
 				Animated.timing(this.state.anim.zIndex,{
-					toValue:1,
+					toValue:1 + this.props.index,
 					duration:0
 				}),
 				Animated.timing(this.deg.anim,{
@@ -127,12 +81,11 @@ class EnemyTurn extends React.Component {
 					})
 				]),
 				Animated.timing(this.state.anim.left,{
-					// toValue:minW + (slot - 1)*(W + card_size.my) - this.props.left,
-					toValue:screen_width/2 + (slot - 1 - 2.5)*(W + card_size.my*2) + card_size.my - this.props.left,
+					toValue:screen_width/2 + (slot - 3.5)*(W + card_size.my*2) + card_size.my - this.props.left,
 					duration:D1
 				}),
 				Animated.timing(this.state.anim.top,{
-					toValue:block_height*(line + 1),
+					toValue:block_height*(line) + info_height - this.state.margin_top/2,
 					duration:D1
 				})
 			]).start(() => {
@@ -152,7 +105,8 @@ class EnemyTurn extends React.Component {
 			Animated.sequence([
 				Animated.timing(this.state.anim.opacity,{
 					toValue:0,
-					duration:D3
+					duration:D3,
+					delay:DELAY
 				}),
 				Animated.parallel([
 					Animated.timing(this.state.anim.left,{
@@ -195,7 +149,7 @@ class EnemyTurn extends React.Component {
 					user:null,
 					flipped:false
 				})
-			},D3/2);
+			},D3/2 + DELAY);
 		});
 	}
 	render(){
@@ -237,7 +191,7 @@ class EnemyTurn extends React.Component {
 
 		if(this.props.index == 1){
 			style = {
-				marginTop:card_size.h/16
+				marginTop:this.state.margin_top
 			}
 		}
 
@@ -259,6 +213,7 @@ class EnemyTurn extends React.Component {
 				// });
 			}}>
 				{inside}
+				{this.state.user ? BattleUtils.compileBotDelayCmp(this.state.user.aura) : undefined}
 			</Animated.View>
 		)
 	}

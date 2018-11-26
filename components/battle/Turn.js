@@ -7,18 +7,19 @@ import C from '../../engine/c';
 import styles, { screen_width, slots_block_width, block_height, card_size, info_height } from './css';
 import { b_heart, b_ribbon_gray, b_knife, b_card_back } from '../../constants/images';
 import Dims from '../../utils/dimensions';
+import BattleUtils from '../../utils/battle';
 
-const minW = (screen_width - slots_block_width)/2,
-	cardW = card_size.w + card_size.my,
-	maxW = minW + slots_block_width,
+const minW = BattleUtils.calcSlotLeft(1),
+	cardW = card_size.w + card_size.my*2,
+	maxW = BattleUtils.calcSlotLeft(6),
 	W = card_size.w,
 	H = card_size.h,
-	bh2 = block_height*2,
-	bh3 = block_height*3,
-	bh4 = block_height*4,
-	bh5 = block_height*5,
-	cl = minW + 2*cardW,
-	cr = maxW - 2*cardW,
+	bh2 = block_height + info_height,
+	bh3 = block_height*2 + info_height,
+	bh4 = block_height*3 + info_height,
+	bh5 = block_height*3 + info_height*2,
+	cl = BattleUtils.calcSlotLeft(2.5),
+	cr = BattleUtils.calcSlotLeft(4.5),
 	KS_DELAY = 500,
 	KS = 1000,
 	D1 = 1000, // время появления карты на колоде
@@ -408,10 +409,10 @@ class Turn extends DragComponent {
 	 * если блок находится вне слотов (по высоте) - значит он равен 100, т.к. это герой
 	 */
 	getBlock(gesture){
-		let x = gesture.moveX - this.state.dx - minW,
+		let x = gesture.moveX - this.state.dx - minW + card_size.my,
 			y = gesture.moveY - this.state.dy;
 
-		if(y < bh2 || y > bh5){
+		if(y < bh2 || y > bh4){
 			return 100;
 		}else{
 			// console.log(Math.floor(x/cardW) + 1,x,minW);

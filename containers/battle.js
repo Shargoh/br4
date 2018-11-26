@@ -11,7 +11,7 @@ import EnemyTurns from '../components/battle/EnemyTurns.js';
 import Slots from '../components/battle/Slots';
 import { View, ImageBackground, Image } from 'react-native';
 import Deck from '../components/battle/Deck.js';
-import { b_bg, b_flag_left, b_flag_right, b_field } from '../constants/images.js';
+import { b_bg, b_flag_left, b_flag_right, b_field, b_ring } from '../constants/images.js';
 import Dims from '../utils/dimensions.js';
 import { block_height, flags_margin } from '../components/battle/css';
 
@@ -123,6 +123,13 @@ class LocationContainer extends RefluxComponent {
 					}}>
 						<Info user={this.user.attributes} enemy={false} />
 					</View>
+					<Image style={{
+						position:'absolute',
+						bottom:0,
+						left:flags_margin + Dims.pixel(320),
+						width:Dims.pixel(233),
+						height:Dims.pixel(58)
+					}} source={C.getImage(b_ring)} />
 				</View>
 			</ImageBackground>
 		)
