@@ -169,6 +169,7 @@ class Bot extends RefluxComponent {
 							<ImageBackground style={styles.dmg_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
 								<Image style={styles.icon} source={C.getImage(b_knife)} resizeMode="contain" />
 								<Text style={styles.card_text}>{store.get('stats').stats.damage}</Text>
+								{/* {BattleUtils.compileCardText(store.get('stats').stats.damage)} */}
 							</ImageBackground>
 							<ImageBackground style={styles.hp_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
 								<Image style={styles.icon} source={C.getImage(b_heart)} resizeMode="contain" />

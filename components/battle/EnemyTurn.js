@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, ImageBackground, TouchableOpacity, Text, View, Image } from 'react-native';
 import { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, block_height, card_size, info_height } from './css';
+import styles, { screen_width, block_height, card_size, info_height, flags_margin } from './css';
 import { b_card_back, b_knife, b_ribbon_gray, b_heart } from '../../constants/images';
 import Dims from '../../utils/dimensions';
 import BattleUtils from '../../utils/battle';
@@ -110,7 +110,7 @@ class EnemyTurn extends React.Component {
 				}),
 				Animated.parallel([
 					Animated.timing(this.state.anim.left,{
-						toValue:screen_width - Dims.pixel(410) - this.props.left,
+						toValue:screen_width - Dims.pixel(645) - flags_margin - this.props.left,
 						duration:0
 					}),
 					Animated.timing(this.state.anim.top,{

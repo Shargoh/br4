@@ -4,7 +4,7 @@ import DragComponent from '../../engine/views/drag_component';
 import { Image, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, slots_block_width, block_height, card_size, info_height } from './css';
+import styles, { screen_width, slots_block_width, block_height, card_size, info_height, flags_margin } from './css';
 import { b_heart, b_ribbon_gray, b_knife, b_card_back } from '../../constants/images';
 import Dims from '../../utils/dimensions';
 import BattleUtils from '../../utils/battle';
@@ -194,10 +194,10 @@ class Turn extends DragComponent {
 		}else{
 			inside = (
 				<ImageBackground style={styles.card} source={C.getImage(ref.desc.images.active)} resizeMode="contain">
-					<Text style={{
+					{/* <Text style={{
 						fontSize:40,
 						color:'blue'
-					}}>{this.getTargetType()}</Text>
+					}}>{this.getTargetType()}</Text> */}
 					<ImageBackground style={styles.dmg_bg} source={C.getImage(b_ribbon_gray)} resizeMode="contain">
 						<Image style={styles.icon} source={C.getImage(b_knife)} resizeMode="contain" />
 						<Text style={styles.card_text}>{Number(prognoz.top.prognoz_template) || '?'}</Text>
@@ -288,7 +288,7 @@ class Turn extends DragComponent {
 				Animated.timing(this.state.pan, {
 					duration: 0,
 					toValue: {
-						x: screen_width - Dims.pixel(410) - this.pageX, 
+						x: screen_width - Dims.pixel(645) - flags_margin - this.pageX, 
 						y: Dims.pixel(-30)
 					},
 				}),

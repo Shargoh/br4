@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
 		alignItems:'center',
 		position:'absolute',
 		top:margin_top + Dims.pixel(46),
-		left:Dims.pixel(60),
+		left:flags_margin + Dims.pixel(285),
 		width:Dims.pixel(308),
 		height:Dims.pixel(362)
 	},
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
 	surrender_box:{
 		position:'absolute',
 		top:margin_top - Dims.pixel(45),
-		right:Dims.pixel(40),
+		right:flags_margin + Dims.pixel(265),
 		width:Dims.pixel(353),
 		height:Dims.pixel(477),
 		transform:[{rotate:'180deg'}]
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
 	reroll_box:{
 		position:'absolute',
 		bottom:Dims.pixel(50),
-		left:Dims.pixel(40),
+		left:flags_margin + Dims.pixel(265),
 		width:Dims.pixel(353),
 		height:Dims.pixel(477)
 	},
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
 	deck_box:{
 		position:'absolute',
 		bottom:Dims.pixel(0),
-		right:Dims.pixel(40),
+		right:flags_margin + Dims.pixel(265),
 		width:Dims.pixel(383),
 		height:Dims.pixel(559)
 	},
