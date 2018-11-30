@@ -79,7 +79,9 @@ class LocationContainer extends RefluxComponent {
 				<View style={{
 					width:'100%',
 					height:field_height,
-					marginTop:-margin_top
+					marginTop:-margin_top,
+					alignItems:'center',
+					justifyContent:'center'
 				}}>
 					<EnemyTurns />
 					<View style={{
@@ -115,14 +117,14 @@ class LocationContainer extends RefluxComponent {
 					<Reroll />
 					<Turns />
 					<Deck />
-					<View style={{
+					{/* <View style={{
 						flexDirection: 'row',
 						flex:1,
 						alignItems:'center',
 						justifyContent:'center',
-					}}>
+					}}> */}
 						<Info user={this.user.attributes} enemy={false} />
-					</View>
+					{/* </View> */}
 					<Image style={{
 						position:'absolute',
 						bottom:0,

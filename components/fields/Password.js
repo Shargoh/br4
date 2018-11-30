@@ -11,7 +11,7 @@ class PasswordInput extends React.Component {
 				placeholder='Password'
 				autoCorrect={false}
 				keyboardAppearance='dark'
-				keyboardType='visible-password'
+				secureTextEntry={true}
         onChangeText={(text) => {
 					if(this.props.onChangePassword){
 						this.props.onChangePassword(text);

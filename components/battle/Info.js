@@ -7,7 +7,7 @@ import { BattleActions } from '../../engine/actions.js';
 import { b_avatar_border, b_avatar_signs, b_avatar_heart } from '../../constants/images.js';
 import Dims from '../../utils/dimensions.js';
 
-const top = Dims.pixel(56),
+const top = Dims.pixel(78),
 	bottom = Dims.pixel(73);
 
 class Info extends RefluxComponent {
@@ -39,6 +39,7 @@ class Info extends RefluxComponent {
 	render() {
 		var user_image,
 			flip,
+			style,
 			hp;
 
 		if(this.props.user){
@@ -53,14 +54,16 @@ class Info extends RefluxComponent {
 				transform:[{rotateX:'180deg'}],
 				bottom:bottom
 			}
+			style = styles.enemy_avatar_box;
 		}else{
 			flip = {
 				top:top
 			}
+			style = styles.my_avatar_box;
 		}
 
 		return (
-			<TouchableOpacity style={[styles.avatar_size,styles.avatar_box]} onPress={() => {
+			<TouchableOpacity style={[styles.avatar_size,styles.avatar_box,style]} onPress={() => {
 				var enemy = this.store.getEnemy();
 
 				BattleActions.event('select_hero',enemy && enemy.battle.ekey == this.props.user.battle.ekey);

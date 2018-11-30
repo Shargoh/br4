@@ -25,7 +25,7 @@ _flags_margin = Math.max(-left_flag_w*0.6,_flags_margin);
 
 export const flags_margin = _flags_margin;
 
-const sin45 = Math.sin(45*Math.PI/180);
+const sin45 = Math.sin(43*Math.PI/180);
 
 const styles = StyleSheet.create({
   text:{
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
 		justifyContent:'center'
 	},
 	my_turn_block:{
-		bottom:0
+		top:block_height*3 + info_height*2
 	},
 	enemy_turn_block:{
 		top:0
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 		marginTop:Dims.pixel(5)
 	},
 	card_text:{
-		fontFamily:'Kenyan',
+		fontFamily:'KenyanCoffeeRg-Bold',
 		fontSize:Dims.pixel(50),
 		color:'#fdf9bf',
 		marginTop:Dims.height(-Dims.eHeight/10),
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
 		textShadowRadius: Dims.pixel(5)
 	},
 	wait_text:{
-		fontFamily:'Kenyan',
+		fontFamily:'KenyanCoffeeRg-Bold',
 		fontSize:Dims.pixel(160),
 		color:'#b7b7b7',
 		textShadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -136,7 +136,14 @@ const styles = StyleSheet.create({
 	},
 	avatar_box:{
 		alignItems:'center',
-		justifyContent:'center'
+		justifyContent:'center',
+		position:'absolute'
+	},
+	enemy_avatar_box:{
+		top:block_height
+	},
+	my_avatar_box:{
+		top:block_height*3 + info_height
 	},
 	avatar_heart:{
 		position:'absolute',
@@ -145,7 +152,7 @@ const styles = StyleSheet.create({
 		height:Dims.pixel(98)
 	},
 	avatar_hp:{
-		fontFamily:'Kenyan',
+		fontFamily:'KenyanCoffeeRg-Bold',
 		fontSize:Dims.pixel(55),
 		color:'#fdf9bf',
 		textAlign:'center',
@@ -163,7 +170,7 @@ const styles = StyleSheet.create({
 		height:Dims.pixel(362)
 	},
 	timer_text:{
-		fontFamily:'GothamMedium',
+		fontFamily:'Gotham-Medium',
 		color:'#fcf23d',
 		fontSize:Dims.pixel(65),
 		marginTop:Dims.pixel(50),

@@ -5,7 +5,7 @@ export const IMAGE_URL = 'https://satimetobehero.cdnvideo.ru/';
 export const HOST_URL = 'https://test-mobile.timetobehero.ru/';
 export const WS = 'wss://test-mobile.timetobehero.ru/ws';
 export const IS_TEST = true;
-export const TEST_ANIM = false;
+export const TEST_ANIM = true;
 export const APP_NAME = 'com.br4';
 
 export const ACTIVE_SLOT = 32;
