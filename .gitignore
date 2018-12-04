@@ -60,3 +60,6 @@ buck-out/
 # images
 #
 images/
+
+# platform specific files
+utils/payment/get.js
