@@ -15,6 +15,7 @@ export const slots_block_width = card_size.w*5;
 export const block_height = card_size.h;
 export const info_height = Dims.pixel(490);
 export const turn_margin = -card_size.w/6;
+export const bottom_delta = battle_height - 4*block_height - 2*info_height;
 
 var width_k = screen_height/Dims.eHeight,
 	_flags_margin = (screen_width/width_k - Dims.eWidth)*width_k,

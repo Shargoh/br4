@@ -4,7 +4,7 @@ import DragComponent from '../../engine/views/drag_component';
 import { Image, Animated, ImageBackground, TouchableOpacity, Text } from 'react-native';
 import GlobalActions, { BattleActions } from '../../engine/actions';
 import C from '../../engine/c';
-import styles, { screen_width, slots_block_width, block_height, card_size, info_height, flags_margin } from './css';
+import styles, { screen_width, slots_block_width, block_height, card_size, info_height, flags_margin, bottom_delta } from './css';
 import { b_heart, b_ribbon_gray, b_knife, b_card_back } from '../../constants/images';
 import Dims from '../../utils/dimensions';
 import BattleUtils from '../../utils/battle';
@@ -22,9 +22,9 @@ const minW = BattleUtils.calcSlotLeft(1),
 	cr = BattleUtils.calcSlotLeft(4.5),
 	KS_DELAY = 500,
 	KS = 1000,
-	D1 = 1000, // время появления карты на колоде
+	D1 = 200, // время появления карты на колоде
 	D2 = 500, // время полета карты из колоды
-	D2_DELAY = 200; // задержка перед полетом карты из колоды
+	D2_DELAY = 0; // задержка перед полетом карты из колоды
 
 /**
  * flags
@@ -289,7 +289,7 @@ class Turn extends DragComponent {
 					duration: 0,
 					toValue: {
 						x: screen_width - Dims.pixel(645) - flags_margin - this.pageX, 
-						y: Dims.pixel(-30)
+						y: bottom_delta + Dims.pixel(-30)
 					},
 				}),
 				Animated.timing(this.deg.anim,{
@@ -329,7 +329,6 @@ class Turn extends DragComponent {
 				y = -1*block_height - info_height;
 			}
 
-			y -= Dims.pixel(32);
 			y -= this.props.margin_top;
 
 			// var slot_x = minW + (slot_id - 1)*(W + card_size.my) + card_size.my/2;
@@ -364,36 +363,34 @@ class Turn extends DragComponent {
 				this.setState({
 					flipped:false
 				});
-			},D1 + D2_DELAY + D2/2);
+			},D2_DELAY + D2/2);
 
-			Animated.sequence([
+			Animated.parallel([
 				Animated.timing(this.state.opacity, {
 					toValue: 1,
 					duration: D1
 				}),
-				Animated.parallel([
-					Animated.sequence([
-						Animated.timing(this.scale.anim,{
-							toValue:0,
-							delay:D2_DELAY,
-							duration:D2/2
-						}),
-						Animated.timing(this.scale.anim,{
-							toValue:1,
-							duration:D2/1
-						})
-					]),
-					Animated.timing(this.state.pan, {
-						duration: D2,
-						delay: D2_DELAY,
-						toValue: { x: 0, y: 0 }
+				Animated.sequence([
+					Animated.timing(this.scale.anim,{
+						toValue:0,
+						delay:D2_DELAY,
+						duration:D2/2
 					}),
-					Animated.timing(this.deg.anim, {
-						duration: D2,
-						delay: D2_DELAY,
-						toValue: 0
+					Animated.timing(this.scale.anim,{
+						toValue:1,
+						duration:D2/1
 					})
-				])
+				]),
+				Animated.timing(this.state.pan, {
+					duration: D2,
+					delay: D2_DELAY,
+					toValue: { x: 0, y: 0 }
+				}),
+				Animated.timing(this.deg.anim, {
+					duration: D2,
+					delay: D2_DELAY,
+					toValue: 0
+				})
 			]).start(() => {
 				this._waiting_reset_animation = false;
 				this.setPageX();

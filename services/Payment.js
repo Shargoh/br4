@@ -3,7 +3,7 @@
 
  */
 import Base from './Base.js';
-import payment from '../utils/payment/ios';
+import payment from '../utils/payment/get';
 import request from '../utils/request.js';
 import { IS_TEST } from '../constants/common.js';
 
