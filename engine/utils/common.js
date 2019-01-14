@@ -111,7 +111,7 @@ const CommonUtils = {
         }
         
         return arr;
-    },
+    }
 };
 
 export default CommonUtils;

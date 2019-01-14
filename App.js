@@ -5,6 +5,7 @@ import { StatusBar, StyleSheet, Text, View, ImageBackground } from 'react-native
 import GameApp from './engine/app.js';
 import BaseLayer from './layers/base.js';
 import LoaderLayer from './layers/loader.js';
+import WindowLayer from './layers/window';
 import { IS_TEST } from './constants/common.js';
 // import AnimatedSprite from 'react-native-animated-sprite';
 
@@ -23,6 +24,7 @@ export default class App extends React.Component {
       }} source={C.getImage('ds1/battle/result/left.png')} imageStyle={{resizeMode:'stretch'}}>
         <StatusBar hidden={true} />
         <BaseLayer />
+        <WindowLayer />
         <LoaderLayer />
         {/* <AnimatedSprite 
           ref={'monsterRef'}

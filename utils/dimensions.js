@@ -27,7 +27,7 @@ const Dims = {
 	pixel(number){
 		if(K > 0){
 			return this.width(kWidth/number);
-		}else return this.height(eHeight/number)/2;
+		}else return this.height(eHeight/number);
 	},
 	widthPercent(percent){
 		return Dimensions.get('window').width*percent/100;

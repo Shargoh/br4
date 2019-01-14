@@ -55,4 +55,8 @@ export const ShopActions = Reflux.createActions([
 	'event'
 ]);
 
+export const LocationActions = Reflux.createActions([
+	'event'
+]);
+
 export default GlobalActions;
