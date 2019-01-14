@@ -5,6 +5,7 @@ import { FlatList, Text, View, Button, TouchableOpacity } from 'react-native';
 import GlobalActions from '../../engine/actions.js';
 import Item from './Item.js';
 import C from '../../engine/c.js';
+import Dims from '../../utils/dimensions.js';
 
 class SurgingList extends RefluxComponent {
 	componentWillMount(){
@@ -14,13 +15,11 @@ class SurgingList extends RefluxComponent {
   render() {
 		return (
 			<View style={{
-				flex:1,
+				height:Dims.height(1) - Dims.pixel(1314),
+				top:Dims.pixel(1314),
 				width:'100%',
 			}}>
 				<FlatList
-					style={{
-						marginTop:70
-					}}
 					data={this.state.surging}
 					renderItem={({item}) => (
 						<Item item={item} />

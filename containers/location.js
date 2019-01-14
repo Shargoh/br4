@@ -11,11 +11,12 @@ import { Image, Text, View, Button, Alert, ImageBackground } from 'react-native'
 import Swiper from 'react-native-swiper';
 import GlobalActions from '../engine/actions.js';
 import Header from '../components/location/Header.js';
-import { l_bg } from '../constants/images.js';
+import { l_bg, l_arena_preview_bg } from '../constants/images.js';
 import Dims from '../utils/dimensions.js';
 import Chests from '../components/location/Chests.js';
+import ArenaPreview from '../components/location/ArenaPreview.js';
 
-const COUNT = 3;
+const COUNT = 4;
 
 class LocationContainer extends RefluxComponent {
 	componentWillMount(){
@@ -45,34 +46,37 @@ class LocationContainer extends RefluxComponent {
 			}} source={C.getImage(l_bg)} resizeMode="cover">
 				<Header />
 				<Chests />
+				<Swiper 
+					ref={'swiper'}
+					loop={false} 
+					showsPagination={false}
+					onMomentumScrollEnd={(e,state) => {
+						GlobalActions.event('toggle_menu',state.index);
+					}}
+				>
+					<ArenaPreview data={{
+						img:C.getImage(l_arena_preview_bg),
+						left:100*60*100,
+						title:'ЗОЛОТАЯ ЛИГА',
+						num:10,
+						place:36
+					}} />
+					<Surging />
+					<Inventory />
+					<Shop />
+				</Swiper>
+				<View style={{
+					width:'100%',
+					height:50,
+					justifyContent:'space-around',
+					flexDirection:'row'
+				}}>
+					<MenuButton title="Арена" bcount={COUNT} index={0} active={this.state.active_menu} />
+					<MenuButton title="Монстры" bcount={COUNT} index={1} active={this.state.active_menu} />
+					<MenuButton title="Рюкзак" bcount={COUNT} index={2} active={this.state.active_menu} />
+					<MenuButton title="Магазин" bcount={COUNT} index={3} active={this.state.active_menu} />
+				</View>
 			</ImageBackground>
-			// <View style={{
-			// 	width:'100%',
-			// 	flex:1
-			// }}>
-			// 	<Swiper 
-			// 		ref={'swiper'}
-			// 		loop={false} 
-			// 		showsPagination={false}
-			// 		onMomentumScrollEnd={(e,state) => {
-			// 			GlobalActions.event('toggle_menu',state.index);
-			// 		}}
-			// 	>
-			// 		<Surging />
-			// 		<Inventory />
-			// 		<Shop />
-			// 	</Swiper>
-			// 	<View style={{
-			// 		width:'100%',
-			// 		height:50,
-			// 		justifyContent:'space-around',
-			// 		flexDirection:'row'
-			// 	}}>
-			// 		<MenuButton title="Монстры" bcount={COUNT} index={0} active={this.state.active_menu} />
-			// 		<MenuButton title="Рюкзак" bcount={COUNT} index={1} active={this.state.active_menu} />
-			// 		<MenuButton title="Магазин" bcount={COUNT} index={2} active={this.state.active_menu} />
-			// 	</View>
-			// </View>
 		)
   }
 }

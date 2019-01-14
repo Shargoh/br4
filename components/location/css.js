@@ -7,7 +7,8 @@ const resource_container_width = 450,
 const styles = StyleSheet.create({
 	header:{
 		width:Dims.width(1),
-		alignItems:'center'
+		alignItems:'center',
+		zIndex:100
 	},
 	header_bg:{
 		width:Dims.pixel(2078),
@@ -165,7 +166,8 @@ const styles = StyleSheet.create({
 		position:'absolute',
 		top:Dims.pixel(775),
 		justifyContent:'center',
-		alignItems:'center'
+		alignItems:'center',
+		zIndex:100
 	},
 	chest_container:{
 		width:Dims.pixel(489),
@@ -222,6 +224,107 @@ const styles = StyleSheet.create({
 		position:'absolute',
 		top:Dims.pixel(3),
 		marginLeft:Dims.pixel(-2)
+	},
+	swiper_container:{
+		height:Dims.height(1) - Dims.pixel(1314) - Dims.pixel(402) + Dims.battleMarginTop(),
+		width:Dims.width(1),
+		position:'absolute',
+		top:Dims.pixel(1040),
+		justifyContent:'center',
+		alignItems:'center'
+	},
+	arena_preview_container:{
+		width:Dims.pixel(1438),
+		height:Dims.pixel(1140),
+		alignItems:'center'
+	},
+	arena_preview_bg:{
+		width:Dims.pixel(1438),
+		height:Dims.pixel(1040)
+	},
+	arena_button:{
+		width:Dims.pixel(577),
+		height:Dims.pixel(335)
+	},
+	arena_button_box:{
+		top:Dims.pixel(860),
+		position:'absolute'
+	},
+	arena_data_box:{
+		position:'absolute',
+		right:Dims.pixel(50),
+		top:Dims.pixel(240),
+		width:Dims.pixel(537),
+		height:Dims.pixel(666),
+		alignItems:'center'
+	},
+	arena_data_bg:{
+		width:Dims.pixel(437),
+		height:Dims.pixel(566),
+		top:Dims.pixel(50)
+	},
+	arena_timer_icon:{
+		width:Dims.pixel(40),
+		height:Dims.pixel(48),
+		position:'absolute',
+		top:Dims.pixel(25),
+		left:Dims.pixel(90)
+	},
+	arena_timer_text:{
+		fontFamily:'Gotham-Bold',
+		fontSize:Dims.pixel(46),
+		color:'#a4fe17',
+		position:'absolute',
+		top:Dims.pixel(20),
+		left:Dims.pixel(150)
+	},
+	/**
+	 * Kenyan Coffee Bold 145 градиент (угол 59) #ffffff #a6b8c3 #c8d6de #647681; 
+	 * stroke #39030d 6px; inner shadow #ced5d6 distance 4px size 6px; 
+	 * shadow #000000 distance 6px spread 3% size 4px
+	 */
+	arena_division_text:{
+		fontFamily:'KenyanCoffeeRg-Bold',
+		fontSize:Dims.pixel(145),
+		color:'#ffffff',
+		position:'absolute',
+		top:Dims.pixel(122),
+		letterSpacing:Dims.pixel(5)
+	},
+	arena_division_shadow:{
+		fontFamily:'KenyanCoffeeRg-Bold',
+		fontSize:Dims.pixel(155),
+		color:'#000000',
+		position:'absolute',
+		top:Dims.pixel(115),
+		marginLeft:Dims.pixel(-3),
+		textShadowColor:'#000000',
+		textShadowRadius:Dims.pixel(20),
+	},
+	//Kenyan 90 градиент #ffffff #fdf9bf;stroke 2px #15191c;shadow #000000 50% 5px distance 5px
+	arena_flag_text:{
+		fontFamily:'KenyanCoffeeRg-Bold',
+		fontSize:Dims.pixel(90),
+		color:'#ffffff',
+		position:'absolute',
+		top:Dims.pixel(477)
+	},
+	arena_flag_shadow:{
+		fontFamily:'KenyanCoffeeRg-Bold',
+		fontSize:Dims.pixel(96),
+		color:'#000000',
+		position:'absolute',
+		top:Dims.pixel(474),
+		marginLeft:Dims.pixel(-3),
+		letterSpacing:Dims.pixel(-3)
+	},
+	//Gotham Bold 52 градиент #fffb75 #cfab4b #fffc76 #946326
+	arena_league_text:{
+		fontFamily:'Gotham-Bold',
+		fontSize:Dims.pixel(52),
+		color:'#fffb75',
+		position:'absolute',
+		top:Dims.pixel(382),
 	}
 });
 

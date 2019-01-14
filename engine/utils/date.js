@@ -62,10 +62,10 @@ var DateUtils =  {
                     return tm +':'+ ts;
                 }
             case 'long':
-                if(d) arr.push(d +' дн.');
-                if(d || h) arr.push(h +' ч.');
-                if(d || m) arr.push(m +' мин.');
-                if(s) arr.push(s +' сек.');
+                if(d) arr.push(d +'д');
+                if(d || h) arr.push(h +'ч');
+                if(d || m) arr.push(m +'м');
+                if(s) arr.push(s +'с');
                 
                 return arr.slice(0,3).join(' ');
             case 'short':

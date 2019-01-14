@@ -45,3 +45,7 @@ export const l_chest_bg = 'cards/card_game_chest_slot_active_bg.png';
 export const l_chest = 'cards/card_game_chest.png';
 export const l_chest_timer = 'cards/card_game_chest_slot_timer.png';
 export const l_chest_ruby = 'cards/card_game_icon_ruby.png';
+export const l_arena_preview_bg = 'cards/banners_activity_alchemist.png';
+export const l_arena_button = 'cards/card_game_button_fight_upstate.png';
+export const l_arena_data_bg = 'cards/card_game_ligue_golden.png';
+export const l_arena_timer_icon = 'cards/card_game_icon_timer2.png';
