@@ -14,6 +14,7 @@ import Inventory from '../../services/Inventory.js';
 import SpecialDeal from '../../services/SpecialDeal.js';
 import Shop from '../../services/Shop.js';
 import Payment from '../../services/Payment.js';
+import MobileArena from '../../services/MobileArena.js';
 
 const classes = {
 	Empty,
@@ -24,7 +25,8 @@ const classes = {
 	Inventory,
 	SpecialDeal,
 	Payment,
-	Shop
+	Shop,
+	MobileArena
 }
 
 class ServiceManager extends Manager{
@@ -32,6 +34,7 @@ class ServiceManager extends Manager{
 		super();
 		this.type = 'service';
 		this.services = {};
+		this.services_by_id = {};
 
 		Reflux.ListenerMethods.listenTo(GlobalActions.initServices,(services) => {
 			this.initialize(services);
@@ -72,19 +75,36 @@ class ServiceManager extends Manager{
 		if (info && Class) {
 			if (Class.isSingle()) {
 				if(!this.services[name]) {
-					this.services[name] = new Class({
+					let service = new Class({
 						id: service_id
 					});
+
+					this.services[name] = service;
+					this.services_by_id[service_id] = service;
 					
-					return this.services[name];
+					return service;
 				}
 
 				return this.services[name];
-			} else return new Class({
-				id: service_id
-			});
+			} else {
+				if(!this.services_by_id[service_id]) {
+					let service = new Class({
+						id: service_id
+					});
+	
+					this.services_by_id[service_id] = service;
+					
+					return service;
+				}
+
+				return this.services_by_id[service_id];
+			}
 		} else {
-			GlobalActions.warn(!info ? 'Не найдена спрвочная информация для сервиса ' + service_id  : 'Не определён класс сервиса ' + name);
+			GlobalActions.warn(
+				!info ? 
+				'Не найдена спрвочная информация для сервиса ' + service_id  : 
+				'Не определён класс сервиса ' + name
+			);
 			return;
 		}
 	}
@@ -106,6 +126,16 @@ class ServiceManager extends Manager{
 			}
 
 			GlobalActions.error('Сервис не найден',name);
+		}else return service;
+	}
+	/**
+	 * Вернёт экземпляр сервиса по id
+	 */
+	getById(service_id) {
+		var service = this.services_by_id[service_id];
+
+		if (!service) {
+			GlobalActions.error('Сервис не найден по ID',service_id);
 		}else return service;
 	}
 	/**

@@ -4,18 +4,43 @@ import { Image, View, Text, TouchableOpacity } from 'react-native';
 import { LocationActions } from '../../engine/actions.js';
 import C from '../../engine/c.js';
 import styles from './css';
-import { l_arena_button, l_arena_data_bg, l_arena_timer_icon } from '../../constants/images.js';
+import { 
+	l_arena_button, 
+	l_arena_data_bg, 
+	l_arena_timer_icon, 
+	l_arena_preview_bg 
+} from '../../constants/images.js';
 import Timer from '../common/Timer.js';
 import { LinearTextGradient } from 'react-native-text-gradient';
 
 class ArenaPreview extends RefluxComponent {
+	constructor() {
+    super();
+
+    this.state = {};
+  }
+	componentWillMount(){
+		this.bindService(this.props.service);
+		this.updateServiceState();
+	}
+	onAction(action,store){
+		if(action == 'change'){
+			this.updateServiceState();
+		}
+	}
 	render(){
-		var data = this.props.data;
+		var timer;
+
+		if(this.state.ladder_end){
+			timer = <Timer textStyle={styles.arena_timer_text} time={this.state.ladder_end} options={{
+				type:'long'
+			}} />
+		}
 
 		return (
 			<View style={styles.swiper_container}>
 				<View style={styles.arena_preview_container}>
-					<Image source={data.img} style={styles.arena_preview_bg} />
+					<Image source={C.getImage(l_arena_preview_bg)} style={styles.arena_preview_bg} />
 					<TouchableOpacity style={[styles.arena_button,styles.arena_button_box]} onPress={() => {
 						console.log('FIGHT!');
 					}}>
@@ -24,10 +49,8 @@ class ArenaPreview extends RefluxComponent {
 					<View style={styles.arena_data_box}>
 						<Image source={C.getImage(l_arena_data_bg)} style={styles.arena_data_bg} />
 						<Image source={C.getImage(l_arena_timer_icon)} style={styles.arena_timer_icon} />
-						<Timer textStyle={styles.arena_timer_text} time={data.left} options={{
-							type:'long'
-						}} />
-						<Text style={styles.arena_division_shadow}>{data.num}</Text>
+						{timer}
+						<Text style={styles.arena_division_shadow}>{this.state.division}</Text>
 						<LinearTextGradient
 							style={styles.arena_division_text}
 							//#ffffff #a6b8c3 #c8d6de #647681;
@@ -36,7 +59,7 @@ class ArenaPreview extends RefluxComponent {
 							start={{ x: 0, y: 0 }}
 							end={{ x: 1, y: 1 }}
 						>
-							{data.num}
+							<Text>{this.state.division}</Text>
 						</LinearTextGradient>
 						<LinearTextGradient
 							style={styles.arena_league_text}
@@ -46,9 +69,9 @@ class ArenaPreview extends RefluxComponent {
 							start={{ x: 0, y: 0 }}
 							end={{ x: 0, y: 1 }}
 						>
-							{data.title}
+							<Text>{this.state.league}</Text>
 						</LinearTextGradient>
-						<Text style={styles.arena_flag_shadow}>{data.place}</Text>
+						<Text style={styles.arena_flag_shadow}>{this.state.place}</Text>
 						<LinearTextGradient
 							style={styles.arena_flag_text}
 							//#ffffff #fdf9bf
@@ -57,7 +80,7 @@ class ArenaPreview extends RefluxComponent {
 							start={{ x: 0, y: 0 }}
 							end={{ x: 0, y: 1 }}
 						>
-							{data.place}
+							<Text>{this.state.place}</Text>
 						</LinearTextGradient>
 					</View>
 				</View>

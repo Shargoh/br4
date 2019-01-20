@@ -9,6 +9,7 @@ import Battle from '../../modules/battle.js';
 import BattleResult from '../../modules/battle_result.js';
 import Inventory from '../../modules/inventory';
 import Shop from '../../modules/shop';
+import Arena from '../../modules/arena';
 
 class ModuleManager extends Manager{
 	constructor(){
@@ -20,6 +21,7 @@ class ModuleManager extends Manager{
 		var modules = [
 				Inventory,
 				Shop,
+				Arena,
 				LocationModule,
 				AccountsModule,
 				SurgingModule,

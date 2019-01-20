@@ -1,7 +1,7 @@
 import C from '../engine/c.js';
 
 const store = {
-    /**
+  /**
 	 * Вернёт сервисы, привязанные к локации по названию прототипа.
 	 */
 	getBindableServices(name){
@@ -23,6 +23,10 @@ const store = {
 		}
 
 		return services;
+	},
+	onSet(){
+		// инициализирую все сервисы локации
+		this.getBindableServices();
 	}
 };
 

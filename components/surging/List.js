@@ -6,6 +6,7 @@ import GlobalActions from '../../engine/actions.js';
 import Item from './Item.js';
 import C from '../../engine/c.js';
 import Dims from '../../utils/dimensions.js';
+import styles from '../location/css.js';
 
 class SurgingList extends RefluxComponent {
 	componentWillMount(){
@@ -14,11 +15,7 @@ class SurgingList extends RefluxComponent {
 	}
   render() {
 		return (
-			<View style={{
-				height:Dims.height(1) - Dims.pixel(1314),
-				top:Dims.pixel(1314),
-				width:'100%',
-			}}>
+			<View style={styles.swiper_container}>
 				<FlatList
 					data={this.state.surging}
 					renderItem={({item}) => (

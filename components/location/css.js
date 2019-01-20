@@ -228,8 +228,6 @@ const styles = StyleSheet.create({
 	swiper_container:{
 		height:Dims.height(1) - Dims.pixel(1314) - Dims.pixel(402) + Dims.battleMarginTop(),
 		width:Dims.width(1),
-		position:'absolute',
-		top:Dims.pixel(1040),
 		justifyContent:'center',
 		alignItems:'center'
 	},
@@ -325,6 +323,42 @@ const styles = StyleSheet.create({
 		color:'#fffb75',
 		position:'absolute',
 		top:Dims.pixel(382),
+	},
+	footer:{
+		width:Dims.pixel(2078),
+		height:Dims.pixel(402),
+		flexDirection:'row',
+		alignItems:'flex-end',
+		position:'absolute',
+		bottom:0
+	},
+	menu_button_box:{
+		flexDirection:'row',
+		alignItems:'flex-end'
+	},
+	menu_button:{
+
+	},
+	menu_dot:{
+		width:Dims.pixel(48),
+		height:Dims.pixel(51),
+		marginLeft:Dims.pixel(35),
+		marginRight:Dims.pixel(35),
+		marginBottom:Dims.pixel(50)
+	},
+	// Gotham Bold 85 #ffffff
+	menu_active_text:{
+		fontFamily:'Gotham-Bold',
+		fontSize:Dims.pixel(85),
+		color:'#ffffff',
+		marginBottom:Dims.pixel(35)
+	},
+	// Gotham Medium 64 #a6a3b1
+	menu_text:{
+		fontFamily:'Gotham-Medium',
+		fontSize:Dims.pixel(64),
+		color:'#a6a3b1',
+		marginBottom:Dims.pixel(42)
 	}
 });
 
