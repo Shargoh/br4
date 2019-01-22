@@ -68,10 +68,14 @@ class Module extends Proto{
 
 			C.refs = new Refs(config.references);
 			// только здесь инициализирую все игровые модули, чтобы не тупить на старте приложения
-			GlobalActions.init();
+			GlobalActions.init(config);
 			GlobalActions.initServices(config.services);
 			GlobalActions.updateLocation(config.location);
 			GlobalActions.setUser(config.user);
+
+			this.store.set({
+				config:config
+			});
 			// GlobalActions.initAnimations();
 			// this.showGame();
 			// dispatch(setRealCurrency(config.references.real_currency));

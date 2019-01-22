@@ -8,7 +8,8 @@ const styles = StyleSheet.create({
 	header:{
 		width:Dims.width(1),
 		alignItems:'center',
-		zIndex:100
+		zIndex:100,
+		height:Dims.pixel(460+298)
 	},
 	header_bg:{
 		width:Dims.pixel(2078),
@@ -144,6 +145,10 @@ const styles = StyleSheet.create({
 		width:Dims.pixel(291),
 		height:Dims.pixel(298),
 		margin:Dims.pixel(1)
+	},
+	top_menu_inside:{
+		width:Dims.pixel(291),
+		height:Dims.pixel(298)
 	},
 	top_menu_counter:{
 		width:Dims.pixel(106),

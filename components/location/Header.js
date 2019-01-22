@@ -36,6 +36,12 @@ const menu = [{
 }];
 
 class Header extends RefluxComponent {
+	componentWillMount(){
+		this.bindStore('AppStore');
+		this.setState({
+			menu:this.store.get('config').menu.mainmenu
+		});
+	}
 	render(){
 		return (
 			<View style={styles.header}>
@@ -49,8 +55,8 @@ class Header extends RefluxComponent {
 				</TouchableOpacity>
 				<Title />
 				<View style={styles.top_menu}>
-					{menu.map((el) => {
-						return <TopMenu data={el} key={el.name}/>;
+					{this.state.menu.map((el) => {
+						return <TopMenu data={el} key={el.id_element}/>;
 					})}
 				</View>
 			</View>

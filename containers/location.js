@@ -5,7 +5,7 @@ import RefluxComponent from '../engine/views/reflux_component.js';
 import Surging from '../components/surging/List.js';
 import Inventory from './inventory';
 import Shop from './shop';
-import { Image, Text, View, Button, Alert, ImageBackground } from 'react-native';
+import { Image, Text, View, PanResponder, Alert, ImageBackground } from 'react-native';
 import Swiper from 'react-native-swiper';
 import SwiperFlatList from 'react-native-swiper-flatlist';
 import GlobalActions from '../engine/actions.js';
@@ -36,6 +36,29 @@ class LocationContainer extends RefluxComponent {
 			}
 		}
 	}
+	_panResponder = PanResponder.create({
+		onMoveShouldSetPanResponder: (e, gesture) => {
+			//return true if user is swiping, return false if it's a single click
+			return !(gesture.dx === 0 && gesture.dy === 0);
+		},
+		
+    onPanResponderMove: (e, gesture) => {
+			if(this.state.start_drag_active_menu == this.state.active_menu){
+				let count = this.state.location.blob.objects.length;
+
+				GlobalActions.event(
+					'toggle_menu',
+					Math.max(0,Math.min(count,this.state.active_menu - (gesture.dx > 0 ? 1 : -1)))
+				);
+			}
+			console.log(gesture.dx,this.state.active_menu - (gesture.dx > 0 ? 1 : -1))
+		},
+		onPanResponderGrant: (e,gesture) => {
+			this.setState({
+				start_drag_active_menu:this.state.active_menu
+			});
+		}
+  })
   render() {
 		// var swiper = (
 		// 	<Swiper 
@@ -62,17 +85,16 @@ class LocationContainer extends RefluxComponent {
 
 		var ServiceManager = C.getManager('service');
 
-		// console.log(this.state.location.blob.objects)
-
 		var swiper = (
 			<SwiperFlatList 
 				contentContainerStyle={{
-					top:Dims.pixel(1040)
+					top:Dims.pixel(1040-460-298+259)
 				}}
 				ref={'swiper'}
 				onMomentumScrollEnd={(data) => {
 					GlobalActions.event('toggle_menu',data.index);
 				}}
+				{...this._panResponder.panHandlers}
 				children={this.state.location.blob.objects.map((data) => {
 					if(!data.client_action.id) return null;
 
@@ -92,12 +114,6 @@ class LocationContainer extends RefluxComponent {
 						default:
 							return null;
 					}
-
-					// console.log(service);
-
-					return (
-						<Text>{data.client_action.id}</Text>
-					)
 				})}
 				// onScrollBeginDrag={(e) => {
 				// 	// console.log(Object.keys(e.currentTarget))
@@ -119,12 +135,16 @@ class LocationContainer extends RefluxComponent {
 		)
 
 		return (
-			<ImageBackground style={{
-				// flexDirection: 'row',
-				flex:1,
-				width:Dims.width(1),
-				alignItems:'center'
-			}} source={C.getImage(l_bg)} resizeMode="cover">
+			<ImageBackground 
+				style={{
+					// flexDirection: 'row',
+					flex:1,
+					width:Dims.width(1),
+					alignItems:'center'
+				}} 
+				source={C.getImage(l_bg)} 
+				resizeMode="cover"
+			>
 				<Header />
 				<Chests />
 				{swiper}

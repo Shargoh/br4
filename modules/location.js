@@ -71,6 +71,8 @@ class Module extends Proto{
 			this._flag_waiting_position = true;
 		}
 
+		console.log('MENU:',active_menu)
+
 		var active_menu_data = this.service.store.get('location').blob.objects[active_menu],
 			active_service_id = active_menu_data.client_action.id;
 
