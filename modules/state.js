@@ -24,6 +24,7 @@ class Module extends Proto{
 		});
 		this.listenTo(ChatConnectionActions.ready,'showGame');
 		this.listenTo(GlobalActions.state,'setState');
+		this.listenTo(GlobalActions.window,'setWindow');
 		this.listenTo(GlobalActions.showLocation,'showLocation');
 		this.listenTo(GlobalActions.showBattle,'showBattle');
 	}
@@ -107,6 +108,11 @@ class Module extends Proto{
 	}
 	showBattle(){
 		C.getModule('Battle').show();
+	}
+	setWindow(name){
+		this.store.set({
+			window:name
+		});
 	}
 };
 

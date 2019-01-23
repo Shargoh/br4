@@ -29,6 +29,10 @@ const classes = {
 	MobileArena
 }
 
+const components_to_modules = {
+	'inventory_tabs':'Inventory'
+}
+
 class ServiceManager extends Manager{
 	constructor(){
 		super();
@@ -188,6 +192,30 @@ class ServiceManager extends Manager{
 			}
 
 			return classes[name];
+		}
+	}
+	showComponentByService(service_id){
+		var service = this.getById(service_id);
+
+		if(service){
+			let data = C.refs.ref('client_objects|' + service.info.params.object_name);
+
+			// console.log(C.refs.ref('client_objects').map((el) => {
+			// 	return el.name;
+			// }));
+
+			console.log(data)
+
+			if(!data) return null;
+
+			let module_name = components_to_modules[data.component_id];
+
+			if(module_name){
+				GlobalActions.showModule(module_name,{
+					service:service,
+					object:data
+				});
+			}
 		}
 	}
 };

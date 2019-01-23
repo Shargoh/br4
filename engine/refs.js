@@ -409,7 +409,7 @@ function prepareReferences(config_references) {
   refs.client_actions = client_actions;
 
   // клиентские объекты
-  prepareRef(refs,'client_objects','id');
+  prepareRef(refs,'client_objects','name');
 
   // ежедневная награда
   var login_days_bonus = [];

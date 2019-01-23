@@ -18,6 +18,7 @@ GlobalActions = Reflux.createActions([
 	'warn',
 	'initServices',
 	'state',
+	'window',
 	'userChanged',
 	'showLocation',
 	'showBattle',

@@ -103,6 +103,13 @@ class Module extends Proto{
 			}
 		}
 	}
+	onMenu(el,data){
+		// TODO disable menu
+		var ServiceManager = C.getManager('service'),
+			service = ServiceManager.factory(data.params.id);
+
+		ServiceManager.showComponentByService(service.id);
+	}
 };
 
 export default Module;

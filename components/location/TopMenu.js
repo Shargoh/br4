@@ -9,8 +9,7 @@ class TopMenu extends React.Component {
 	render(){
 		return (
 			<TouchableOpacity style={styles.top_menu_el} onPress={() => {
-				// console.log(this.props.data.params.id);
-				console.log('123')
+				LocationActions.event('menu',this,this.props.data);
 			}}>
 				<ImageBackground style={styles.top_menu_inside} source={C.getImage(this.props.data.images.image)}>
 					<ImageBackground style={styles.top_menu_counter} source={C.getImage(l_m_counter)}>

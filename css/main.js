@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Dims from '../utils/dimensions';
 
 export default styles = StyleSheet.create({
   container: {
@@ -26,5 +27,27 @@ export default styles = StyleSheet.create({
   bottom_button_text:{
     color:'#fff2cd',
     fontSize:24
+  },
+  window_container:{
+    position:'absolute',
+    top:0,
+    left:0,
+    width:Dims.width(1),
+    height:Dims.height(1),
+    zIndex:1000
+  },
+  close_container:{
+    position:'absolute',
+    top:0,
+    right:0,
+    width:Dims.pixel(100),
+    height:Dims.pixel(100),
+    justifyContent:'center',
+    alignItems:'center',
+    zIndex:1000
+  },
+  close_btn:{
+    fontSize:Dims.pixel(100),
+    color:'red'
   }
 });

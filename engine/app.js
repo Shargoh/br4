@@ -2,14 +2,11 @@
 import _ from 'lodash';
 import C from './c.js';
 import CommonUtils from './utils/common.js';
-// import WindowManager from './managers/window.js';
 import StuffManager from './managers/stuff.js';
 import ModuleManager from './managers/module.js';
 import LockManager from './managers/lock.js';
 import ServiceManager from './managers/service.js';
 import LogManager from './managers/log.js';
-// import Factory from './factory.js';
-// import API from './api.js';
 
 class Ticker{
 	constructor(){

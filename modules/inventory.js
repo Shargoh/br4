@@ -2,7 +2,7 @@ import C from '../engine/c.js';
 import Proto from '../engine/proto_module.js';
 import React from 'react';
 import Reflux from 'reflux';
-import { InventoryActions } from '../engine/actions.js';
+import GlobalActions, { InventoryActions } from '../engine/actions.js';
 import { Alert } from 'react-native';
 
 class Module extends Proto{
@@ -15,6 +15,15 @@ class Module extends Proto{
 		Reflux.ListenerMethods.listenTo(InventoryActions.event,function(){
 			me.onEvent.apply(me,arguments);
 		});
+	}
+	/**
+	 * 
+	 * @param {*} data 
+	 * 	service (данные сервиса)
+	 * 	object (клиентский объект)
+	 */
+	show(data){
+		GlobalActions.window('inventory');
 	}
 	onInit(){
 		this.service = C.getManager('service').get('inventory');

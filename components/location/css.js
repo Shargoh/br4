@@ -68,8 +68,7 @@ const styles = StyleSheet.create({
 		width:Dims.pixel(1455),
 		height:Dims.pixel(207),
 		position:'absolute',
-		top:Dims.pixel(246),
-		left:Dims.pixel(98)
+		top:Dims.pixel(246)
 	},
 	title_guild:{
 		position:'absolute',
