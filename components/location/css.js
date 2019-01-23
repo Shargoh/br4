@@ -6,7 +6,7 @@ const resource_container_width = 450,
 
 const styles = StyleSheet.create({
 	header:{
-		width:Dims.width(1),
+		width:Math.min(Dims.width(1),Dims.pixel(2078)),
 		alignItems:'center',
 		zIndex:100,
 		height:Dims.pixel(460+298)
